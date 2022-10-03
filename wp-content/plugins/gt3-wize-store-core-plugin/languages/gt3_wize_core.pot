@@ -1,0 +1,187 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Project-Id-Version: GT3 Wize Store Core\n"
+"POT-Creation-Date: 2021-04-25 04:54+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: gt3_core.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"\n"
+"Language: "
+
+#: includes/post-types/practice/shortcodes/practice.php:47
+msgid "1"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:48
+msgid "2"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:49
+msgid "3"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:50
+msgid "4"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:61
+msgid "Ajax load more button"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:317
+msgid "Background image"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:115
+msgid "Charts in content"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:349
+msgid "Choose Sidebar to show in Dropdown"
+msgstr ""
+
+#. Description of the plugin
+msgid "Core plugin for Wize Store Theme."
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:39
+msgid "Create WordPress loop, to populate content from your site."
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:338
+msgid "Custom widget area"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:311
+msgid "Don't show title"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:318
+msgid "Enter Image URL"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:23
+msgid "GT3 Modules"
+msgstr ""
+
+#. Name of the plugin
+msgid "GT3 Wize Store Core"
+msgstr ""
+
+#. Author of the plugin
+msgid "GT3themes"
+msgstr ""
+
+#. URI of the plugin
+#. Author URI of the plugin
+msgid "https://themeforest.net/user/gt3themes"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:100
+#: includes/post-types/practice/shortcodes/practice.php:119
+msgid "Items load by load more button."
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:96
+msgid "Items on load"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:43
+msgid "Items Per Line"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:280
+msgid "Label BG Color"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:287
+msgid "Label Color"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:273
+msgid "Label Text"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:311
+msgid "Load More"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:300
+msgid "Mega Menu"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:183
+msgid "megamenu"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:324
+msgid "Padding-left (px)"
+msgstr ""
+
+#: includes/gt3_mega_menu/class-gt3_mega_menu.php:331
+msgid "Padding-right (px)"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:30
+msgid "Project Items"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:20
+#: includes/post-types/practice/shortcodes/practice.php:26
+msgid "Project List"
+msgstr ""
+
+#: includes/post-types/practice/templates/single-projects.php:50
+msgid "Read more!"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:55
+msgid "Select style"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:108
+msgid "Show Content"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:66
+msgid "Show Filter"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:127
+msgid "Show Learn More Button"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:85
+msgid "Show Load More Button"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:74
+msgid "Show Pagination"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:60
+msgid "Standard Pagination"
+msgstr ""
+
+#: includes/post-types/practice/shortcodes/practice.php:68
+#: includes/post-types/practice/shortcodes/practice.php:76
+#: includes/post-types/practice/shortcodes/practice.php:87
+#: includes/post-types/practice/shortcodes/practice.php:110
+#: includes/post-types/practice/shortcodes/practice.php:130
+msgid "Yes"
+msgstr ""
