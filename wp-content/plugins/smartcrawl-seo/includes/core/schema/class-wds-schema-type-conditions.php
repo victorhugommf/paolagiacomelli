@@ -1,11 +1,14 @@
 <?php
 
 class Smartcrawl_Schema_Type_Conditions {
+
 	private $conditions;
+
 	/**
 	 * @var WP_Post
 	 */
 	private $post;
+
 	/**
 	 * @var bool
 	 */
@@ -13,33 +16,32 @@ class Smartcrawl_Schema_Type_Conditions {
 
 	/**
 	 * Smartcrawl_Schema_Condition constructor.
-	 *
-	 * @param $rules
-	 * @param $post
-	 * @param $is_front_page
 	 */
 	public function __construct( $rules, $post, $is_front_page ) {
-		$this->conditions = $rules;
-		$this->post = $post;
+		$this->conditions    = $rules;
+		$this->post          = $post;
 		$this->is_front_page = $is_front_page;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function met() {
 		$met = false;
 		foreach ( $this->conditions as $group ) {
 			$and = null;
 			foreach ( $group as $condition ) {
-				$lhs = smartcrawl_get_array_value( $condition, 'lhs' );
+				$lhs       = smartcrawl_get_array_value( $condition, 'lhs' );
 				$lhs_value = $this->lhs_value( $lhs );
-				$rhs = smartcrawl_get_array_value( $condition, 'rhs' );
-				$operator = smartcrawl_get_array_value( $condition, 'operator' );
+				$rhs       = smartcrawl_get_array_value( $condition, 'rhs' );
+				$operator  = smartcrawl_get_array_value( $condition, 'operator' );
 
 				if ( is_null( $lhs ) || is_null( $rhs ) || is_null( $operator ) ) {
-					// Omit the condition because data is somehow missing
+					// Omit the condition because data is somehow missing.
 					continue;
 				}
 
-				if ( $lhs_value == $rhs && empty( $lhs_value ) && empty( $rhs ) ) {
+				if ( $lhs_value === $rhs && empty( $lhs_value ) && empty( $rhs ) ) {
 					// Edge case where the lhs is empty because post is not available
 					// in the current context and rhs is empty because the user left
 					// the search field blank. Omit the condition.
@@ -53,17 +55,9 @@ class Smartcrawl_Schema_Type_Conditions {
 				if ( is_bool( $lhs_value ) ) {
 					$and = $and && $lhs_value;
 				} elseif ( is_array( $lhs_value ) ) {
-					$and = $and &&
-					       (
-						       ( $operator === '=' && in_array( $rhs, $lhs_value ) ) ||
-						       ( $operator === '!=' && ! in_array( $rhs, $lhs_value ) )
-					       );
+					$and = $and && ( ( '=' === $operator && in_array( $rhs, $lhs_value, true ) ) || ( '!=' === $operator && ! in_array( $rhs, $lhs_value, true ) ) );
 				} else {
-					$and = $and &&
-					       (
-						       ( $operator === '=' && $rhs == $lhs_value ) ||
-						       ( $operator === '!=' && $rhs != $lhs_value )
-					       );
+					$and = $and && ( ( '=' === $operator && $rhs === $lhs_value ) || ( '!=' === $operator && $rhs !== $lhs_value ) );
 				}
 			}
 			if ( ! is_null( $and ) ) {
@@ -74,6 +68,9 @@ class Smartcrawl_Schema_Type_Conditions {
 		return $met;
 	}
 
+	/**
+	 * @return array|bool|int|string|string[]|WP_Error|WP_Term[]
+	 */
 	private function lhs_value( $lhs ) {
 		switch ( $lhs ) {
 			case 'post_type':
@@ -92,6 +89,7 @@ class Smartcrawl_Schema_Type_Conditions {
 					return array();
 				}
 				$user = get_user_by( 'ID', $this->post->post_author );
+
 				return $user->roles;
 
 			case 'post_category':
@@ -122,6 +120,9 @@ class Smartcrawl_Schema_Type_Conditions {
 		return '';
 	}
 
+	/**
+	 * @return string
+	 */
 	private function get_product_class_name() {
 		if ( ! function_exists( 'wc_get_product' ) ) {
 			return '';
@@ -135,14 +136,21 @@ class Smartcrawl_Schema_Type_Conditions {
 		return get_class( $product );
 	}
 
+	/**
+	 * @return array|WP_Error|WP_Term[]
+	 */
 	private function get_post_terms( $taxonomy ) {
 		if ( ! $this->post ) {
 			return array();
 		}
 
-		$terms = wp_get_object_terms( array( $this->post->ID ), $taxonomy, array(
-			'fields' => 'ids',
-		) );
+		$terms = wp_get_object_terms(
+			array( $this->post->ID ),
+			$taxonomy,
+			array(
+				'fields' => 'ids',
+			)
+		);
 
 		if ( is_wp_error( $terms ) ) {
 			return array();

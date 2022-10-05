@@ -1,34 +1,23 @@
 <?php
+/**
+ * Class Smartcrawl_Network_Settings_Page_Controller
+ *
+ * @package SmartCrawl
+ */
 
 class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page {
+
+	use Smartcrawl_Singleton;
+
 	const MENU_SLUG = 'wds_network_settings';
-	/**
-	 * Singleton instance
-	 *
-	 * @var self
-	 */
-	private static $_instance;
-	private $submenu_page;
-
-	/**
-	 * Singleton instance getter
-	 *
-	 * @return self instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	public function should_run() {
-		return is_multisite()
-		       && is_network_admin();
+		return is_multisite() && is_network_admin();
 	}
 
 	/**
+	 * Get the capability.
+	 *
 	 * @return string
 	 */
 	public function capability() {
@@ -50,13 +39,13 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 	}
 
 	public function save_settings() {
-		$data = $this->get_request_data();
+		$data  = $this->get_request_data();
 		$input = smartcrawl_get_array_value( $data, 'wds_settings_options' );
 		if (
 			! empty( $input['save_blog_tabs'] )
 			&& current_user_can( $this->capability() )
 		) {
-			$raw = ! empty( $input['wds_blog_tabs'] ) && is_array( $input['wds_blog_tabs'] )
+			$raw  = ! empty( $input['wds_blog_tabs'] ) && is_array( $input['wds_blog_tabs'] )
 				? $input['wds_blog_tabs']
 				: array();
 			$tabs = array();
@@ -82,7 +71,7 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 	}
 
 	public function add_page() {
-		$dashboard = Smartcrawl_Settings_Dashboard::get_instance();
+		$dashboard = Smartcrawl_Settings_Dashboard::get();
 		add_menu_page(
 			'',
 			$dashboard->get_title(),
@@ -112,7 +101,7 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 	}
 
 	private function add_network_settings_page( $parent ) {
-		$this->submenu_page = add_submenu_page(
+		$submenu_page = add_submenu_page(
 			$parent,
 			esc_html__( 'SmartCrawl Network Settings', 'wds' ),
 			esc_html__( 'Network Settings', 'wds' ),
@@ -121,11 +110,11 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 			array( $this, 'options_page' )
 		);
 
-		add_action( "admin_print_styles-{$this->submenu_page}", array( $this, 'admin_styles' ) );
+		add_action( "admin_print_styles-{$submenu_page}", array( $this, 'admin_styles' ) );
 	}
 
 	public function options_page() {
-		$arguments['slugs'] = array(
+		$arguments['slugs']                = array(
 			Smartcrawl_Settings::TAB_ONPAGE    => __( 'Title & Meta', 'wds' ),
 			Smartcrawl_Settings::TAB_SCHEMA    => __( 'Schema', 'wds' ),
 			Smartcrawl_Settings::TAB_SOCIAL    => __( 'Social', 'wds' ),
@@ -133,11 +122,11 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 			Smartcrawl_Settings::TAB_AUTOLINKS => __( 'Advanced Tools', 'wds' ),
 			Smartcrawl_Settings::TAB_SETTINGS  => __( 'Settings', 'wds' ),
 		);
-		$arguments['blog_tabs'] = Smartcrawl_Settings_Settings::get_blog_tabs();
+		$arguments['blog_tabs']            = Smartcrawl_Settings_Settings::get_blog_tabs();
 		$arguments['subsite_manager_role'] = get_site_option( 'wds_subsite_manager_role' );
-		$arguments['subsite_config_id'] = get_site_option( 'wds_subsite_config_id' );
-		$arguments['option_name'] = 'wds_settings_options';
-		$arguments['per_site_notice'] = $this->per_site_notice();
+		$arguments['subsite_config_id']    = get_site_option( 'wds_subsite_config_id' );
+		$arguments['option_name']          = 'wds_settings_options';
+		$arguments['per_site_notice']      = $this->per_site_notice();
 
 		wp_enqueue_script( Smartcrawl_Controller_Assets::NETWORK_SETTINGS_PAGE_JS );
 
@@ -150,17 +139,21 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 		?>
 		<?php esc_html_e( 'You are currently in Per Site mode which means each site on your network has different settings.', 'wds' ); ?>
 		<br/><br/>
-		<a type="button"
-		   href="<?php echo esc_attr( $dashboard_url ); ?>"
-		   class="sui-button">
-
+		<a
+			type="button"
+			href="<?php echo esc_attr( $dashboard_url ); ?>"
+			class="sui-button"
+		>
 			<?php esc_html_e( 'Configure Main Site', 'wds' ); ?>
 		</a>
 		<?php
-		return Smartcrawl_Simple_Renderer::load( 'notice', array(
-			'message' => ob_get_clean(),
-			'class'   => 'sui-notice-warning',
-		) );
+		return Smartcrawl_Simple_Renderer::load(
+			'notice',
+			array(
+				'message' => ob_get_clean(),
+				'class'   => 'sui-notice-warning',
+			)
+		);
 	}
 
 	public function admin_styles() {
@@ -168,7 +161,7 @@ class Smartcrawl_Network_Settings_Page_Controller extends Smartcrawl_Admin_Page 
 	}
 
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-network-settings-nonce' ) ? $_POST : array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-network-settings-nonce' ) ? $_POST : array(); // phpcs:ignore -- Sanitized when used.
 	}
 
 	public function get_menu_slug() {

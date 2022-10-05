@@ -8,7 +8,9 @@ if ( empty( $advanced_sections ) ) {
 <div class="wds-metabox-section wds-advanced-metabox-section sui-box-body">
 	<p><?php esc_html_e( 'Configure the advanced settings for this post.', 'wds' ); ?></p>
 
-	<?php foreach ( $advanced_sections as $template => $args ) {
-		$this->_render( $template, $args );
-	} ?>
+	<?php
+	foreach ( $advanced_sections as $template => $args ) {
+		$this->render_view( $template, $args );
+	}
+	?>
 </div>

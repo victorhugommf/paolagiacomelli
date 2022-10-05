@@ -1,7 +1,9 @@
 <?php
 
 class Smartcrawl_Schema_Utils {
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
+
 	/**
 	 * @var array
 	 */
@@ -12,16 +14,13 @@ class Smartcrawl_Schema_Utils {
 	 */
 	private $schema_options;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
+	/**
+	 * @return string
+	 */
 	public function url_to_id( $url, $id ) {
 		/**
+		 * Rewrite.
+		 *
 		 * @var $wp_rewrite WP_Rewrite
 		 */
 		global $wp_rewrite;
@@ -32,6 +31,9 @@ class Smartcrawl_Schema_Utils {
 		return $url . $id;
 	}
 
+	/**
+	 * @return mixed|string|null
+	 */
 	public function get_schema_option( $key ) {
 		$value = smartcrawl_get_array_value( $this->get_schema_options(), $key );
 		if ( is_string( $value ) ) {
@@ -41,24 +43,33 @@ class Smartcrawl_Schema_Utils {
 		return $value;
 	}
 
+	/**
+	 * @return array
+	 */
 	private function get_schema_options() {
 		if ( empty( $this->schema_options ) ) {
-			$schema = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SCHEMA );
+			$schema               = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SCHEMA );
 			$this->schema_options = is_array( $schema ) ? $schema : array();
 		}
 
 		return $this->schema_options;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_social_options() {
 		if ( empty( $this->social_options ) ) {
-			$social = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
+			$social               = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
 			$this->social_options = is_array( $social ) ? $social : array();
 		}
 
 		return $this->social_options;
 	}
 
+	/**
+	 * @return mixed|string|null
+	 */
 	public function get_social_option( $key ) {
 		$value = smartcrawl_get_array_value( $this->get_social_options(), $key );
 		if ( is_string( $value ) ) {
@@ -68,6 +79,9 @@ class Smartcrawl_Schema_Utils {
 		return $value;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_media_item_image_schema( $media_item_id, $schema_id ) {
 		if ( ! $media_item_id ) {
 			return array();
@@ -87,14 +101,21 @@ class Smartcrawl_Schema_Utils {
 		);
 	}
 
+	/**
+	 * @return array|false
+	 */
 	public function get_attachment_image_source( $media_item_id ) {
 		$media_item = wp_get_attachment_image_src( $media_item_id, 'full' );
 		if ( ! $media_item || count( $media_item ) < 3 ) {
 			return false;
 		}
+
 		return $media_item;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_image_schema( $id, $url, $width = '', $height = '', $caption = '' ) {
 		$image_schema = array(
 			'@type' => 'ImageObject',
@@ -117,23 +138,38 @@ class Smartcrawl_Schema_Utils {
 		return $image_schema;
 	}
 
+	/**
+	 * @return mixed|void
+	 */
 	public function apply_filters( $filter, ...$args ) {
-		return apply_filters( "wds-schema-{$filter}", ...$args );
+		return apply_filters( "wds-schema-$filter", ...$args );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function reset_options() {
 		$this->schema_options = array();
 		$this->social_options = array();
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_webpage_id( $url ) {
 		return $this->url_to_id( $url, '#schema-webpage' );
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_website_id() {
-		return $this->url_to_id( get_site_url(), "#schema-website" );
+		return $this->url_to_id( get_site_url(), '#schema-website' );
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_custom_schema_types( $post = null, $is_front_page = false ) {
 		$custom_types = array();
 		$schema_types = Smartcrawl_Controller_Schema_Types::get()->get_schema_types();
@@ -144,22 +180,19 @@ class Smartcrawl_Schema_Utils {
 				$custom_types[ $type->get_type() ][] = $type->get_schema();
 			}
 		}
+
 		return $custom_types;
 	}
 
 	/**
 	 * TODO: make sure webpage_id is passed where necessary
 	 *
-	 * @param $schema
-	 * @param $custom_types
-	 * @param string $webpage_id
-	 *
 	 * @return mixed
 	 */
 	public function add_custom_schema_types( $schema, $custom_types, $webpage_id ) {
 		foreach ( $custom_types as $type_key => $type_collection ) {
-			if ( $type_key === "Article" ) {
-				// Article schemas will be handled separately
+			if ( 'Article' === $type_key ) {
+				// Article schemas will be handled separately.
 				continue;
 			}
 
@@ -168,7 +201,7 @@ class Smartcrawl_Schema_Utils {
 			}
 		}
 
-		$article_schemas = smartcrawl_get_array_value( $custom_types, "Article" );
+		$article_schemas = smartcrawl_get_array_value( $custom_types, 'Article' );
 		if ( ! empty( $article_schemas ) && is_array( $article_schemas ) ) {
 			foreach ( $article_schemas as $article_schema ) {
 				$article_schema['mainEntityOfPage'] = $webpage_id;
@@ -180,10 +213,16 @@ class Smartcrawl_Schema_Utils {
 		return $schema;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_schema_type_person() {
-		return $this->get_social_option( 'schema_type' ) === "Person";
+		return $this->get_social_option( 'schema_type' ) === 'Person';
 	}
 
+	/**
+	 * @return array|false|WP_Post
+	 */
 	public function get_special_page( $key ) {
 		$page_id = (int) $this->get_schema_option( $key );
 		if ( ! $page_id ) {
@@ -199,21 +238,26 @@ class Smartcrawl_Schema_Utils {
 	}
 
 	/**
-	 * @param $user Smartcrawl_Model_User
-	 *
 	 * @return mixed
 	 */
 	public function get_user_full_name( $user ) {
 		return $this->apply_filters( 'user-full_name', $user->get_full_name(), $user );
 	}
 
+	/**
+	 * @return mixed|string|void
+	 */
 	public function get_organization_name() {
 		$organization_name = $this->get_social_option( 'organization_name' );
+
 		return $organization_name
 			? $organization_name
 			: get_bloginfo( 'name' );
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	public function get_personal_brand_name() {
 		return $this->first_non_empty_string(
 			$this->get_schema_option( 'person_brand_name' ),
@@ -222,6 +266,9 @@ class Smartcrawl_Schema_Utils {
 		);
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	public function first_non_empty_string( ...$args ) {
 		foreach ( $args as $arg ) {
 			if ( ! empty( $arg ) ) {
@@ -232,11 +279,18 @@ class Smartcrawl_Schema_Utils {
 		return '';
 	}
 
+	/**
+	 * @return mixed|string|void
+	 */
 	public function get_organization_description() {
 		$description = $this->get_textarea_schema_option( 'organization_description' );
+
 		return $description ? $description : get_bloginfo( 'description' );
 	}
 
+	/**
+	 * @return mixed|string|null
+	 */
 	public function get_textarea_schema_option( $key ) {
 		$value = $this->get_schema_option( $key );
 		if ( is_string( $value ) ) {
@@ -246,10 +300,16 @@ class Smartcrawl_Schema_Utils {
 		return $value;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_author_gravatar_enabled() {
 		return (bool) $this->get_schema_option( 'schema_enable_author_gravatar' );
 	}
 
+	/**
+	 * @return array|string[]
+	 */
 	public function get_contact_point( $phone, $contact_page_id, $contact_type = '' ) {
 		$schema = array();
 		if ( $phone ) {
@@ -264,7 +324,7 @@ class Smartcrawl_Schema_Utils {
 		}
 
 		if ( $schema ) {
-			$other_values = array( '@type' => "ContactPoint" );
+			$other_values = array( '@type' => 'ContactPoint' );
 			if ( $contact_type ) {
 				$other_values['contactType'] = $contact_type;
 			}
@@ -274,8 +334,11 @@ class Smartcrawl_Schema_Utils {
 		return $schema;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_social_urls() {
-		$urls = array();
+		$urls   = array();
 		$social = $this->get_social_options();
 		foreach ( $social as $key => $value ) {
 			if ( preg_match( '/_url$/', $key ) && ! empty( trim( $value ) ) ) {
@@ -285,7 +348,7 @@ class Smartcrawl_Schema_Utils {
 
 		$twitter_username = $this->get_social_option( 'twitter_username' );
 		if ( $twitter_username ) {
-			$urls[] = "https://twitter.com/{$twitter_username}";
+			$urls[] = "https://twitter.com/$twitter_username";
 		}
 
 		return $urls;

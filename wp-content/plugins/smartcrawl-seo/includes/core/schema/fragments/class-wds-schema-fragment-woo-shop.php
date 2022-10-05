@@ -1,9 +1,21 @@
 <?php
 
 class Smartcrawl_Schema_Fragment_Woo_Shop extends Smartcrawl_Schema_Fragment {
+	/**
+	 * @var
+	 */
 	private $url;
+	/**
+	 * @var
+	 */
 	private $posts;
+	/**
+	 * @var
+	 */
 	private $title;
+	/**
+	 * @var
+	 */
 	private $description;
 	/**
 	 * @var Smartcrawl_Woocommerce_Data
@@ -14,26 +26,38 @@ class Smartcrawl_Schema_Fragment_Woo_Shop extends Smartcrawl_Schema_Fragment {
 	 */
 	private $utils;
 
+	/**
+	 * @param $url
+	 * @param $posts
+	 * @param $title
+	 * @param $description
+	 */
 	public function __construct( $url, $posts, $title, $description ) {
-		$this->url = $url;
-		$this->posts = $posts;
-		$this->title = $title;
+		$this->url         = $url;
+		$this->posts       = $posts;
+		$this->title       = $title;
 		$this->description = $description;
-		$this->data = new Smartcrawl_Woocommerce_Data();
-		$this->utils = Smartcrawl_Schema_Utils::get();
+		$this->data        = new Smartcrawl_Woocommerce_Data();
+		$this->utils       = Smartcrawl_Schema_Utils::get();
 	}
 
+	/**
+	 * @return array
+	 */
 	private function get_options() {
 		return $this->data->get_options();
 	}
 
+	/**
+	 * @return array|mixed|Smartcrawl_Schema_Fragment_Archive
+	 */
 	protected function get_raw() {
-		$woo_enabled = (bool) smartcrawl_get_array_value( $this->get_options(), 'woocommerce_enabled' );
+		$woo_enabled             = (bool) smartcrawl_get_array_value( $this->get_options(), 'woocommerce_enabled' );
 		$enable_shop_page_schema = (bool) smartcrawl_get_array_value( $this->get_options(), 'enable_shop_page_schema' );
 
 		if ( $woo_enabled && $enable_shop_page_schema ) {
 			return new Smartcrawl_Schema_Fragment_Archive(
-				"CollectionPage",
+				'CollectionPage',
 				$this->url,
 				$this->posts,
 				$this->title,

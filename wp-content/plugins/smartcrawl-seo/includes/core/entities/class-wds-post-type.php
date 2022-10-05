@@ -5,35 +5,40 @@ class Smartcrawl_Post_Type extends Smartcrawl_Entity_With_Archive {
 	 * @var WP_Post_Type
 	 */
 	private $post_type;
+
 	/**
 	 * @var array
 	 */
 	private $posts;
+
 	/**
 	 * @var string
 	 */
 	private $location;
+
 	/**
 	 * @var string
 	 */
 	private $name;
+
 	/**
 	 * @var string
 	 */
 	private $singular_name;
+
 	/**
 	 * @var int
 	 */
 	private $page_number;
 
 	/**
-	 * @param $post_type WP_Post_Type
-	 * @param array $posts
+	 * @param WP_Post_Type $post_type Post type object.
+	 * @param array        $posts     Posts.
 	 */
 	public function __construct( $post_type, $posts = array(), $page_number = 0 ) {
-		$this->post_type = $post_type;
-		$this->posts = $posts;
-		$this->location = $this->post_type
+		$this->post_type   = $post_type;
+		$this->posts       = $posts;
+		$this->location    = $this->post_type
 			? Smartcrawl_Onpage_Settings::PT_ARCHIVE_PREFIX . $this->post_type->name
 			: '';
 		$this->page_number = $page_number;
@@ -98,9 +103,9 @@ class Smartcrawl_Post_Type extends Smartcrawl_Entity_With_Archive {
 			return '';
 		}
 
-		$first_page_indexed = $this->is_first_page_indexed();
+		$first_page_indexed   = $this->is_first_page_indexed();
 		$current_page_indexed = ! $this->is_noindex();
-		$post_type_link = get_post_type_archive_link( $this->post_type->name );
+		$post_type_link       = get_post_type_archive_link( $this->post_type->name );
 
 		if ( $current_page_indexed ) {
 			return $this->append_page_number( $post_type_link, $this->page_number );
@@ -194,7 +199,7 @@ class Smartcrawl_Post_Type extends Smartcrawl_Entity_With_Archive {
 	}
 
 	/**
-	 * @param $page_number
+	 * @param int $page_number Page number.
 	 *
 	 * @return string
 	 */
@@ -206,7 +211,7 @@ class Smartcrawl_Post_Type extends Smartcrawl_Entity_With_Archive {
 			return '';
 		}
 
-		$noindex = $this->get_noindex_setting( $this->location ) ? 'noindex' : 'index';
+		$noindex  = $this->get_noindex_setting( $this->location ) ? 'noindex' : 'index';
 		$nofollow = $this->get_nofollow_setting( $this->location ) ? 'nofollow' : 'follow';
 
 		return "{$noindex},{$nofollow}";

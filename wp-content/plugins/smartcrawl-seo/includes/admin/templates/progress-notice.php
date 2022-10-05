@@ -1,6 +1,6 @@
 <?php
 $admin_email = false;
-$dash_email = false;
+$dash_email  = false;
 if ( class_exists( 'WPMUDEV_Dashboard' ) && ! empty( WPMUDEV_Dashboard::$site ) ) {
 	if ( is_callable( array( WPMUDEV_Dashboard::$site, 'get_option' ) ) ) {
 		$dash_email = WPMUDEV_Dashboard::$site->get_option( 'auth_user' );
@@ -22,9 +22,11 @@ if ( ! $message ) {
 			<?php $admin_email = sprintf( '<strong>%1$s</strong>', esc_html__( 'your DEV account email', 'wds' ) ); ?>
 		<?php } ?>
 
-		<?php printf(
+		<?php
+		printf(
 			wp_kses_post( $message ),
 			wp_kses_post( $admin_email )
-		); ?>
+		);
+		?>
 	</small>
 </p>

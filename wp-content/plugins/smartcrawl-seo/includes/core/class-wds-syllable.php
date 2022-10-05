@@ -3,11 +3,14 @@
 use Smartcrawl_Vendor\Vanderlee\Syllable\Syllable;
 
 class Smartcrawl_Syllable {
+
 	private $language_code;
+
 	/**
 	 * @var Syllable
 	 */
 	private $helper;
+
 	/**
 	 * @var float[]
 	 */
@@ -16,9 +19,7 @@ class Smartcrawl_Syllable {
 	);
 
 	public function __construct( $language_code ) {
-		$language_code = $language_code === 'en'
-			? 'en-us'
-			: $language_code;
+		$language_code = 'en' === $language_code ? 'en-us' : $language_code;
 
 		$this->language_code = $language_code;
 
@@ -52,24 +53,24 @@ class Smartcrawl_Syllable {
 	 *
 	 * @see https://github.com/shivam5992/textstat/
 	 *
-	 * @param $unadjusted_count
+	 * @param int $unadjusted_count Count.
 	 *
 	 * @return int
 	 */
 	private function adjust_syllable_count( $unadjusted_count ) {
-		$offset = smartcrawl_get_array_value(
+		$offset   = smartcrawl_get_array_value(
 			$this->syllable_offsets,
 			$this->language_code
 		);
-		$offset = empty( $offset ) ? 1 : $offset;
+		$offset   = empty( $offset ) ? 1 : $offset;
 		$adjusted = $unadjusted_count * $offset;
 
 		return intval( $adjusted );
 	}
 
 	public function is_language_supported() {
-		$vendor = SMARTCRAWL_VENDOR_PREFIXED_DIR;
-		$lang = $this->language_code;
+		$vendor         = SMARTCRAWL_VENDOR_PREFIXED_DIR;
+		$lang           = $this->language_code;
 		$lang_file_path = "$vendor/syllable/languages/hyph-$lang.tex";
 
 		return file_exists( $lang_file_path );

@@ -190,7 +190,7 @@
 							$('.size-chart-model').css('padding', '35px');
 							modal = document.getElementById('md-size-chart-modal');
 							modal.style.display = 'block';
-							$('#md-poup').after(response.html);
+							$('#md-poup').append(response.html);
 							$('#' + cssSelector).text(response.css);
 						} else {
 							alert('size-chart-for-woocommerce-premium==>' + response.msg);
@@ -411,7 +411,7 @@
 			/**
 			 * Close popup.
 			 */
-			$('div#md-size-chart-modal .remodal-close').click(function() {
+			$(document).on('click', 'div#md-size-chart-modal .remodal-close', function() {
 				var modal = document.getElementById('md-size-chart-modal');
 				$('.chart-container').remove();
 				modal.style.display = 'none';

@@ -8,21 +8,14 @@ if ( ! file_exists( $file_path ) ) {
 require_once $file_path;
 
 class Smartcrawl_Recommended_Plugins extends Smartcrawl_Base_Controller {
-	private static $_instance;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
+	use Smartcrawl_Singleton;
 
 	protected function init() {
 		do_action(
-			'wpmudev-recommended-plugins-register-notice',
+			'wpmudev-recommended-plugins-register-notice', // phpcs:ignore
 			SMARTCRAWL_PLUGIN_BASENAME,
-			'SmartCrawl', // Plugin Name
+			'SmartCrawl', // Plugin Name.
 			array(
 				'toplevel_page_wds_wizard',
 				'smartcrawl_page_wds_health',

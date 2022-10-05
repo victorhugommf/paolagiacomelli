@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // indonesian
-
-static $data = [
+static $data = array(
     'ada',
     'adanya',
     'adalah',
@@ -360,7 +359,7 @@ static $data = [
     'yaitu',
     'yakni',
     'yang',
-];
+);
 
 $result =& $data;
 unset($data);

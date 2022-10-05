@@ -1,28 +1,32 @@
 <?php
 
 class Smartcrawl_Buddypress_Profile extends Smartcrawl_Entity {
+
 	/**
 	 * @var Smartcrawl_Buddypress_Api
 	 */
 	private $buddypress_api;
+
 	/**
 	 * @var WP_User
 	 */
 	private $wp_user;
+
 	/**
 	 * @var string
 	 */
 	private $username;
+
 	/**
 	 * @var string
 	 */
 	private $display_name;
 
 	/**
-	 * @param WP_User $wp_user
+	 * @param WP_User $wp_user User object.
 	 */
 	public function __construct( $wp_user ) {
-		$this->wp_user = $wp_user;
+		$this->wp_user        = $wp_user;
 		$this->buddypress_api = new Smartcrawl_Buddypress_Api();
 	}
 
@@ -47,7 +51,7 @@ class Smartcrawl_Buddypress_Profile extends Smartcrawl_Entity {
 	}
 
 	protected function load_robots() {
-		$noindex = $this->get_noindex_setting( 'bp_profile' ) ? 'noindex' : 'index';
+		$noindex  = $this->get_noindex_setting( 'bp_profile' ) ? 'noindex' : 'index';
 		$nofollow = $this->get_nofollow_setting( 'bp_profile' ) ? 'nofollow' : 'follow';
 
 		return "{$noindex},{$nofollow}";

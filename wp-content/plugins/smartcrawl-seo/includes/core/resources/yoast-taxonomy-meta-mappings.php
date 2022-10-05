@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of mappings
 
 return array(
 	'wpseo_title'                 => 'wds_title',

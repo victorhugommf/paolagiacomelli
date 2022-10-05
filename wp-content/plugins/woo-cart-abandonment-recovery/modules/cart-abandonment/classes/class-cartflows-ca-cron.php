@@ -56,7 +56,7 @@ class Cartflows_Ca_Cron {
 		/**
 		 * Add filter to change the cron interval time to uodate order status.
 		 */
-		$cron_time = apply_filters( 'woo_ca_update_order_cron_interval', get_option( 'wcf_ca_cron_run_time', 15 ) );
+		$cron_time = apply_filters( 'woo_ca_update_order_cron_interval', get_option( 'wcf_ca_cron_run_time', 20 ) );
 
 		$schedules['every_fifteen_minutes'] = array(
 			'interval' => intval( $cron_time ) * MINUTE_IN_SECONDS,

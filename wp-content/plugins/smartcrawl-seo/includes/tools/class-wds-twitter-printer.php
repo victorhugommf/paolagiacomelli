@@ -1,59 +1,69 @@
 <?php
+/**
+ * Class Smartcrawl_Twitter_Printer
+ *
+ * @package SmartCrawl
+ */
 
 /**
  * Outputs Twitter cards data to the page
  */
 class Smartcrawl_Twitter_Printer extends Smartcrawl_WorkUnit {
 
+	use Smartcrawl_Singleton;
+
 	const CARD_SUMMARY = 'summary';
+
 	const CARD_IMAGE = 'summary_large_image';
 
 	/**
-	 * Singleton instance holder
+	 * Is running flag.
+	 *
+	 * @var bool $is_running
 	 */
-	private static $_instance;
-
-	private $_is_running = false;
-	private $_is_done = false;
+	private $is_running = false;
 
 	/**
-	 * Boot the hooking part
+	 * Is done flag.
+	 *
+	 * @var bool $is_done
+	 */
+	private $is_done = false;
+
+	/**
+	 * Boot the hooking part.
 	 */
 	public static function run() {
-		self::get()->_add_hooks();
+		self::get()->add_hooks();
 	}
 
-	private function _add_hooks() {
-		// Do not double-bind
-		if ( $this->apply_filters( 'is_running', $this->_is_running ) ) {
-			return true;
+	/**
+	 * Register hooks.
+	 *
+	 * @return void
+	 */
+	private function add_hooks() {
+		// Do not double-bind.
+		if ( $this->apply_filters( 'is_running', $this->is_running ) ) {
+			return;
 		}
 
 		add_action( 'wp_head', array( $this, 'dispatch_tags_injection' ), 50 );
 		add_action( 'wds_head-after_output', array( $this, 'dispatch_tags_injection' ) );
 
-		$this->_is_running = true;
-		return true;
+		$this->is_running = true;
 	}
 
 	/**
-	 * Singleton instance getter
+	 * Dispatch tag injection.
 	 *
-	 * @return Smartcrawl_Twitter_Printer instance
+	 * @return bool
 	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 	public function dispatch_tags_injection() {
-		if ( ! ! $this->_is_done ) {
+		if ( ! ! $this->is_done ) {
 			return false;
 		}
-		$this->_is_done = true;
+		$this->is_done = true;
 
 		$queried = Smartcrawl_Endpoint_Resolver::resolve()->get_queried_entity();
 
@@ -66,7 +76,7 @@ class Smartcrawl_Twitter_Printer extends Smartcrawl_WorkUnit {
 		}
 
 		$images = $queried->get_twitter_images();
-		$card = $this->get_card_content( $images );
+		$card   = $this->get_card_content( $images );
 		$this->print_html_tag( 'card', $card );
 
 		$site = $this->get_site_content();
@@ -94,26 +104,32 @@ class Smartcrawl_Twitter_Printer extends Smartcrawl_WorkUnit {
 		return true;
 	}
 
+	/**
+	 * Is module globally enabled.
+	 *
+	 * @return bool
+	 */
 	private function is_globally_enabled() {
 		$settings = Smartcrawl_Settings::get_options();
+
 		return ! empty( $settings['twitter-card-enable'] );
 	}
 
 	/**
-	 * Card type to render
+	 * Card type to render.
 	 *
-	 * @param array $images
+	 * @param array $images Images list.
 	 *
 	 * @return string Card type
 	 */
 	public function get_card_content( $images = array() ) {
 		$options = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
-		$card = is_array( $options ) && ! empty( $options['twitter-card-type'] )
+		$card    = is_array( $options ) && ! empty( $options['twitter-card-type'] )
 			? $options['twitter-card-type']
 			: self::CARD_IMAGE;
 
 		if ( self::CARD_IMAGE === $card ) {
-			// Force summary card if we can't show image
+			// Force summary card if we can't show image.
 			if ( empty( $images ) ) {
 				$card = self::CARD_SUMMARY;
 			}
@@ -123,10 +139,10 @@ class Smartcrawl_Twitter_Printer extends Smartcrawl_WorkUnit {
 	}
 
 	/**
-	 * Gets HTML element ready for rendering
+	 * Gets HTML element ready for rendering.
 	 *
-	 * @param string $type Element type to prepare
-	 * @param string $content Element content
+	 * @param string $type    Element type to prepare.
+	 * @param string $content Element content.
 	 *
 	 * @return string Element
 	 */
@@ -137,9 +153,9 @@ class Smartcrawl_Twitter_Printer extends Smartcrawl_WorkUnit {
 	}
 
 	/**
-	 * Sitewide twitter handle
+	 * Sitewide twitter handle.
 	 *
-	 * @return string Handle
+	 * @return string Handle.
 	 */
 	public function get_site_content() {
 		$options = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
@@ -149,21 +165,37 @@ class Smartcrawl_Twitter_Printer extends Smartcrawl_WorkUnit {
 			: '';
 	}
 
+	/**
+	 * Get prefix for filters.
+	 *
+	 * @return string
+	 */
 	public function get_filter_prefix() {
 		return 'wds-twitter';
 	}
 
+	/**
+	 * Get allowed tags.
+	 *
+	 * @return array[][]
+	 */
 	private function get_allowed_tags() {
-		$allowed_tags = array(
+		return array(
 			'meta' => array(
 				'name'    => array(),
 				'content' => array(),
 			),
 		);
-
-		return $allowed_tags;
 	}
 
+	/**
+	 * Print html tag content.
+	 *
+	 * @param string $type    Tag type.
+	 * @param string $content Tag content.
+	 *
+	 * @return void
+	 */
 	private function print_html_tag( $type, $content ) {
 		echo wp_kses( $this->get_html_tag( $type, $content ), $this->get_allowed_tags() );
 	}

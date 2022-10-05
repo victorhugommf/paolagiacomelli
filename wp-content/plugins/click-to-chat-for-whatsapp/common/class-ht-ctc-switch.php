@@ -24,6 +24,7 @@ class HT_CTC_Swift {
     private function define_constants() {
         
 		$this->define( 'HT_CTC_WP_MIN_VERSION', '4.6' );
+		$this->define( 'HT_CTC_PLUGIN_DIR_URL', plugin_dir_url( HT_CTC_PLUGIN_FILE ) );
 		$this->define( 'HT_CTC_PLUGIN_BASENAME', plugin_basename( HT_CTC_PLUGIN_FILE ) );
 		$this->define( 'HT_CTC_BLOG_NAME', get_bloginfo('name') );
 		// $this->define( 'HT_CTC_SITE_URL', get_site_url() );

@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // greek
-
-static $data = [
+static $data = array(
     'αλλα',
     'αν',
     'αντι',
@@ -268,7 +267,7 @@ static $data = [
     'ὥστε',
     'ὦ',
     'ᾧ',
-];
+);
 
 $result =& $data;
 unset($data);

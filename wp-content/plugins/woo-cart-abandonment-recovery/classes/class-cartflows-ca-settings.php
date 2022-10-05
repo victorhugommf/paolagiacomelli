@@ -726,9 +726,9 @@ class Cartflows_Ca_Settings {
 	 * @since 1.1.5
 	 */
 	public static function wcf_ca_cron_run_time_callback( $args ) {
-		$wcf_ca_cron_run_time = apply_filters( 'woo_ca_update_order_cron_interval', get_option( 'wcf_ca_cron_run_time', 15 ) );
+		$wcf_ca_cron_run_time = apply_filters( 'woo_ca_update_order_cron_interval', get_option( 'wcf_ca_cron_run_time', 20 ) );
 		printf(
-			'<input class="wcf-ca-trigger-input wcf-ca-email-inputs" type="number" id="wcf_ca_cron_run_time" name="wcf_ca_cron_run_time" value="%s" />',
+			'<input class="wcf-ca-trigger-input wcf-ca-email-inputs" type="number" min="10" id="wcf_ca_cron_run_time" name="wcf_ca_cron_run_time" value="%s" />',
 			esc_attr( $wcf_ca_cron_run_time )
 		);
 

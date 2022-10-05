@@ -1,7 +1,7 @@
 <?php
-$content = empty( $content ) ? '' : $content;
-$image = empty( $image ) ? '' : $image;
-$component = empty( $component ) ? '' : $component;
+$content     = empty( $content ) ? '' : $content;
+$image       = empty( $image ) ? '' : $image;
+$component   = empty( $component ) ? '' : $component;
 $button_text = empty( $button_text ) ? '' : $button_text;
 ?>
 <form method='post'>
@@ -11,12 +11,15 @@ $button_text = empty( $button_text ) ? '' : $button_text;
 		</div>
 		<div class="sui-box-body">
 			<?php
-			$this->_render( 'disabled-component-inner', array(
-				'content'     => $content,
-				'image'       => $image,
-				'component'   => $component,
-				'button_text' => $button_text,
-			) );
+			$this->render_view(
+				'disabled-component-inner',
+				array(
+					'content'     => $content,
+					'image'       => $image,
+					'component'   => $component,
+					'button_text' => $button_text,
+				)
+			);
 			?>
 		</div>
 	</div>

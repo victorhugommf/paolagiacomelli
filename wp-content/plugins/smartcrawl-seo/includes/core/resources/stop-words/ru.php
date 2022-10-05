@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // russian
-
-static $data = [
+static $data = array(
     'и',
     'в',
     'во',
@@ -154,7 +153,7 @@ static $data = [
     'конечно',
     'всю',
     'между',
-];
+);
 
 $result =& $data;
 unset($data);

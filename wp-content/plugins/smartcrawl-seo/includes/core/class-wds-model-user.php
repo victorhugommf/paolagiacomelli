@@ -7,28 +7,28 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	 *
 	 * @var int
 	 */
-	private $_user_id;
+	private $user_id;
 
 	/**
 	 * Holds the user object cache
 	 *
-	 * @var WP_User object
+	 * @var WP_User object.
 	 */
-	private $_user;
+	private $user;
 
 	public function __construct( $user_id = false ) {
 		if ( ! empty( $user_id ) && is_numeric( $user_id ) ) {
-			$this->_user_id = (int) $user_id;
-			$this->_user = new WP_User( $user_id );
+			$this->user_id = (int) $user_id;
+			$this->user    = new WP_User( $user_id );
 		} elseif ( ! empty( $user_id ) ) {
 			$user = new WP_User( $user_id );
 			if ( ! empty( $user->ID ) && is_numeric( $user->ID ) ) {
-				$this->_user_id = $user->ID;
-				$this->_user = $user;
+				$this->user_id = $user->ID;
+				$this->user    = $user;
 			}
 		} else {
-			$this->_user_id = false;
-			$this->_user = new WP_User();
+			$this->user_id = false;
+			$this->user    = new WP_User();
 		}
 	}
 
@@ -44,9 +44,9 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	/**
 	 * Particular user convenience factory method
 	 *
-	 * @param int|string $user_id User ID, or login|email
+	 * @param int|string $user_id User ID, or login|email.
 	 *
-	 * @return Smartcrawl_Model_User Particular user instance
+	 * @return Smartcrawl_Model_User Particular user instance.
 	 */
 	public static function get( $user_id = false ) {
 		return new self( $user_id );
@@ -55,23 +55,25 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	/**
 	 * Fetches the site owner user (one of)
 	 *
-	 * @return Smartcrawl_Model_User Owner user reference
+	 * @return Smartcrawl_Model_User Owner user reference.
 	 */
 	public static function owner() {
-		$by_id = get_user_by( 'ID', apply_filters( 'wds-site-owner-id', 1 ) );
-		if ( $by_id && in_array( 'administrator', $by_id->roles ) ) {
+		$by_id = get_user_by( 'ID', apply_filters( 'wds-site-owner-id', 1 ) ); // phpcs:ignore
+		if ( $by_id && in_array( 'administrator', $by_id->roles, true ) ) {
 			return self::get( $by_id );
 		}
 
 		$by_admin_email = get_user_by( 'email', get_option( 'admin_email' ) );
-		if ( $by_admin_email && in_array( 'administrator', $by_admin_email->roles ) ) {
+		if ( $by_admin_email && in_array( 'administrator', $by_admin_email->roles, true ) ) {
 			return self::get( $by_admin_email );
 		}
 
-		$admins = get_users( array(
-			'role'   => 'administrator',
-			'fields' => 'ID',
-		) );
+		$admins = get_users(
+			array(
+				'role'   => 'administrator',
+				'fields' => 'ID',
+			)
+		);
 
 		return self::get( reset( $admins ) );
 	}
@@ -82,7 +84,7 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	 * @return string First name, or display name
 	 */
 	public function get_first_name() {
-		$name = $this->_user->user_firstname;
+		$name = $this->user->user_firstname;
 		$name = ! empty( $name )
 			? $name
 			: $this->get_display_name();
@@ -90,12 +92,12 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 		return apply_filters(
 			$this->get_filter( 'first_name' ),
 			$name,
-			$this->_user_id
+			$this->user_id
 		);
 	}
 
 	public function get_last_name() {
-		return $name = $this->_user->user_lastname;
+		return $this->user->user_lastname;
 	}
 
 	/**
@@ -104,7 +106,7 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	 * @return string Display name, or fallback
 	 */
 	public function get_display_name() {
-		$name = $this->_user->display_name;
+		$name = $this->user->display_name;
 		$name = ! empty( $name )
 			? $name
 			: $this->get_fallback_name();
@@ -112,12 +114,12 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 		return apply_filters(
 			$this->get_filter( 'display_name' ),
 			$name,
-			$this->_user_id
+			$this->user_id
 		);
 	}
 
 	public function get_username() {
-		return $this->_user->user_login;
+		return $this->user->user_login;
 	}
 
 	/**
@@ -126,7 +128,7 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	 * @return string
 	 */
 	public function get_fallback_name() {
-		$name = $this->_user->user_nicename;
+		$name = $this->user->user_nicename;
 		$name = ! empty( $name )
 			? $name
 			: __( 'Anonymous', 'wds' );
@@ -134,7 +136,7 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 		return apply_filters(
 			$this->get_filter( 'fallback_name' ),
 			$name,
-			$this->_user_id
+			$this->user_id
 		);
 	}
 
@@ -148,22 +150,23 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	public function get_full_name() {
 		$name = '';
 
-		// Try full first
+		// Try full first.
 		$first = get_user_meta( $this->get_id(), 'first_name', true );
-		$last = get_user_meta( $this->get_id(), 'last_name', true );
+		$last  = get_user_meta( $this->get_id(), 'last_name', true );
 		if ( ! empty( $first ) && ! empty( $last ) ) {
 			$name = "{$first} {$last}";
 		}
 
-		// Fall back to display name
+		// Fall back to display name.
 		if ( empty( $name ) ) {
-			$name = $this->_user->display_name;
+			$name = $this->user->display_name;
 		}
 
 		return apply_filters(
 			$this->get_filter( 'full_name' ),
 			$name,
-			$first, $last
+			$first,
+			$last
 		);
 	}
 
@@ -173,7 +176,7 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	 * @return int
 	 */
 	public function get_id() {
-		return (int) $this->_user_id;
+		return (int) $this->user_id;
 	}
 
 	/**
@@ -193,10 +196,8 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	}
 
 	public function get_user_urls() {
-		$urls = array();
-
-		// TODO: fetch user URLs
-		return $urls;
+		// TODO: fetch user URLs.
+		return array();
 	}
 
 	public function get_type() {
@@ -204,7 +205,7 @@ class Smartcrawl_Model_User extends Smartcrawl_Model {
 	}
 
 	public function get_email() {
-		return $this->_user->user_email;
+		return $this->user->user_email;
 	}
 
 	public function get_description() {

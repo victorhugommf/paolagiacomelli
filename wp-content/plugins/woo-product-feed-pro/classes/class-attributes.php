@@ -82,11 +82,17 @@ private function get_custom_attributes() {
 	if ( ! function_exists( 'woosea_get_meta_keys_for_post_type' ) ) :
 
     		function woosea_get_meta_keys_for_post_type( $post_type, $sample_size = 'modified' ) {
-        		$meta_keys = array();
-        		$posts     = get_posts( array( 'post_type' => $post_type, 'limit' => $sample_size ) );
+			$meta_keys = array();
+
+                	$add_woosea_basic = get_option ('add_woosea_basic');
+			if($add_woosea_basic == "yes"){
+        			$posts     = get_posts( array( 'post_type' => $post_type, 'limit' => $sample_size ) );
+			} else {	
+				$posts     = get_posts( array( 'post_type' => $post_type, 'numberposts' => -1 ) );
+			}
 
         		foreach ( $posts as $post ) {
-            			$post_meta_keys = get_post_custom_keys( $post->ID );
+				$post_meta_keys = get_post_custom_keys( $post->ID );
             			$meta_keys      = array_merge( $meta_keys, $post_meta_keys );
         		}
 
@@ -303,6 +309,11 @@ public function get_mapping_attributes_dropdown() {
 			"condition" => "Condition",
 			"purchase_note" => "Purchase note",
 			"availability" => "Availability",
+			"availability_date_plus1week" => "Availability date + 1 week",
+			"availability_date_plus2week" => "Availability date + 2 weeks",
+			"availability_date_plus3week" => "Availability date + 3 weeks",
+			"availability_date_plus4week" => "Availability date + 4 weeks",
+			"availability_date_plus5week" => "Availability date + 5 weeks",
 			"region_id" => "Region Id",
 			"stock_status" => "Stock Status WooCommerce",
             		"quantity" => "Quantity [Stock]",
@@ -507,6 +518,11 @@ public function get_mapping_attributes_dropdown() {
 			"condition" => "Condition",
 			"purchase_note" => "Purchase note",
 			"availability" => "Availability",
+		        "availability_date_plus1week" => "Availability date + 1 week",
+                        "availability_date_plus2week" => "Availability date + 2 weeks",
+                        "availability_date_plus3week" => "Availability date + 3 weeks",
+                        "availability_date_plus4week" => "Availability date + 4 weeks",
+                        "availability_date_plus5week" => "Availability date + 5 weeks",	
 			"region_id" => "Region Id",
 			"stock_status" => "Stock Status WooCommerce",
 			"quantity" => "Quantity [Stock]",

@@ -200,6 +200,10 @@ class SCFW_Size_Chart_For_Woocommerce {
 		$this->loader->add_action( 'wp_ajax_size_chart_product_assign', $plugin_admin, 'scfw_size_chart_product_assign_callback' );
 		$this->loader->add_action( 'wp_ajax_size_chart_quick_search_products', $plugin_admin, 'scfw_size_chart_quick_search_products_callback' );
 		$this->loader->add_action( 'wp_ajax_size_chart_unassign_product', $plugin_admin, 'scfw_size_chart_unassign_product_callback' );
+		$this->loader->add_action( 'wp_ajax_size_chart_export_data', $plugin_admin, 'scfw_size_chart_export_data_callback' );
+		$this->loader->add_action( 'wp_ajax_size_chart_import_data', $plugin_admin, 'scfw_size_chart_import_data_callback' );
+		$this->loader->add_action( 'wp_ajax_scfw_export_settings_action', $plugin_admin, 'scfw_export_settings_action__premium_only' );
+		$this->loader->add_action( 'wp_ajax_scfw_import_settings_action', $plugin_admin, 'scfw_import_settings_action__premium_only' );
 		$this->loader->add_filter( 'manage_edit-size-chart_columns', $plugin_admin, 'scfw_size_chart_column_callback' );
 		$this->loader->add_filter( 'manage_size-chart_posts_custom_column', $plugin_admin, 'scfw_size_chart_manage_column_callback' );
 

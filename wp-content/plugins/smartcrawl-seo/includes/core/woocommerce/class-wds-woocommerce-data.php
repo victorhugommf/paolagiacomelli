@@ -1,6 +1,7 @@
 <?php
 
 class Smartcrawl_Woocommerce_Data {
+
 	const OPTION_ID = 'wds_woocommerce_options';
 
 	public function __construct() {
@@ -9,10 +10,10 @@ class Smartcrawl_Woocommerce_Data {
 	public function get_data() {
 		$options = $this->get_options();
 
-		$js_data = array();
+		$js_data         = array();
 		$js_setting_keys = $this->get_js_setting_keys();
 		foreach ( $js_setting_keys as $js_setting_key => $sanitizer ) {
-			$setting_value = smartcrawl_get_array_value(
+			$setting_value              = smartcrawl_get_array_value(
 				$options,
 				smartcrawl_camel_to_snake( $js_setting_key )
 			);
@@ -35,15 +36,16 @@ class Smartcrawl_Woocommerce_Data {
 
 	public function get_options() {
 		$options = get_option( self::OPTION_ID );
+
 		return empty( $options ) || ! is_array( $options )
 			? array()
 			: $options;
 	}
 
 	public function save_data( $data ) {
-		// Save the rest in the options table
+		// Save the rest in the options table.
 		$setting_keys = $this->get_js_setting_keys();
-		$settings = array();
+		$settings     = array();
 		foreach ( $setting_keys as $setting_key => $sanitizer ) {
 			$setting_value = smartcrawl_get_array_value( $data, $setting_key );
 
@@ -67,17 +69,17 @@ class Smartcrawl_Woocommerce_Data {
 	}
 
 	private function get_brand_options() {
-		$options = array(
+		$options            = array(
 			'' => esc_html__( 'None', 'wds' ),
 		);
 		$product_taxonomies = get_object_taxonomies( 'product', 'objects' );
-		$excluded = array(
+		$excluded           = array(
 			'product_shipping_class',
 			'product_type',
 			'product_visibility',
 		);
 		foreach ( $product_taxonomies as $product_taxonomy ) {
-			if ( in_array( $product_taxonomy->name, $excluded ) ) {
+			if ( in_array( $product_taxonomy->name, $excluded, true ) ) {
 				continue;
 			}
 
@@ -88,18 +90,18 @@ class Smartcrawl_Woocommerce_Data {
 	}
 
 	private function is_opengraph_enabled() {
-		$options = Smartcrawl_Settings::get_options();
-		$social_enabled = (bool) smartcrawl_get_array_value( $options, 'social' );
-		$og_active = (bool) smartcrawl_get_array_value( $options, 'og-enable' );
+		$options                = Smartcrawl_Settings::get_options();
+		$social_enabled         = (bool) smartcrawl_get_array_value( $options, 'social' );
+		$og_active              = (bool) smartcrawl_get_array_value( $options, 'og-enable' );
 		$og_active_for_products = (bool) smartcrawl_get_array_value( $options, 'og-active-product' );
 
 		return $social_enabled && $og_active && $og_active_for_products;
 	}
 
 	private function get_social_url() {
-		$options = Smartcrawl_Settings::get_options();
+		$options        = Smartcrawl_Settings::get_options();
 		$social_enabled = (bool) smartcrawl_get_array_value( $options, 'social' );
-		$og_active = (bool) smartcrawl_get_array_value( $options, 'og-enable' );
+		$og_active      = (bool) smartcrawl_get_array_value( $options, 'og-enable' );
 
 		if ( ! $social_enabled || ! $og_active ) {
 			return Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_SOCIAL );
@@ -110,13 +112,14 @@ class Smartcrawl_Woocommerce_Data {
 
 	private function is_schema_enabled() {
 		$social = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
+
 		return empty( $social['disable-schema'] );
 	}
 
 	private function is_social_allowed() {
-		$options = Smartcrawl_Settings::get_options();
+		$options        = Smartcrawl_Settings::get_options();
 		$social_enabled = (bool) smartcrawl_get_array_value( $options, 'social' );
-		$og_active = (bool) smartcrawl_get_array_value( $options, 'og-enable' );
+		$og_active      = (bool) smartcrawl_get_array_value( $options, 'og-enable' );
 
 		if ( ! $social_enabled || ! $og_active ) {
 			return Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SOCIAL );

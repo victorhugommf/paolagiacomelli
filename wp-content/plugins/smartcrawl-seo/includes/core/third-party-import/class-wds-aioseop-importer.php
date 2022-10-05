@@ -1,10 +1,14 @@
 <?php
 
 class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
+
 	const IMPORT_IN_PROGRESS_FLAG = 'wds-aioseop-import-in-progress';
+
 	const NETWORK_IMPORT_SITES_PROCESSED_COUNT = 'wds-aioseop-network-sites-processed';
+
 	const AIOSEOP_OPTIONS_ID = 'aioseop_options';
-	// phpcs:disable -- PHPCS complains about whitespaces here
+
+	// phpcs:disable -- white spaces.
 	private $conditions = array(
 		'_aioseop_custom_link'                                                        => 'canonical_links_enabled',
 		'aioseop_options/aiosp_([a-z0-9_]+)_tax_title_format'                         => 'rewrite_titles_enabled',
@@ -23,14 +27,11 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 			return false;
 		}
 
-		return apply_filters(
-			'wds-import-aioseop-data-exists',
-			strpos( $version, '3' ) === 0
-		);
+		return apply_filters( 'wds-import-aioseop-data-exists', strpos( $version, '3' ) === 0 ); // phpcs:ignore
 	}
 
 	public function import_options() {
-		$mappings = $this->expand_mappings( $this->load_option_mappings() );
+		$mappings       = $this->expand_mappings( $this->load_option_mappings() );
 		$source_options = $this->get_source_options();
 		$target_options = array();
 
@@ -45,7 +46,7 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 				$use_mapped_value = false;
 			}
 
-			$processed_target_key = $this->pre_process_key( $target_key );
+			$processed_target_key   = $this->pre_process_key( $target_key );
 			$processed_target_value = $this->pre_process_value( $target_key, $source_value );
 
 			if ( ! $processed_target_key ) {
@@ -103,7 +104,7 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 
 	private function meets_condition( $key ) {
 		$condition = null;
-		$matches = array();
+		$matches   = array();
 		foreach ( $this->conditions as $condition_pattern => $callback ) {
 			if ( preg_match( '#' . $condition_pattern . '#', $key, $matches ) ) {
 				$condition = $callback;
@@ -133,44 +134,58 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	}
 
 	public function save_sitemap_posttypes( $target_options ) {
-		$source_options = get_option( self::AIOSEOP_OPTIONS_ID );
-		$all_post_types = $this->get_post_types();
-		$source_post_types = smartcrawl_get_array_value( $source_options, array(
-			'modules',
-			'aiosp_sitemap_options',
-			'aiosp_sitemap_posttypes',
-		) );
+		$source_options    = get_option( self::AIOSEOP_OPTIONS_ID );
+		$all_post_types    = $this->get_post_types();
+		$source_post_types = smartcrawl_get_array_value(
+			$source_options,
+			array(
+				'modules',
+				'aiosp_sitemap_options',
+				'aiosp_sitemap_posttypes',
+			)
+		);
 		$source_post_types = null === $source_post_types ? $all_post_types : $source_post_types;
 
 		$excluded_post_types = array_diff( $all_post_types, $source_post_types );
 
 		foreach ( $excluded_post_types as $excluded_post_type ) {
-			smartcrawl_put_array_value( true, $target_options, array(
-				'wds_sitemap_options',
-				sprintf( 'post_types-%s-not_in_sitemap', $excluded_post_type ),
-			) );
+			smartcrawl_put_array_value(
+				true,
+				$target_options,
+				array(
+					'wds_sitemap_options',
+					sprintf( 'post_types-%s-not_in_sitemap', $excluded_post_type ),
+				)
+			);
 		}
 
 		return $target_options;
 	}
 
 	public function save_sitemap_taxonomies( $target_options ) {
-		$source_options = get_option( self::AIOSEOP_OPTIONS_ID );
-		$all_taxonomies = $this->get_taxonomies();
-		$source_taxonomies = smartcrawl_get_array_value( $source_options, array(
-			'modules',
-			'aiosp_sitemap_options',
-			'aiosp_sitemap_taxonomies',
-		) );
+		$source_options    = get_option( self::AIOSEOP_OPTIONS_ID );
+		$all_taxonomies    = $this->get_taxonomies();
+		$source_taxonomies = smartcrawl_get_array_value(
+			$source_options,
+			array(
+				'modules',
+				'aiosp_sitemap_options',
+				'aiosp_sitemap_taxonomies',
+			)
+		);
 		$source_taxonomies = null === $source_taxonomies ? $all_taxonomies : $source_taxonomies;
 
 		$excluded_post_types = array_diff( $all_taxonomies, $source_taxonomies );
 
 		foreach ( $excluded_post_types as $excluded_post_type ) {
-			smartcrawl_put_array_value( true, $target_options, array(
-				'wds_sitemap_options',
-				sprintf( 'taxonomies-%s-not_in_sitemap', $excluded_post_type ),
-			) );
+			smartcrawl_put_array_value(
+				true,
+				$target_options,
+				array(
+					'wds_sitemap_options',
+					sprintf( 'taxonomies-%s-not_in_sitemap', $excluded_post_type ),
+				)
+			);
 		}
 
 		return $target_options;
@@ -178,17 +193,20 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 
 	private function save_social_types( $target_options ) {
 		$default_post_types = array( 'post', 'page' );
-		$source_post_types = smartcrawl_get_array_value( get_option( self::AIOSEOP_OPTIONS_ID, array() ), array(
-			'modules',
-			'aiosp_opengraph_options',
-			'aiosp_opengraph_types',
-		) );
-		$source_post_types = null === $source_post_types ? $default_post_types : $source_post_types;
+		$source_post_types  = smartcrawl_get_array_value(
+			get_option( self::AIOSEOP_OPTIONS_ID, array() ),
+			array(
+				'modules',
+				'aiosp_opengraph_options',
+				'aiosp_opengraph_types',
+			)
+		);
+		$source_post_types  = null === $source_post_types ? $default_post_types : $source_post_types;
 
-		// Activate twitter
+		// Activate twitter.
 		smartcrawl_put_array_value( true, $target_options, array( 'wds_social_options', 'twitter-card-enable' ) );
 
-		// Activate for post types
+		// Activate for post types.
 		foreach ( $source_post_types as $og_post_type ) {
 			$target_options = $this->enable_social_for( $og_post_type, $target_options );
 		}
@@ -205,23 +223,31 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	}
 
 	private function enable_social_for( $type, $target_options ) {
-		smartcrawl_put_array_value( true, $target_options, array(
-			'wds_onpage_options',
-			sprintf( 'og-active-%s', $type ),
-		) );
-		smartcrawl_put_array_value( true, $target_options, array(
-			'wds_onpage_options',
-			sprintf( 'twitter-active-%s', $type ),
-		) );
+		smartcrawl_put_array_value(
+			true,
+			$target_options,
+			array(
+				'wds_onpage_options',
+				sprintf( 'og-active-%s', $type ),
+			)
+		);
+		smartcrawl_put_array_value(
+			true,
+			$target_options,
+			array(
+				'wds_onpage_options',
+				sprintf( 'twitter-active-%s', $type ),
+			)
+		);
 
 		return $target_options;
 	}
 
 	private function enabled_for_taxonomy( $taxonomy ) {
-		$default_types = array( 'category', 'post_tag', 'tag' );
-		$options = get_option( self::AIOSEOP_OPTIONS_ID );
+		$default_types        = array( 'category', 'post_tag', 'tag' );
+		$options              = get_option( self::AIOSEOP_OPTIONS_ID );
 		$seo_for_custom_types = (bool) smartcrawl_get_array_value( $options, 'aiosp_enablecpost' );
-		$active_types = smartcrawl_get_array_value( $options, 'aiosp_taxactive' );
+		$active_types         = smartcrawl_get_array_value( $options, 'aiosp_taxactive' );
 
 		if ( $seo_for_custom_types ) {
 			return is_array( $active_types ) && in_array( $taxonomy, $active_types, true );
@@ -238,7 +264,7 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 				continue;
 			}
 
-			$term_object = get_term( $term_id );
+			$term_object   = get_term( $term_id );
 			$taxonomy_meta = array();
 
 			$taxonomy_meta = $this->import_term_meta_text( '_aioseop_title', 'wds_title', $term_id, $taxonomy_meta );
@@ -256,12 +282,12 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	private function get_terms_with_aioseop_metas() {
 		global $wpdb;
 
-		return $wpdb->get_col( "SELECT term_id FROM {$wpdb->termmeta} WHERE meta_key LIKE '_aioseop_%' GROUP BY term_id" );
+		return $wpdb->get_col( "SELECT term_id FROM {$wpdb->termmeta} WHERE meta_key LIKE '_aioseop_%' GROUP BY term_id" ); // phpcs:ignore
 	}
 
 	private function enabled_for_term( $term_id ) {
-		$term = get_term( $term_id );
-		$enabled_for_term = 'on' !== get_term_meta( $term_id, '_aioseop_disable', true );
+		$term                 = get_term( $term_id );
+		$enabled_for_term     = 'on' !== get_term_meta( $term_id, '_aioseop_disable', true );
 		$enabled_for_taxonomy = $this->enabled_for_taxonomy( $term->taxonomy );
 
 		return $enabled_for_term && $enabled_for_taxonomy;
@@ -269,7 +295,7 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 
 	private function import_term_meta_text( $source_key, $target_key, $term_id, $taxonomy_meta ) {
 		if ( $this->meets_condition( $source_key ) ) {
-			$meta_value = get_term_meta( $term_id, $source_key, true );
+			$meta_value                   = get_term_meta( $term_id, $source_key, true );
 			$taxonomy_meta[ $target_key ] = $meta_value;
 		}
 
@@ -278,8 +304,8 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 
 	private function import_term_meta_boolean( $source_key, $target_key, $term_id, $taxonomy_meta ) {
 		if ( $this->meets_condition( $source_key ) ) {
-			$meta_value = get_term_meta( $term_id, $source_key, true );
-			$meta_value = 'on' === $meta_value ? true : false;
+			$meta_value                   = get_term_meta( $term_id, $source_key, true );
+			$meta_value                   = 'on' === $meta_value;
 			$taxonomy_meta[ $target_key ] = $meta_value;
 		}
 
@@ -301,10 +327,10 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	}
 
 	private function populate_opengraph_values( $meta_values, $opengraph_key = '_wds_opengraph', $twitter_key = '_wds_twitter' ) {
-		$wds_values = array();
-		$title = smartcrawl_get_array_value( $meta_values, 'aioseop_opengraph_settings_title' );
-		$description = smartcrawl_get_array_value( $meta_values, 'aioseop_opengraph_settings_desc' );
-		$image = smartcrawl_get_array_value( $meta_values, 'aioseop_opengraph_settings_customimg' );
+		$wds_values    = array();
+		$title         = smartcrawl_get_array_value( $meta_values, 'aioseop_opengraph_settings_title' );
+		$description   = smartcrawl_get_array_value( $meta_values, 'aioseop_opengraph_settings_desc' );
+		$image         = smartcrawl_get_array_value( $meta_values, 'aioseop_opengraph_settings_customimg' );
 		$twitter_image = smartcrawl_get_array_value( $meta_values, 'aioseop_opengraph_settings_customimg_twitter' );
 
 		smartcrawl_put_array_value( $title, $wds_values, array( $opengraph_key, 'title' ) );
@@ -323,8 +349,8 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	}
 
 	public function import_post_meta() {
-		$batch_size = apply_filters( 'wds_post_meta_import_batch_size', 300 );
-		$all_posts = $this->get_posts_with_aioseop_metas();
+		$batch_size  = apply_filters( 'wds_post_meta_import_batch_size', 300 );
+		$all_posts   = $this->get_posts_with_aioseop_metas();
 		$batch_posts = array_slice( $all_posts, 0, $batch_size );
 
 		foreach ( $batch_posts as $post_id ) {
@@ -340,10 +366,12 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 			$this->import_post_meta_opengraph( $post_id );
 		}
 
-		$this->update_status( array(
-			'remaining_posts' => count( $this->get_posts_with_aioseop_metas() ),
-			'completed_posts' => count( $this->get_posts_with_target_metas() ),
-		) );
+		$this->update_status(
+			array(
+				'remaining_posts' => count( $this->get_posts_with_aioseop_metas() ),
+				'completed_posts' => count( $this->get_posts_with_target_metas() ),
+			)
+		);
 
 		return count( $all_posts ) === count( $batch_posts );
 	}
@@ -353,17 +381,17 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	}
 
 	private function enabled_for_post( $post_id ) {
-		$enabled_for_post = 'on' !== get_post_meta( $post_id, '_aioseop_disable', true );
+		$enabled_for_post      = 'on' !== get_post_meta( $post_id, '_aioseop_disable', true );
 		$enabled_for_post_type = $this->enabled_for_post_type( get_post_type( $post_id ) );
 
 		return $enabled_for_post && $enabled_for_post_type;
 	}
 
 	private function enabled_for_post_type( $post_type ) {
-		$default_types = array( 'post', 'page' );
-		$options = get_option( self::AIOSEOP_OPTIONS_ID );
+		$default_types        = array( 'post', 'page' );
+		$options              = get_option( self::AIOSEOP_OPTIONS_ID );
 		$seo_for_custom_types = (bool) smartcrawl_get_array_value( $options, 'aiosp_enablecpost' );
-		$active_types = smartcrawl_get_array_value( $options, 'aiosp_cpostactive' );
+		$active_types         = smartcrawl_get_array_value( $options, 'aiosp_cpostactive' );
 
 		if ( $seo_for_custom_types ) {
 			return is_array( $active_types ) && in_array( $post_type, $active_types, true );
@@ -412,12 +440,15 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	}
 
 	private function opengraph_enabled_for_post_type( $post_type ) {
-		$options = get_option( self::AIOSEOP_OPTIONS_ID );
-		$og_types = smartcrawl_get_array_value( $options, array(
-			'modules',
-			'aiosp_opengraph_options',
-			'aiosp_opengraph_types',
-		) );
+		$options       = get_option( self::AIOSEOP_OPTIONS_ID );
+		$og_types      = smartcrawl_get_array_value(
+			$options,
+			array(
+				'modules',
+				'aiosp_opengraph_options',
+				'aiosp_opengraph_types',
+			)
+		);
 		$default_types = array( 'post', 'page' );
 
 		if ( null !== $og_types ) {
@@ -462,7 +493,7 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	}
 
 	public function save_social_profile_links( $source_key, $source_value, $target_options ) {
-		$mappings = array(
+		$mappings     = array(
 			'facebook.com'  => 'facebook_url',
 			'fb.com'        => 'facebook_url',
 			'instagram.com' => 'instagram_url',
@@ -476,10 +507,14 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 		foreach ( $social_links as $social_link ) {
 			foreach ( $mappings as $domain => $target ) {
 				if ( strpos( $social_link, $domain ) !== false ) {
-					smartcrawl_put_array_value( trim( $social_link ), $target_options, array(
-						'wds_social_options',
-						$target,
-					) );
+					smartcrawl_put_array_value(
+						trim( $social_link ),
+						$target_options,
+						array(
+							'wds_social_options',
+							$target,
+						)
+					);
 				}
 			}
 		}
@@ -507,25 +542,36 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	}
 
 	public function save_person_or_organization_name( $source_key, $source_value, $target_options ) {
-		$options = get_option( self::AIOSEOP_OPTIONS_ID );
-		$person_or_org = smartcrawl_get_array_value( $options, array(
-			'modules',
-			'aiosp_opengraph_options',
-			'aiosp_opengraph_person_or_org',
-		) );
+		$options       = get_option( self::AIOSEOP_OPTIONS_ID );
+		$person_or_org = smartcrawl_get_array_value(
+			$options,
+			array(
+				'modules',
+				'aiosp_opengraph_options',
+				'aiosp_opengraph_person_or_org',
+			)
+		);
 
 		if ( 'person' === $person_or_org ) {
-			smartcrawl_put_array_value( $source_value, $target_options, array(
-				'wds_social_options',
-				'override_name',
-			) );
+			smartcrawl_put_array_value(
+				$source_value,
+				$target_options,
+				array(
+					'wds_social_options',
+					'override_name',
+				)
+			);
 		}
 
 		if ( 'org' === $person_or_org ) {
-			smartcrawl_put_array_value( $source_value, $target_options, array(
-				'wds_social_options',
-				'organization_name',
-			) );
+			smartcrawl_put_array_value(
+				$source_value,
+				$target_options,
+				array(
+					'wds_social_options',
+					'organization_name',
+				)
+			);
 		}
 
 		return $target_options;
@@ -633,18 +679,17 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 	private function canonical_links_enabled() {
 		$options = get_option( self::AIOSEOP_OPTIONS_ID );
 
-		return 'on' === smartcrawl_get_array_value( $options, 'aiosp_can' )
-		       && 'on' === smartcrawl_get_array_value( $options, 'aiosp_customize_canonical_links' );
+		return 'on' === smartcrawl_get_array_value( $options, 'aiosp_can' ) && 'on' === smartcrawl_get_array_value( $options, 'aiosp_customize_canonical_links' );
 	}
 
 	private function rewrite_titles_enabled( $key, $matches ) {
-		$options = get_option( self::AIOSEOP_OPTIONS_ID );
-		$rewrite_titles = (bool) smartcrawl_get_array_value( $options, 'aiosp_rewrite_titles' );
-		$seo_for_custom_types = (bool) smartcrawl_get_array_value( $options, 'aiosp_enablecpost' );
+		$options                            = get_option( self::AIOSEOP_OPTIONS_ID );
+		$rewrite_titles                     = (bool) smartcrawl_get_array_value( $options, 'aiosp_rewrite_titles' );
+		$seo_for_custom_types               = (bool) smartcrawl_get_array_value( $options, 'aiosp_enablecpost' );
 		$advanced_settings_for_custom_types = (bool) smartcrawl_get_array_value( $options, 'aiosp_cpostadvanced' );
-		$rewrite_titles_for_custom_types = (bool) smartcrawl_get_array_value( $options, 'aiosp_cposttitles' );
-		$type = smartcrawl_get_array_value( $matches, 1 );
-		$basic_types = array(
+		$rewrite_titles_for_custom_types    = (bool) smartcrawl_get_array_value( $options, 'aiosp_cposttitles' );
+		$type                               = smartcrawl_get_array_value( $matches, 1 );
+		$basic_types                        = array(
 			'post',
 			'page',
 			'category',
@@ -660,16 +705,18 @@ class Smartcrawl_AIOSEOP_Importer extends Smartcrawl_Importer {
 		if ( in_array( $type, $basic_types, true ) ) {
 			return $rewrite_titles;
 		} else {
-			return $rewrite_titles
-			       && $seo_for_custom_types
-			       && $advanced_settings_for_custom_types
-			       && $rewrite_titles_for_custom_types
-			       && ( $this->enabled_for_post_type( $type ) || $this->enabled_for_taxonomy( $type ) );
+			return (
+				$rewrite_titles
+				&& $seo_for_custom_types
+				&& $advanced_settings_for_custom_types
+				&& $rewrite_titles_for_custom_types
+				&& ( $this->enabled_for_post_type( $type ) || $this->enabled_for_taxonomy( $type ) )
+			);
 		}
 	}
 
 	private function home_og_fields_enabled() {
-		$options = get_option( self::AIOSEOP_OPTIONS_ID );
+		$options                 = get_option( self::AIOSEOP_OPTIONS_ID );
 		$use_home_meta_as_social = (bool) smartcrawl_get_array_value( $options, 'aiosp_opengraph_setmeta' );
 
 		return ! $use_home_meta_as_social;

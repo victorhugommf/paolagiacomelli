@@ -7,9 +7,11 @@ class Smartcrawl_Check_Links_Count extends Smartcrawl_Check_Abstract {
 	 *
 	 * @var int
 	 */
-	private $_state;
-	private $_link_count = null;
-	private $_internal_link_count = null;
+	private $state;
+
+	private $link_count = null;
+
+	private $internal_link_count = null;
 
 	public function get_status_msg() {
 		return $this->choose_message(
@@ -20,11 +22,11 @@ class Smartcrawl_Check_Links_Count extends Smartcrawl_Check_Abstract {
 	}
 
 	private function choose_message( $okay_message, $no_links, $no_internal ) {
-		$total_count = (int) $this->_link_count;
-		$internal_count = (int) $this->_internal_link_count;
+		$total_count    = (int) $this->link_count;
+		$internal_count = (int) $this->internal_link_count;
 		$external_count = $total_count - $internal_count;
 
-		if ( $this->_state ) {
+		if ( $this->state ) {
 			$message = $okay_message;
 		} elseif ( ! $total_count ) {
 			$message = $no_links;
@@ -36,23 +38,23 @@ class Smartcrawl_Check_Links_Count extends Smartcrawl_Check_Abstract {
 	}
 
 	public function apply() {
-		$selector_links = 'a[href]';
+		$selector_links          = 'a[href]';
 		$selector_internal_links = sprintf(
 			'a[href^="%s"],a[href^="/"],a[href^="#"]',
 			site_url()
 		);
 
-		$links = Smartcrawl_Html::find( $selector_links, $this->get_markup() );
-		$link_count = count( $links );
-		$this->_link_count = $link_count;
+		$links            = Smartcrawl_Html::find( $selector_links, $this->get_markup() );
+		$link_count       = count( $links );
+		$this->link_count = $link_count;
 
-		$internal_links = Smartcrawl_Html::find( $selector_internal_links, $this->get_markup() );
-		$internal_link_count = count( $internal_links );
-		$this->_internal_link_count = $internal_link_count;
+		$internal_links            = Smartcrawl_Html::find( $selector_internal_links, $this->get_markup() );
+		$internal_link_count       = count( $internal_links );
+		$this->internal_link_count = $internal_link_count;
 
-		$this->_state = ! empty( $internal_link_count );
+		$this->state = ! empty( $internal_link_count );
 
-		return ! ! $this->_state;
+		return ! ! $this->state;
 	}
 
 	public function get_recommendation() {
@@ -69,10 +71,12 @@ class Smartcrawl_Check_Links_Count extends Smartcrawl_Check_Abstract {
 		<?php esc_html_e( "Internal links are important for linking together related content. Search engines will 'crawl' through your website, indexing pages and posts as they go. To help them discover all the juicy content your website has to offer, it's wise to make sure your content has internal links built in for bots to follow and index.", 'wds' ); ?>
 		<br/><br/>
 
-		<?php printf(
+		<?php
+		printf(
 			"%s <a href='https://moz.com/learn/seo/internal-link' target='_blank'>https://moz.com/learn/seo/internal-link</a>",
 			esc_html__( "External links don't benefit your SEO by having them in your own content, but you'll want to try and get as many other websites linking to your articles and pages as possible. Search engines treat links to your website as a 'third party vote' in favour of your website - like a vote of confidence. Since they're the hardest form of 'validation' to get (another website has to endorse you!) search engines weight them heavily when considering page rank. For more info:", 'wds' )
-		); ?>
+		);
+		?>
 		<br/><br/>
 
 		<?php esc_html_e( "Note: This check is only looking at the content your page is outputting and doesn't include your main navigation. Blogs with lots of posts will benefit the most from this method, as it aids Google in finding and indexing all of your content, not just the latest articles.", 'wds' ); ?>

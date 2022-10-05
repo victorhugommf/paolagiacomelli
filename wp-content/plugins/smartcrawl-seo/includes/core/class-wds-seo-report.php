@@ -2,35 +2,40 @@
 
 class Smartcrawl_SeoReport {
 
-	private $_in_progress = false;
-	private $_progress = 0;
-	private $_start_timestamp = 0;
-	private $_items = array();
-	private $_by_type = array();
+	private $in_progress = false;
 
-	private $_state_messages = array();
-	private $_meta = array();
+	private $progress = 0;
+
+	private $start_timestamp = 0;
+
+	private $items = array();
+
+	private $by_type = array();
+
+	private $state_messages = array();
+
+	private $meta = array();
 
 	/**
 	 * @var Smartcrawl_Model_Ignores
 	 */
-	private $_ignores;
+	private $ignores;
 
-	private $_sitemap_issues = 0;
+	private $sitemap_issues = 0;
 	/**
 	 * @var Smartcrawl_Redirects_Database_Table
 	 */
 	private $redirects_table;
 
 	public function __construct() {
-		$this->_ignores = new Smartcrawl_Model_Ignores();
+		$this->ignores         = new Smartcrawl_Model_Ignores();
 		$this->redirects_table = Smartcrawl_Redirects_Database_Table::get();
 	}
 
 	/**
 	 * Builds report instance
 	 *
-	 * @param array $raw Raw crawl report, as returned by service
+	 * @param array $raw Raw crawl report, as returned by service.
 	 *
 	 * @return Smartcrawl_SeoReport instance
 	 */
@@ -55,21 +60,21 @@ class Smartcrawl_SeoReport {
 	/**
 	 * Builds report meta list
 	 *
-	 * @param array $raw Raw crawl report, as returned by service
+	 * @param array $raw Raw crawl report, as returned by service.
 	 *
-	 * @return object Smartcrawl_SeoReport instance
+	 * @return void
 	 */
 	public function build_meta( $raw ) {
 		$sitemap_total = ! empty( $raw['sitemap_total'] )
 			? $raw['sitemap_total']
 			: ( ! empty( $raw['issues']['sitemap_total'] ) ? $raw['issues']['sitemap_total'] : 0 );
-		$discovered = ! empty( $raw['discovered'] )
+		$discovered    = ! empty( $raw['discovered'] )
 			? $raw['discovered']
 			: ( ! empty( $raw['issues']['discovered'] ) ? $raw['issues']['discovered'] : 0 );
 
 		if ( ! empty( $raw['issues']['messages'] ) ) {
 			foreach ( $raw['issues']['messages'] as $msg ) {
-				$this->_state_messages[] = $msg;
+				$this->state_messages[] = $msg;
 			}
 		}
 
@@ -77,7 +82,7 @@ class Smartcrawl_SeoReport {
 			? (int) $raw['total']
 			: 0;
 
-		$this->_meta = array(
+		$this->meta = array(
 			'sitemap_total' => $sitemap_total,
 			'discovered'    => $discovered,
 			'total'         => $total,
@@ -87,7 +92,7 @@ class Smartcrawl_SeoReport {
 	/**
 	 * Builds report instance issues
 	 *
-	 * @param array $raw Raw issues list, as returned by service
+	 * @param array $raw Raw issues list, as returned by service.
 	 *
 	 * @return object Smartcrawl_SeoReport instance
 	 */
@@ -100,32 +105,32 @@ class Smartcrawl_SeoReport {
 			if ( ! is_array( $items ) || empty( $items ) ) {
 				continue;
 			}
-			if ( ! in_array( $type, array_keys( $this->_by_type ), true ) ) {
-				$this->_by_type[ $type ] = array();
+			if ( ! in_array( $type, array_keys( $this->by_type ), true ) ) {
+				$this->by_type[ $type ] = array();
 			}
 			foreach ( $items as $item ) {
-				$key = $this->get_item_key( $item, $type );
+				$key  = $this->get_item_key( $item, $type );
 				$path = (string) smartcrawl_get_array_value( $item, 'path' );
 				if ( empty( $key ) ) {
-					continue; // Invalid key
+					continue; // Invalid key.
 				}
-				$item['type'] = $type;
-				$item['ignored'] = $this->is_ignored_issue( $key );
+				$item['type']     = $type;
+				$item['ignored']  = $this->is_ignored_issue( $key );
 				$item['redirect'] = $this->get_redirect( $path );
 
-				$this->_items[ $key ] = $item;
-				$this->_by_type[ $type ][ $key ] = $item;
+				$this->items[ $key ]            = $item;
+				$this->by_type[ $type ][ $key ] = $item;
 			}
 		}
 
 		// Special case sitemap issues reporting
 		if ( ! empty( $raw['sitemap'] ) && is_numeric( $raw['sitemap'] ) ) {
-			$this->_sitemap_issues = (int) $raw['sitemap'];
+			$this->sitemap_issues = (int) $raw['sitemap'];
 		}
 
-		if ( empty( $this->_state_messages ) && ! empty( $raw['messages'] ) ) {
+		if ( empty( $this->state_messages ) && ! empty( $raw['messages'] ) ) {
 			foreach ( $raw['messages'] as $msg ) {
-				$this->_state_messages[] = $msg;
+				$this->state_messages[] = $msg;
 			}
 		}
 
@@ -135,8 +140,8 @@ class Smartcrawl_SeoReport {
 	/**
 	 * Creates an unique key for a corresponding item
 	 *
-	 * @param array $item Item to create the key for
-	 * @param string $type Optional item type
+	 * @param array  $item Item to create the key for.
+	 * @param string $type Optional item type.
 	 *
 	 * @return string Unique key
 	 */
@@ -161,7 +166,7 @@ class Smartcrawl_SeoReport {
 	 * @return array List of known issue types identifiers
 	 */
 	public function get_issue_types() {
-		return array_keys( $this->_by_type );
+		return array_keys( $this->by_type );
 	}
 
 	/**
@@ -170,15 +175,15 @@ class Smartcrawl_SeoReport {
 	 * @return array List of ignored items unique IDs
 	 */
 	public function get_ignored_issues() {
-		return $this->_ignores->get_all();
+		return $this->ignores->get_all();
 	}
 
 	/**
 	 * Gets issues count, for all issues or by type
 	 *
-	 * @param string $type Optional issue type
-	 *                     - if omitted, all issues are counted
-	 * @param bool $include_ignored Whether to include ignored items (default: no)
+	 * @param string $type            Optional issue type.
+	 *                                - if omitted, all issues are counted.
+	 * @param bool   $include_ignored Whether to include ignored items (default: no).
 	 *
 	 * @return int Issues count
 	 */
@@ -193,12 +198,12 @@ class Smartcrawl_SeoReport {
 	/**
 	 * Gets unique IDs of all issues
 	 *
-	 * @param bool $include_ignored Whether to include ignored items (default: no)
+	 * @param bool $include_ignored Whether to include ignored items (default: no).
 	 *
 	 * @return array List of all known issues
 	 */
 	public function get_all_issues( $include_ignored = false ) {
-		$all = $this->_items;
+		$all = $this->items;
 		if ( ! empty( $include_ignored ) ) {
 			return $all;
 		}
@@ -214,25 +219,27 @@ class Smartcrawl_SeoReport {
 	}
 
 	/**
-	 * Checks if an issue is to be ignored
+	 * Checks if an issue is to be ignored.
+	 *
+	 * @param string $key Key.
 	 *
 	 * @return bool
 	 */
 	public function is_ignored_issue( $key ) {
-		return (bool) $this->_ignores->is_ignored( $key );
+		return (bool) $this->ignores->is_ignored( $key );
 	}
 
 	/**
 	 * Gets issues for a specific issue type
 	 *
-	 * @param string $type Type identifier
-	 * @param bool $include_ignored Whether to include ignored items (default: no)
+	 * @param string $type            Type identifier.
+	 * @param bool   $include_ignored Whether to include ignored items (default: no).
 	 *
 	 * @return array List of issues for this type
 	 */
 	public function get_issues_by_type( $type, $include_ignored = false ) {
-		$issues = ! empty( $this->_by_type[ $type ] ) && is_array( $this->_by_type[ $type ] )
-			? $this->_by_type[ $type ]
+		$issues = ! empty( $this->by_type[ $type ] ) && is_array( $this->by_type[ $type ] )
+			? $this->by_type[ $type ]
 			: array();
 
 		if ( ! empty( $include_ignored ) ) {
@@ -250,9 +257,9 @@ class Smartcrawl_SeoReport {
 	}
 
 	public function get_all_issues_grouped_by_type() {
-		return empty( $this->_by_type )
+		return empty( $this->by_type )
 			? array()
-			: $this->_by_type;
+			: $this->by_type;
 	}
 
 	/**
@@ -261,7 +268,7 @@ class Smartcrawl_SeoReport {
 	 * @return int Count
 	 */
 	public function get_sitemap_misses() {
-		$count = (int) $this->_sitemap_issues;
+		$count = (int) $this->sitemap_issues;
 
 		return 0 === $count
 			? (int) $this->get_issues_count( 'sitemap' )
@@ -271,14 +278,14 @@ class Smartcrawl_SeoReport {
 	/**
 	 * Gets a meta key value
 	 *
-	 * @param string $key Meta key to check
-	 * @param mixed $fallback What to return instead if there's no such key
+	 * @param string $key      Meta key to check.
+	 * @param mixed  $fallback What to return instead if there's no such key.
 	 *
 	 * @return mixed Meta value
 	 */
 	public function get_meta( $key, $fallback = false ) {
 		if ( $this->has_meta( $key ) ) {
-			return $this->_meta[ $key ];
+			return $this->meta[ $key ];
 		}
 
 		return $fallback;
@@ -287,24 +294,24 @@ class Smartcrawl_SeoReport {
 	/**
 	 * Check whether a meta key has been set
 	 *
-	 * @param string $key Meta key to check
+	 * @param string $key Meta key to check.
 	 *
 	 * @return bool
 	 */
 	public function has_meta( $key ) {
-		return isset( $this->_meta[ $key ] );
+		return isset( $this->meta[ $key ] );
 	}
 
 	/**
 	 * Gets a specific issue by its key
 	 *
-	 * @param string $key Issue's unique key
+	 * @param string $key Issue's unique key.
 	 *
 	 * @return array Issue info hash
 	 */
 	public function get_issue( $key ) {
-		return ! empty( $this->_items[ $key ] ) && is_array( $this->_items[ $key ] )
-			? $this->_items[ $key ]
+		return ! empty( $this->items[ $key ] ) && is_array( $this->items[ $key ] )
+			? $this->items[ $key ]
 			: array();
 	}
 
@@ -314,8 +321,8 @@ class Smartcrawl_SeoReport {
 	 * @return array
 	 */
 	public function get_state_messages() {
-		return ! empty( $this->_state_messages ) && is_array( $this->_state_messages )
-			? $this->_state_messages
+		return ! empty( $this->state_messages ) && is_array( $this->state_messages )
+			? $this->state_messages
 			: array();
 	}
 
@@ -325,47 +332,47 @@ class Smartcrawl_SeoReport {
 	 * @return bool
 	 */
 	public function has_state_messages() {
-		return ! empty( $this->_state_messages );
+		return ! empty( $this->state_messages );
 	}
 
 	/**
 	 * @return int
 	 */
 	public function get_start_timestamp() {
-		return $this->_start_timestamp;
+		return $this->start_timestamp;
 	}
 
 	/**
-	 * @param int $start_timestamp
+	 * @param int $start_timestamp Start timestamp.
 	 */
 	public function set_start_timestamp( $start_timestamp ) {
-		$this->_start_timestamp = $start_timestamp;
+		$this->start_timestamp = $start_timestamp;
 	}
 
 	private function __clone() {
 	}
 
 	public function is_in_progress() {
-		return $this->_in_progress;
+		return $this->in_progress;
 	}
 
 	public function set_in_progress( $in_progress ) {
-		$this->_in_progress = $in_progress;
+		$this->in_progress = $in_progress;
 	}
 
 	public function get_progress() {
-		return $this->_progress;
+		return $this->progress;
 	}
 
 	public function set_progress( $progress ) {
-		$this->_progress = $progress;
+		$this->progress = $progress;
 	}
 
 	public function has_data() {
-		// Check if the meta has been set already or we have some error messages to show
-		return (boolean) (
-			array_filter( $this->_meta )
-			|| array_filter( $this->_state_messages )
+		// Check if the meta has been set already or we have some error messages to show.
+		return (bool) (
+			array_filter( $this->meta )
+			|| array_filter( $this->state_messages )
 		);
 	}
 

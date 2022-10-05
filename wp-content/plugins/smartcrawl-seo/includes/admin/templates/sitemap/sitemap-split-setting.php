@@ -1,5 +1,5 @@
 <?php
-$option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
+$option_name       = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
 $items_per_sitemap = Smartcrawl_Sitemap_Utils::get_items_per_sitemap();
 ?>
 <div class="sui-box-settings-row">
@@ -15,16 +15,20 @@ $items_per_sitemap = Smartcrawl_Sitemap_Utils::get_items_per_sitemap();
 				<label for="items-per-sitemap" class="sui-label">
 					<?php echo esc_html__( 'Number of links per sitemap', 'wds' ); ?>
 				</label>
-				<input type="number"
-				       id="items-per-sitemap"
-				       class="sui-form-control sui-input-sm"
-				       value="<?php echo esc_attr( $items_per_sitemap ); ?>"
-				       name="<?php echo esc_attr( $option_name ); ?>[items-per-sitemap]"/>
+				<input
+					type="number"
+					id="items-per-sitemap"
+					class="sui-form-control sui-input-sm"
+					value="<?php echo esc_attr( $items_per_sitemap ); ?>"
+					name="<?php echo esc_attr( $option_name ); ?>[items-per-sitemap]"
+				/>
 				<p class="sui-description">
-					<?php printf(
+					<?php
+					printf(
 						esc_html__( 'Choose how many URLs each sitemap has, up to %s. A higher number will use more server resources to generate.', 'wds' ),
-						Smartcrawl_Sitemap_Utils::get_max_items_per_sitemap()
-					); ?>
+						esc_html( Smartcrawl_Sitemap_Utils::get_max_items_per_sitemap() )
+					);
+					?>
 				</p>
 			</div>
 		</div>

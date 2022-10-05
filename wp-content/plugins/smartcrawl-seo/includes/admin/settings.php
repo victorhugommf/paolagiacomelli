@@ -101,11 +101,19 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 		add_action( 'admin_menu', array( $this, 'add_page' ) );
 	}
 
+	/**
+	 * Is current screen SmartCrawl.
+	 *
+	 * @return bool
+	 */
 	private function is_current_screen() {
 		$screen = get_current_screen();
-		return ! empty( $screen->id )
-		       && ! empty( $this->smartcrawl_page_hook )
-		       && strpos( $screen->id, $this->smartcrawl_page_hook ) === 0;
+
+		return (
+			! empty( $screen->id ) &&
+			! empty( $this->smartcrawl_page_hook ) &&
+			strpos( $screen->id, $this->smartcrawl_page_hook ) === 0
+		);
 	}
 
 	/**
@@ -134,8 +142,8 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 * Add sub page to the Settings Menu
 	 */
 	public function add_page() {
-		if ( ! $this->_is_current_tab_allowed() ) {
-			return false;
+		if ( ! $this->is_current_tab_allowed() ) {
+			return;
 		}
 
 		$this->smartcrawl_page_hook = add_submenu_page(
@@ -155,6 +163,11 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 		add_action( "admin_print_styles-{$this->smartcrawl_page_hook}", array( $this, 'admin_styles' ) );
 	}
 
+	/**
+	 * Get title.
+	 *
+	 * @return mixed
+	 */
 	abstract public function get_title();
 
 	/**
@@ -162,10 +175,8 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 *
 	 * @return bool
 	 */
-	protected function _is_current_tab_allowed() {
-		return ! empty( $this->slug )
-			? self::is_tab_allowed( $this->slug )
-			: false;
+	protected function is_current_tab_allowed() {
+		return ! empty( $this->slug ) && self::is_tab_allowed( $this->slug );
 	}
 
 	/**
@@ -178,36 +189,37 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 * @return bool
 	 */
 	public static function is_tab_allowed( $tab ) {
-		// On single installs, everything is good
+		// On single installs, everything is good.
 		if ( ! is_multisite() ) {
 			return true;
 		}
 
-		// SEO health not supported on sub-sites
-		if ( $tab === self::TAB_HEALTH ) {
+		// SEO health not supported on sub-sites.
+		if ( self::TAB_HEALTH === $tab ) {
 			return is_main_site();
 		}
 
-		// Dashboard shown on all sub-sites
-		if ( $tab === self::TAB_DASHBOARD ) {
+		// Dashboard shown on all sub-sites.
+		if ( self::TAB_DASHBOARD === $tab ) {
 			return true;
 		}
 
-		// Check whether the tab is blocked on network level
+		// Check whether the tab is blocked on network level.
 		$allowed = Smartcrawl_Settings_Settings::get_blog_tabs();
 		$allowed = empty( $allowed ) ? array() : $allowed;
+
 		return in_array( $tab, array_keys( $allowed ), true ) && ! empty( $allowed[ $tab ] );
 	}
 
 	/**
-	 * Enqueue styles
+	 * Enqueue styles.
 	 */
 	public function admin_styles() {
 		wp_enqueue_style( Smartcrawl_Controller_Assets::APP_CSS );
 	}
 
 	/**
-	 * Display the admin options page
+	 * Display the admin options page.
 	 */
 	public function options_page() {
 		// phpcs:disable -- $_GET values need to be used without nonces
@@ -261,7 +273,7 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 
 			$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
 			if ( $service->is_member() ) {
-				$classes .= " wds-is-member";
+				$classes .= ' wds-is-member';
 			}
 		}
 
@@ -274,20 +286,27 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 * As a side-effect, also calls `WDEV_Plugin_Ui::output()`
 	 *
 	 * @param string $view View file to load.
-	 * @param array $args Optional array of arguments to pass to view.
+	 * @param array  $args Optional array of arguments to pass to view.
 	 *
 	 * @return bool
 	 */
-	protected function _render_page( $view, $args = array() ) {
-		$this->_render( $view, $args );
+	protected function render_page( $view, $args = array() ) {
+		$this->render_view( $view, $args );
 
 		return true;
 	}
 
+	/**
+	 * Render settings fields.
+	 *
+	 * @param string $option_group Option group.
+	 *
+	 * @return void
+	 */
 	protected function settings_fields( $option_group ) {
 		echo "<input type='hidden' name='option_page' value='" . esc_attr( $option_group ) . "' />";
 		echo '<input type="hidden" name="action" value="update" />';
-		wp_nonce_field( "$option_group-options", "_wpnonce", false );
+		wp_nonce_field( "$option_group-options", '_wpnonce', false );
 	}
 
 	/**
@@ -295,9 +314,9 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 *
 	 * @return array Defaults
 	 */
-	protected function _get_view_defaults() {
-		$errors = get_transient( 'wds-settings-save-errors' );
-		$errors = ! empty( $errors ) ? $errors : array();
+	protected function get_view_defaults() {
+		$errors  = get_transient( 'wds-settings-save-errors' );
+		$errors  = ! empty( $errors ) ? $errors : array();
 		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
 
 		return array(
@@ -321,9 +340,7 @@ abstract class Smartcrawl_Settings_Admin extends Smartcrawl_Settings {
 	 *
 	 * @return string The last active tab.
 	 */
-	protected function _get_active_tab( $default = '' ) {
-		return empty( $_GET['tab'] )
-			? $default
-			: $_GET['tab'];
+	protected function get_active_tab( $default = '' ) {
+		return empty( $_GET['tab'] ) ? $default : esc_html( $_GET['tab'] ); // phpcs:ignore
 	}
 }

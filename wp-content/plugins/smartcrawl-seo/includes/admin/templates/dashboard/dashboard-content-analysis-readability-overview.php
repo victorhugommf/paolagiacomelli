@@ -6,14 +6,14 @@
  */
 
 $analysis_model = new Smartcrawl_Model_Analysis();
-$overview = $analysis_model->get_overall_readability_analysis();
+$overview       = $analysis_model->get_overall_readability_analysis();
 
 if ( ! $overview ) {
 	return;
 }
 
-$total = smartcrawl_get_array_value( $overview, 'total' );
-$passed = smartcrawl_get_array_value( $overview, 'passed' );
+$total          = smartcrawl_get_array_value( $overview, 'total' );
+$passed         = smartcrawl_get_array_value( $overview, 'passed' );
 $type_breakdown = smartcrawl_get_array_value( $overview, 'post-types' );
 
 if ( is_null( $total ) || is_null( $passed ) || is_null( $type_breakdown ) ) {
@@ -25,21 +25,21 @@ $percentage = ! empty( $total )
 	: 0;
 
 if ( 0 === $passed && 0 === $total ) {
-	$class = 'wds-check-invalid';
+	$class           = 'wds-check-invalid';
 	$indicator_class = 'sui-tag-inactive';
-	$indicator = esc_html__( 'No data yet', 'wds' );
+	$indicator       = esc_html__( 'No data yet', 'wds' );
 } elseif ( $percentage > 79 ) {
-	$class = 'wds-check-success sui-success';
+	$class           = 'wds-check-success sui-success';
 	$indicator_class = 'sui-tag-success';
-	$indicator = esc_html__( 'Easy', 'wds' );
+	$indicator       = esc_html__( 'Easy', 'wds' );
 } elseif ( $percentage > 59 ) {
-	$class = 'wds-check-warning sui-warning';
+	$class           = 'wds-check-warning sui-warning';
 	$indicator_class = 'sui-tag-warning';
-	$indicator = esc_html__( 'Difficult', 'wds' );
+	$indicator       = esc_html__( 'Difficult', 'wds' );
 } else {
-	$class = 'wds-check-error sui-error';
+	$class           = 'wds-check-error sui-error';
 	$indicator_class = 'sui-tag-error';
-	$indicator = esc_html__( 'Difficult', 'wds' );
+	$indicator       = esc_html__( 'Difficult', 'wds' );
 }
 ?>
 <section class="wds-accordion wds-draw-left sui-accordion wds-readability-analysis-overview">
@@ -56,9 +56,11 @@ if ( 0 === $passed && 0 === $total ) {
 			<div class="sui-accordion-col-1">
 				<span class="sui-accordion-open-indicator">
 				<span aria-hidden="true" class="sui-icon-chevron-down"></span>
-				<button type="button"
-				        aria-label="<?php esc_html_e( 'Expand overall readability analysis', 'wds' ); ?>"
-				        class="sui-screen-reader-text"><?php esc_html_e( 'Expand', 'wds' ); ?></button>
+				<button
+					type="button"
+					aria-label="<?php esc_html_e( 'Expand overall readability analysis', 'wds' ); ?>"
+					class="sui-screen-reader-text"
+				><?php esc_html_e( 'Expand', 'wds' ); ?></button>
 				</span>
 			</div>
 		</div>
@@ -78,45 +80,45 @@ if ( 0 === $passed && 0 === $total ) {
 						<th><?php esc_html_e( 'Easy', 'wds' ); ?></th>
 					</tr>
 					</thead>
-					<?php foreach ( $type_breakdown as $post_type => $type_overview ) : ?>
+					<?php foreach ( $type_breakdown as $post_type_name => $type_overview ) : ?>
 						<?php
-						$difficult = intval( smartcrawl_get_array_value( $type_overview, 'error' ) );
-						$okay = intval( smartcrawl_get_array_value( $type_overview, 'warning' ) );
-						$easy = intval( smartcrawl_get_array_value( $type_overview, 'success' ) );
-						$post_type_object = get_post_type_object( $post_type );
+						$difficult           = intval( smartcrawl_get_array_value( $type_overview, 'error' ) );
+						$okay                = intval( smartcrawl_get_array_value( $type_overview, 'warning' ) );
+						$easy                = intval( smartcrawl_get_array_value( $type_overview, 'success' ) );
+						$wp_post_type_object = get_post_type_object( $post_type_name );
 
 						$edit_url = admin_url( 'edit.php?wds_readability_threshold=' );
 						?>
 						<tr>
-							<th><?php echo esc_html( $post_type_object->label ); ?></th>
+							<th><?php echo esc_html( $wp_post_type_object->label ); ?></th>
 							<td>
-								<?php if ( $difficult > 0 ): ?>
-									<a href="<?php echo esc_url( add_query_arg( 'post_type', $post_type, "{$edit_url}0" ) ); ?>">
+								<?php if ( $difficult > 0 ) : ?>
+									<a href="<?php echo esc_url( add_query_arg( 'post_type', $post_type_name, "{$edit_url}0" ) ); ?>">
 										<span class="wds-readability-difficult sui-tag sui-tag-error">
 											<?php echo intval( $difficult ); ?>
 										</span>
 									</a>
-								<?php else: ?>
+								<?php else : ?>
 									<?php esc_html_e( 'None', 'wds' ); ?>
 								<?php endif; ?>
 							</td>
 							<td>
-								<?php if ( $okay > 0 ): ?>
-									<a href="<?php echo esc_url( add_query_arg( 'post_type', $post_type, "{$edit_url}1" ) ); ?>">
+								<?php if ( $okay > 0 ) : ?>
+									<a href="<?php echo esc_url( add_query_arg( 'post_type', $post_type_name, "{$edit_url}1" ) ); ?>">
 										<span class="wds-readability-okay sui-tag sui-tag-warning">
 											<?php echo intval( $okay ); ?>
 										</span>
 									</a>
-								<?php else: ?>
+								<?php else : ?>
 									<?php esc_html_e( 'None', 'wds' ); ?>
 								<?php endif; ?>
 							</td>
 							<td>
-								<?php if ( $easy > 0 ): ?>
+								<?php if ( $easy > 0 ) : ?>
 									<span class="wds-readability-easy sui-tag sui-tag-success">
 										<?php echo intval( $easy ); ?>
 									</span>
-								<?php else: ?>
+								<?php else : ?>
 									<?php esc_html_e( 'None', 'wds' ); ?>
 								<?php endif; ?>
 							</td>

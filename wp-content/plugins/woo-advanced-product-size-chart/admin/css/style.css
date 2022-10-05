@@ -95,7 +95,9 @@ a#fee-delete-field{font-size:25px;vertical-align:middle}
 
 .thedotstore-main-table table.table-outer{width:100%;border-collapse:collapse}
 
-.thedotstore-main-table table.table-outer tr td{font-size:13px!important;color:#333;padding:20px;border:1px solid #ddd;line-height:20px;background:#fff;vertical-align:top}
+.thedotstore-main-table table.table-outer tr td, .thedotstore-main-table table.table-outer tr th{font-size:13px!important;color:#333;padding:20px;border:1px solid #ddd;line-height:20px;background:#fff;vertical-align:top}
+
+.thedotstore-main-table table.table-outer tr th{vertical-align: middle;text-align: left;}
 
 .thedotstore-main-table table.table-outer tr td.fr-1{font-weight:600;width:35%;/* width:16%; */}
 
@@ -404,6 +406,12 @@ ul#size-chart-checklist-all li {
 .sc-star-rating label{margin:0 4px;width:28px;height:28px;cursor:pointer;background-image:url("../../admin/images/light-star.svg");background-repeat:no-repeat;}
 .sc-star-rating label:hover,.sc-star-rating label:hover ~ label{background-image:url("../../admin/images/dark-star.svg");}
 .sc-star-rating input[type="radio"]:checked ~ label{background-image:url("../../admin/images/dark-star.svg");}
+#wpfooter {position: absolute !important;}
+.deprecation-message{color: #efa52e;font-weight: normal;font-style: italic;}
+.deprecation-message strong{font-weight: 900;}
+.disabled{opacity: 0.4;}
+.chart_note{background-color: #eaea16;padding: 5px;border-radius: 5px;margin-top: 10px;}
+
 @media only screen and (max-width: 1450px){
     #dotsstoremain header .dots-header-right .logo-detail{
         width: 50%;

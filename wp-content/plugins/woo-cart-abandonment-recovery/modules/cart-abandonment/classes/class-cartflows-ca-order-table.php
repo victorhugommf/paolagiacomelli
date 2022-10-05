@@ -91,11 +91,19 @@ class Cartflows_Ca_Order_Table extends WP_List_Table {
 
 		}
 
+		if ( ! empty( $item_details['wcf_first_name'] ) ) {
+			$first_name = $item_details['wcf_first_name'];
+			$last_name  = $item_details['wcf_last_name'];
+		} else {
+			$first_name = $item_details['wcf_shipping_first_name'];
+			$last_name  = $item_details['wcf_shipping_last_name'];
+		}
+
 		return sprintf(
 			'<a href="%s"><span class="dashicons dashicons-admin-users"></span> %s %s %s </a>',
 			esc_url( $view_url ),
-			esc_html( $item_details['wcf_first_name'] ),
-			esc_html( $item_details['wcf_last_name'] ),
+			esc_attr( $first_name ),
+			esc_attr( $last_name ),
 			$this->row_actions( $actions )
 		);
 	}

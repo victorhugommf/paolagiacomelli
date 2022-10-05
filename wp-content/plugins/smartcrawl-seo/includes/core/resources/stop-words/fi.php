@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // finnish
-
-static $data = [
+static $data = array(
     'olla',
     'olen',
     'olet',
@@ -238,7 +237,7 @@ static $data = [
     'niin',
     'nyt',
     'itse',
-];
+);
 
 $result =& $data;
 unset($data);

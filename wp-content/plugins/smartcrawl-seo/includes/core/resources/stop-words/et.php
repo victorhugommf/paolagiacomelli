@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // estonian
-
-static $data = [
+static $data = array(
     'aga',
     'ei',
     'et',
@@ -38,7 +37,7 @@ static $data = [
     'ta',
     'te',
     'ära',
-];
+);
 
 $result =& $data;
 unset($data);

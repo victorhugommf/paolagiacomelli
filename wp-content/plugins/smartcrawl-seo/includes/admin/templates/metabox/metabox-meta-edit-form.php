@@ -1,7 +1,7 @@
-<?php
-$post = empty( $post ) ? null : $post;
+<?php // phpcs:disable WordPress.NamingConventions.ValidHookName.UseUnderscores
+$post = empty( $post ) ? null : $post; // phpcs:ignore
 if ( $post ) {
-	$post_id = $post->ID;
+	$post_id = $post->ID; // phpcs:ignore
 } else {
 	return;
 }
@@ -22,16 +22,17 @@ $macros = array_merge(
 			<div class="sui-form-field">
 				<label class="sui-label" for="wds_title">
 					<?php esc_html_e( 'SEO Title', 'wds' ); ?>
-					<span><?php echo esc_html( sprintf( __( '- Include your focus keywords. %d-%d characters recommended.', 'wds' ), smartcrawl_title_min_length(), smartcrawl_title_max_length() ) ); ?></span>
+					<span><?php echo esc_html( sprintf( __( '- Include your focus keywords. %1$d-%2$d characters recommended.', 'wds' ), smartcrawl_title_min_length(), smartcrawl_title_max_length() ) ); ?></span>
 				</label>
 				<div class="sui-insert-variables wds-allow-macros">
-					<input type='text'
-					       id='wds_title'
-					       name='wds_title'
-					       value='<?php echo esc_html( smartcrawl_get_value( 'title', $post_id ) ); ?>'
-					       class='sui-form-control wds-meta-field'/>
-
-					<?php $this->_render( 'macros-dropdown', array( 'macros' => $macros ) ); ?>
+					<input
+						type='text'
+						id='wds_title'
+						name='wds_title'
+						value='<?php echo esc_html( smartcrawl_get_value( 'title', $post_id ) ); ?>'
+						class='sui-form-control wds-meta-field'
+					/>
+					<?php $this->render_view( 'macros-dropdown', array( 'macros' => $macros ) ); ?>
 				</div>
 			</div>
 		<?php endif; ?>
@@ -40,15 +41,17 @@ $macros = array_merge(
 			<div class="sui-form-field">
 				<label class="sui-label" for="wds_metadesc">
 					<?php esc_html_e( 'Description', 'wds' ); ?>
-					<span><?php echo esc_html( sprintf( __( '- Recommended minimum of %d characters, maximum %d.', 'wds' ), smartcrawl_metadesc_min_length(), smartcrawl_metadesc_max_length() ) ); ?></span>
+					<span><?php echo esc_html( sprintf( __( '- Recommended minimum of %1$d characters, maximum %2$d.', 'wds' ), smartcrawl_metadesc_min_length(), smartcrawl_metadesc_max_length() ) ); ?></span>
 				</label>
 				<div class="sui-insert-variables wds-allow-macros">
-					<textarea rows='2'
-					          name='wds_metadesc'
-					          id='wds_metadesc'
-					          class='sui-form-control wds-meta-field'><?php echo esc_textarea( smartcrawl_get_value( 'metadesc', $post_id ) ); ?></textarea>
+					<textarea
+						rows='2'
+						name='wds_metadesc'
+						id='wds_metadesc'
+						class='sui-form-control wds-meta-field'
+					><?php echo esc_textarea( smartcrawl_get_value( 'metadesc', $post_id ) ); ?></textarea>
 
-					<?php $this->_render( 'macros-dropdown', array( 'macros' => $macros ) ); ?>
+					<?php $this->render_view( 'macros-dropdown', array( 'macros' => $macros ) ); ?>
 				</div>
 			</div>
 		<?php endif; ?>

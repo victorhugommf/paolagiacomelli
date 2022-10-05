@@ -3,6 +3,7 @@
 class Smartcrawl_Macro {
 
 	const OPEN_MACRO_DELIM = '%%';
+
 	const CLOSE_MACRO_DELIM = '%%';
 
 	/**
@@ -10,19 +11,19 @@ class Smartcrawl_Macro {
 	 *
 	 * @var array
 	 */
-	private $_defaults = array();
+	private $defaults = array();
 
 	/**
 	 * Holds temporary overrides definitions for the current replacement
 	 *
 	 * @var array
 	 */
-	private $_overrides = array();
+	private $overrides = array();
 
 	/**
 	 * Post factory method
 	 *
-	 * @param int|WP_Post $p Post to boot from
+	 * @param int|WP_Post $p Post to boot from.
 	 *
 	 * @return Smartcrawl_Macro instance
 	 */
@@ -39,7 +40,7 @@ class Smartcrawl_Macro {
 	/**
 	 * Generic data booting method
 	 *
-	 * @param array $data Data to pass as defaults
+	 * @param array $data Data to pass as defaults.
 	 *
 	 * @return Smartcrawl_Macro instance
 	 */
@@ -56,7 +57,7 @@ class Smartcrawl_Macro {
 	/**
 	 * Merges in a batch of overrides
 	 *
-	 * @param array $values A list of values to merge in
+	 * @param array $values A list of values to merge in.
 	 *
 	 * @return Smartcrawl_Macro instance
 	 */
@@ -64,7 +65,7 @@ class Smartcrawl_Macro {
 		if ( ! is_array( $values ) ) {
 			return $this;
 		}
-		$this->_overrides = array_merge( $this->_overrides, $values );
+		$this->overrides = array_merge( $this->overrides, $values );
 
 		return $this;
 	}
@@ -72,12 +73,12 @@ class Smartcrawl_Macro {
 	/**
 	 * Expands known macro definitions
 	 *
-	 * @param string $str String to process
+	 * @param string $str String to process.
 	 *
 	 * @return string Processed input
 	 */
 	public function expand( $str ) {
-		$known = $this->get_values();
+		$known        = $this->get_values();
 		$replacements = $this->get_replacements();
 
 		$ret = '' . $str;
@@ -86,14 +87,14 @@ class Smartcrawl_Macro {
 			$value = '';
 
 			if ( '@' === substr( $expansion, 0, 1 ) ) {
-				$key = substr( $expansion, 1 );
+				$key   = substr( $expansion, 1 );
 				$value = ! empty( $known[ $key ] ) ? $known[ $key ] : '';
 			} elseif ( is_callable( array( $this, $expansion ) ) ) {
 				$value = call_user_func( array( $this, $expansion ) );
 			}
 
 			$macro = $this->get_macro( $subject );
-			$ret = str_replace( $macro, $value, $ret );
+			$ret   = str_replace( $macro, $value, $ret );
 		}
 
 		return $ret;
@@ -109,7 +110,7 @@ class Smartcrawl_Macro {
 	public function get_values() {
 		return array_merge(
 			$this->get_defaults(),
-			$this->_overrides
+			$this->overrides
 		);
 	}
 
@@ -119,13 +120,13 @@ class Smartcrawl_Macro {
 	 * @return array Defaults
 	 */
 	public function get_defaults() {
-		return (array) $this->_defaults;
+		return (array) $this->defaults;
 	}
 
 	/**
 	 * Defaults setter
 	 *
-	 * @param array $defaults Defaults to be used
+	 * @param array $defaults Defaults to be used.
 	 *
 	 * @return Smartcrawl_Macro instance
 	 */
@@ -133,7 +134,7 @@ class Smartcrawl_Macro {
 		if ( ! is_array( $defaults ) ) {
 			return $this;
 		}
-		$this->_defaults = $defaults;
+		$this->defaults = $defaults;
 
 		return $this;
 	}
@@ -144,19 +145,18 @@ class Smartcrawl_Macro {
 	 * @return array Hash of replacements mappings
 	 */
 	public function get_replacements() {
-		$rpl = array(
-			'date'              => '@post_date',
-			'title'             => '@post_title',
-			'term_title'        => '@name',
-			'tag'               => '@name',
-			'modified'          => '@post_modified',
-			'id'                => '@ID',
-			'caption'           => '@post_excerpt',
-			'bp_group_name'     => '@name',
-			'bp_user_username'  => '@username',
-			'bp_user_full_name' => '@full_name',
-			'excerpt_only'      => '@post_excerpt',
-
+		return array(
+			'date'                 => '@post_date',
+			'title'                => '@post_title',
+			'term_title'           => '@name',
+			'tag'                  => '@name',
+			'modified'             => '@post_modified',
+			'id'                   => '@ID',
+			'caption'              => '@post_excerpt',
+			'bp_group_name'        => '@name',
+			'bp_user_username'     => '@username',
+			'bp_user_full_name'    => '@full_name',
+			'excerpt_only'         => '@post_excerpt',
 			'excerpt'              => 'get_excerpt',
 			'sitename'             => 'get_site_name',
 			'sitedesc'             => 'get_site_description',
@@ -179,14 +179,12 @@ class Smartcrawl_Macro {
 			'tag_description'      => 'get_taxonomy_description',
 			'term_description'     => 'get_taxonomy_description',
 		);
-
-		return $rpl;
 	}
 
 	/**
 	 * Gets fully qualified macro
 	 *
-	 * @param string $bare Tag to convert to macro
+	 * @param string $bare Tag to convert to macro.
 	 *
 	 * @return string Macro
 	 */
@@ -229,8 +227,8 @@ class Smartcrawl_Macro {
 	/**
 	 * Gets single value
 	 *
-	 * @param string $key Which value to get
-	 * @param string $fallback Fallback value
+	 * @param string $key      Which value to get.
+	 * @param string $fallback Fallback value.
 	 *
 	 * @return string Value or fallback
 	 */
@@ -267,11 +265,11 @@ class Smartcrawl_Macro {
 	}
 
 	public function get_current_month() {
-		return date( 'F' );
+		return date( 'F' ); // phpcs:ignore
 	}
 
 	public function get_current_year() {
-		return date( 'Y' );
+		return date( 'Y' ); // phpcs:ignore
 	}
 
 	public function get_page() {
@@ -324,15 +322,15 @@ class Smartcrawl_Macro {
 		$list = get_the_category_list( '', '', $this->get_value( 'ID' ) );
 
 		return ! empty( $list )
-			? trim( strip_tags( $list ) )
-			: $this->get_value( $name );
+			? trim( wp_strip_all_tags( $list ) )
+			: '';
 	}
 
 	public function get_taxonomy_description() {
 		$tax = $this->get_value( 'taxonomy' );
 
 		return ! empty( $tax )
-			? trim( strip_tags( get_term_field( 'description', $this->get_value( 'term_id' ), $this->get_value( 'taxonomy' ) ) ) )
+			? trim( wp_strip_all_tags( get_term_field( 'description', $this->get_value( 'term_id' ), $this->get_value( 'taxonomy' ) ) ) )
 			: '';
 	}
 }

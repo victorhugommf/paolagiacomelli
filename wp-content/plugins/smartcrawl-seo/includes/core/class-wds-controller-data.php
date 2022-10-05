@@ -1,17 +1,14 @@
 <?php
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
 class Smartcrawl_Controller_Data extends Smartcrawl_Base_Controller {
+
+	use Smartcrawl_Singleton;
+
 	private $site_service;
-	private static $_instance;
+
 	const PROGRESS_OPTION_ID = 'wds-multisite-data-reset-progress';
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	protected function __construct() {
 		$this->site_service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
@@ -31,14 +28,14 @@ class Smartcrawl_Controller_Data extends Smartcrawl_Base_Controller {
 	}
 
 	public function reset_multisite() {
-		$runner = new Smartcrawl_Subsite_Process_Runner(
+		$runner          = new Smartcrawl_Subsite_Process_Runner(
 			self::PROGRESS_OPTION_ID,
 			array( $this, 'reset' )
 		);
-		$total_sites = $runner->get_total_site_count();
-		$next_site_id = $runner->get_next_site_to_process();
+		$total_sites     = $runner->get_total_site_count();
+		$next_site_id    = $runner->get_next_site_to_process();
 		$processed_sites = $runner->run();
-		$finished = $total_sites === $processed_sites;
+		$finished        = $total_sites === $processed_sites;
 
 		return array(
 			'total_sites'      => $total_sites,
@@ -48,14 +45,14 @@ class Smartcrawl_Controller_Data extends Smartcrawl_Base_Controller {
 	}
 
 	/**
-	 * @param $next_site_id int
-	 * @param $finished boolean
+	 * @param int  $next_site_id Next site id.
+	 * @param bool $finished     Is finished.
 	 *
 	 * @return string
 	 */
 	private function get_progress_message( $next_site_id, $finished ) {
 		if ( $finished ) {
-			// Finished processing, we don't have a next site
+			// Finished processing, we don't have a next site.
 			return esc_html__( 'Finishing up', 'wds' );
 		}
 
@@ -64,6 +61,7 @@ class Smartcrawl_Controller_Data extends Smartcrawl_Base_Controller {
 		}
 
 		$next_site = get_site( $next_site_id );
+
 		return empty( $next_site->blogname )
 			? ''
 			: sprintf( esc_html__( 'Resetting %s', 'wds' ), "<strong>{$next_site->blogname}</strong>" );
@@ -93,9 +91,9 @@ class Smartcrawl_Controller_Data extends Smartcrawl_Base_Controller {
 	 * Resets data and settings based on user's data retention options
 	 */
 	public function uninstall() {
-		$options = Smartcrawl_Settings::get_options();
-		$keep_settings = (boolean) smartcrawl_get_array_value( $options, 'keep_settings_on_uninstall' );
-		$keep_data = (boolean) smartcrawl_get_array_value( $options, 'keep_data_on_uninstall' );
+		$options       = Smartcrawl_Settings::get_options();
+		$keep_settings = (bool) smartcrawl_get_array_value( $options, 'keep_settings_on_uninstall' );
+		$keep_data     = (bool) smartcrawl_get_array_value( $options, 'keep_data_on_uninstall' );
 
 		if ( ! $keep_settings ) {
 			$this->reset_settings();
@@ -145,7 +143,7 @@ class Smartcrawl_Controller_Data extends Smartcrawl_Base_Controller {
 		$this->remove_files();
 		Smartcrawl_Redirects_Database_Table::get()->drop_table();
 
-		// Clear Lighthouse report
+		// Clear Lighthouse report.
 		Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_LIGHTHOUSE )->clear_last_report();
 	}
 
@@ -179,11 +177,13 @@ class Smartcrawl_Controller_Data extends Smartcrawl_Base_Controller {
 
 	private function remove_post_meta() {
 		global $wpdb;
+
 		return $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_wds%'" );
 	}
 
 	private function remove_user_meta() {
 		global $wpdb;
+
 		return $wpdb->query( "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'wds_%'" );
 	}
 
@@ -215,6 +215,7 @@ class Smartcrawl_Controller_Data extends Smartcrawl_Base_Controller {
 			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 		}
+
 		return new WP_Filesystem_Direct( null );
 	}
 }

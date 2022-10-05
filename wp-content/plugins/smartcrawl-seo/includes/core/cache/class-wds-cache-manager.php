@@ -1,19 +1,20 @@
 <?php
+/**
+ * Class Smartcrawl_Cache_Manager
+ *
+ * @package SmartCrawl
+ */
 
+/**
+ * Class Smartcrawl_Cache_Manager
+ */
 class Smartcrawl_Cache_Manager extends Smartcrawl_Base_Controller {
+
+	use Smartcrawl_Singleton;
+
 	private $post_cache;
 
 	private $term_cache;
-
-	private static $_instance;
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	public function __construct() {
 		parent::__construct();

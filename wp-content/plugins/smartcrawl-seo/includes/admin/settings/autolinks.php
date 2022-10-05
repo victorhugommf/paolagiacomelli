@@ -2,7 +2,7 @@
 /**
  * Autolinks module settings
  *
- * @package wpmu-dev-seo
+ * @package Smartcrawl
  */
 
 /**
@@ -10,25 +10,7 @@
  */
 class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 
-	/**
-	 * Holds singleton instance
-	 *
-	 * @var Smartcrawl_Autolinks_Settings
-	 */
-	private static $_instance;
-
-	/**
-	 * Singleton instance getter
-	 *
-	 * @return Smartcrawl_Autolinks_Settings instance
-	 */
-	public static function get_instance() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
+	use Smartcrawl_Singleton;
 
 	/**
 	 * Validate submitted options
@@ -38,7 +20,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	 * @return array Validated input
 	 */
 	public function validate( $input ) {
-		// Start with old values for all the options
+		// Start with old values for all the options.
 		$result = self::get_specific_options( $this->option_name );
 
 		$save_woo = smartcrawl_get_array_value( $input, 'save_woo' );
@@ -47,13 +29,14 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 			if ( $woo_input ) {
 				$woo_data = new Smartcrawl_Woocommerce_Data();
 				$woo_data->save_data( json_decode( $woo_input, true ) );
+
 				return $result;
 			}
 		}
 
 		$save_redirects = isset( $input['save_redirects'] ) && $input['save_redirects'];
 		if ( $save_redirects ) {
-			$result['redirect-attachments'] = ! empty( $input['redirect-attachments'] );
+			$result['redirect-attachments']             = ! empty( $input['redirect-attachments'] );
 			$result['redirect-attachments-images_only'] = ! empty( $input['redirect-attachments-images_only'] );
 
 			if ( isset( $input['redirections-code'] ) ) {
@@ -65,6 +48,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 
 		if ( ! empty( $input['save_robots'] ) ) {
 			$this->validate_and_save_robots_options( $input );
+
 			return $result;
 		}
 
@@ -95,15 +79,15 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 			// Boolean Arrays.
 			$post_type_names = array_keys( self::get_post_types() );
 			foreach ( array_merge( $post_type_names, array( 'comment' ) ) as $post_type ) {
-				$result[ $post_type ] = (boolean) smartcrawl_get_array_value( $input, $post_type );
+				$result[ $post_type ] = (bool) smartcrawl_get_array_value( $input, $post_type );
 			}
 			foreach ( $post_type_names as $post_type ) {
-				$result["l{$post_type}"] = (boolean) smartcrawl_get_array_value( $input, "l{$post_type}" );
+				$result[ 'l' . $post_type ] = (bool) smartcrawl_get_array_value( $input, "l{$post_type}" );
 			}
 			foreach ( get_taxonomies() as $taxonomy ) {
-				$tax = get_taxonomy( $taxonomy );
-				$key = strtolower( $tax->labels->name );
-				$result["l{$key}"] = (boolean) smartcrawl_get_array_value( $input, "l{$key}" );
+				$tax                  = get_taxonomy( $taxonomy );
+				$key                  = strtolower( $tax->labels->name );
+				$result[ 'l' . $key ] = (bool) smartcrawl_get_array_value( $input, "l{$key}" );
 			}
 
 			// Numerics.
@@ -138,14 +122,14 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 
 			// Custom keywords, they need newlines.
 			if ( isset( $input['customkey'] ) ) {
-				$str = wp_check_invalid_utf8( $input['customkey'] );
-				$str = wp_pre_kses_less_than( $str );
-				$str = wp_strip_all_tags( $str );
+				$str                 = wp_check_invalid_utf8( $input['customkey'] );
+				$str                 = wp_pre_kses_less_than( $str );
+				$str                 = wp_strip_all_tags( $str );
 				$result['customkey'] = $str;
 
 				$found = false;
 				while ( preg_match( '/%[a-f0-9]{2}/i', $str, $match ) ) {
-					$str = str_replace( $match[0], '', $str );
+					$str   = str_replace( $match[0], '', $str );
 					$found = true;
 				}
 				if ( $found ) {
@@ -163,30 +147,35 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	 * @param array $input Raw input.
 	 */
 	private function validate_and_save_redirection_options( $input ) {
-		$settings = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
+		$settings                      = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
 		$settings['redirections-code'] = (int) $input['redirections-code'];
 		Smartcrawl_Settings::update_specific_options( 'wds_settings_options', $settings );
 	}
 
+	/**
+	 * Validate and save robots options.
+	 *
+	 * @param array $input Input.
+	 *
+	 * @return void
+	 */
 	private function validate_and_save_robots_options( $input ) {
 		$robots_options = Smartcrawl_Settings::get_specific_options( 'wds_robots_options' );
 
 		$robots_options['sitemap_directive_disabled'] = ! empty( $input['sitemap_directive_disabled'] );
-		$robots_options['custom_sitemap_url'] = esc_url_raw( $input['custom_sitemap_url'] );
-		$robots_options['custom_directives'] = sanitize_textarea_field( $input['custom_directives'] );
+		$robots_options['custom_sitemap_url']         = esc_url_raw( $input['custom_sitemap_url'] );
+		$robots_options['custom_directives']          = sanitize_textarea_field( $input['custom_directives'] );
 
 		Smartcrawl_Settings::update_specific_options( 'wds_robots_options', $robots_options );
 	}
 
 	/**
-	 * Gets site service instance
+	 * Gets site service instance.
 	 *
 	 * @return object
 	 */
 	private function get_site_service() {
-		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
-
-		return $service;
+		return Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
 	}
 
 	/**
@@ -203,9 +192,10 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 				'nav_menu_item',
 				'attachment',
 			);
-			$raw = get_post_types( array(
-				'public' => true,
-			), 'objects' );
+			$raw        = get_post_types(
+				array( 'public' => true ),
+				'objects'
+			);
 			foreach ( $raw as $pt => $pto ) {
 				if ( in_array( $pt, $exclusions, true ) ) {
 					continue;
@@ -220,20 +210,17 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	}
 
 	/**
-	 * Initializes the admin pane
+	 * Initializes the admin pane.
 	 */
 	public function init() {
 		$this->option_name = 'wds_autolinks_options';
-		$this->name = Smartcrawl_Settings::COMP_AUTOLINKS;
-		$this->slug = Smartcrawl_Settings::TAB_AUTOLINKS;
-		$this->action_url = admin_url( 'options.php' );
-		$this->page_title = __( 'SmartCrawl Wizard: Advanced Tools', 'wds' );
+		$this->name        = Smartcrawl_Settings::COMP_AUTOLINKS;
+		$this->slug        = Smartcrawl_Settings::TAB_AUTOLINKS;
+		$this->action_url  = admin_url( 'options.php' );
+		$this->page_title  = __( 'SmartCrawl Wizard: Advanced Tools', 'wds' );
 
 		add_action( 'wp_ajax_wds-load_exclusion-post_data', array( $this, 'json_load_post' ) );
-		add_action( 'wp_ajax_wds-load_exclusion_posts-posts_data-specific', array(
-			$this,
-			'json_load_posts_specific',
-		) );
+		add_action( 'wp_ajax_wds-load_exclusion_posts-posts_data-specific', array( $this, 'json_load_posts_specific' ) );
 		add_action( 'wp_ajax_wds-load_exclusion_posts-posts_data-paged', array( $this, 'json_load_posts_paged' ) );
 		add_action( 'admin_init', array( $this, 'reset_moz_api_credentials' ) );
 		add_action( 'admin_init', array( $this, 'deactivate_components' ) );
@@ -241,20 +228,25 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 		parent::init();
 	}
 
+	/**
+	 * Get the title.
+	 *
+	 * @return string
+	 */
 	public function get_title() {
 		return __( 'Advanced Tools', 'wds' );
 	}
 
 	/**
-	 * Resets Moz API creds
+	 * Resets Moz API creds.
 	 *
 	 * TODO: probably need to move this to the same location as save_moz_api_credentials
 	 */
 	public function reset_moz_api_credentials() {
 		$post_data = $this->get_request_data();
 		if ( isset( $post_data['reset-moz-credentials'] ) ) { // Just a presence flag.
-			$options = self::get_specific_options( 'wds_settings_options' );
-			$options['access-id'] = '';
+			$options               = self::get_specific_options( 'wds_settings_options' );
+			$options['access-id']  = '';
 			$options['secret-key'] = '';
 			self::update_specific_options( 'wds_settings_options', $options );
 
@@ -263,8 +255,13 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 		}
 	}
 
+	/**
+	 * Deactivate components.
+	 *
+	 * @return void
+	 */
 	public function deactivate_components() {
-		$data = isset( $_POST['_wpnonce'] ) && wp_verify_nonce( $_POST['_wpnonce'], $this->option_name . '-options' )
+		$data = isset( $_POST['_wpnonce'] ) && wp_verify_nonce( $_POST['_wpnonce'], $this->option_name . '-options' ) // phpcs:ignore
 			? stripslashes_deep( $_POST )
 			: array();
 
@@ -289,7 +286,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	 */
 	public function json_load_post() {
 		$post_data = $this->get_request_data();
-		$result = array(
+		$result    = array(
 			'id'    => 0,
 			'title' => '',
 			'type'  => '',
@@ -310,7 +307,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 			wp_send_json( $result );
 		}
 
-		wp_send_json( $this->_post_to_response_data( $post ) );
+		wp_send_json( $this->post_to_response_data( $post ) );
 	}
 
 	/**
@@ -320,7 +317,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	 *
 	 * @return array Post response hash
 	 */
-	private function _post_to_response_data( $post ) {
+	private function post_to_response_data( $post ) {
 		$result = array(
 			'id'    => 0,
 			'title' => '',
@@ -336,11 +333,11 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 			$date_format = get_option( 'date_format' );
 		}
 
-		$post_id = $post->ID;
-		$result['id'] = $post_id;
+		$post_id         = $post->ID;
+		$result['id']    = $post_id;
 		$result['title'] = get_the_title( $post_id );
-		$result['type'] = get_post_type( $post_id );
-		$result['date'] = get_post_time( $date_format, false, $post_id );
+		$result['type']  = get_post_type( $post_id );
+		$result['date']  = get_post_time( $date_format, false, $post_id );
 
 		return $result;
 	}
@@ -352,7 +349,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	 */
 	public function json_load_posts_specific() {
 		$post_data = $this->get_request_data();
-		$result = array(
+		$result    = array(
 			'meta'  => array(),
 			'posts' => array(),
 		);
@@ -384,7 +381,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 		);
 
 		foreach ( $query->posts as $post ) {
-			$result['posts'][] = $this->_post_to_response_data( $post );
+			$result['posts'][] = $this->post_to_response_data( $post );
 		}
 
 		wp_send_json_success( $result );
@@ -396,8 +393,8 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	 * Outputs AJAX response
 	 */
 	public function json_load_posts_paged() {
-		$request_data = isset( $_GET['_wds_nonce'] ) && wp_verify_nonce( $_GET['_wds_nonce'], 'wds-autolinks-nonce' ) ? $_GET : array();
-		$result = array(
+		$request_data = isset( $_GET['_wds_nonce'] ) && wp_verify_nonce( $_GET['_wds_nonce'], 'wds-autolinks-nonce' ) ? $_GET : array(); // phpcs:ignore
+		$result       = array(
 			'meta'  => array(),
 			'posts' => array(),
 		);
@@ -418,7 +415,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 		}
 		if ( ! empty( $request_data['page'] ) && is_numeric( $request_data['page'] ) ) {
 			$args['paged'] = (int) $request_data['page'];
-			$page = $args['paged'];
+			$page          = $args['paged'];
 		}
 
 		$query = new WP_Query( $args );
@@ -429,7 +426,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 		);
 
 		foreach ( $query->posts as $post ) {
-			$result['posts'][] = $this->_post_to_response_data( $post );
+			$result['posts'][] = $this->post_to_response_data( $post );
 		}
 
 		wp_send_json( $result );
@@ -445,14 +442,14 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 		$arguments['linkto'] = $this->get_linkto_keys();
 		$arguments['insert'] = $this->get_insert_keys();
 
-		$arguments['active_tab'] = $this->_get_active_tab( 'tab_automatic_linking' );
+		$arguments['active_tab'] = $this->get_active_tab( 'tab_automatic_linking' );
 
 		wp_enqueue_script( Smartcrawl_Controller_Assets::AUTOLINKS_PAGE_JS );
 
-		$arguments['already_exists'] = Smartcrawl_Controller_Robots::get()->file_exists();
+		$arguments['already_exists']  = Smartcrawl_Controller_Robots::get()->file_exists();
 		$arguments['rootdir_install'] = Smartcrawl_Controller_Robots::get()->is_rootdir_install();
 
-		$this->_render_page( 'advanced-tools/advanced-tools-settings', $arguments );
+		$this->render_page( 'advanced-tools/advanced-tools-settings', $arguments );
 	}
 
 	/**
@@ -493,55 +490,79 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 	}
 
 	/**
+	 * Get the request data.
+	 *
 	 * @return array
 	 */
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-autolinks-nonce' ) ? $_POST : array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-autolinks-nonce' ) // phpcs:ignore
+			? $_POST :
+			array();
 	}
 
+	/**
+	 * Get the insert options.
+	 *
+	 * @return array
+	 */
 	public function get_insert_options() {
 		$options = Smartcrawl_Settings::get_component_options( self::COMP_AUTOLINKS );
-		$result = array();
+		$result  = array();
 		foreach ( $this->get_insert_keys() as $key => $label ) {
 			$result[ $key ] = array(
 				'label' => $label,
-				'value' => empty( $options[ $key ] ) ? false : true,
+				'value' => ! empty( $options[ $key ] ),
 			);
 		}
 
 		return $result;
 	}
 
+	/**
+	 * Get the insert keys.
+	 *
+	 * @return array
+	 */
 	private function get_insert_keys() {
 		foreach ( self::get_post_types() as $post_type => $pt ) {
 			$key = strtolower( $pt->name );
 
-			$insert["{$key}"] = $pt->labels->name;
+			$insert[ $key ] = $pt->labels->name;
 		}
 		$insert['comment'] = __( 'Comments', 'wds' );
 
 		return $insert;
 	}
 
+	/**
+	 * Get link to options.
+	 *
+	 * @return array
+	 */
 	public function get_linkto_options() {
 		$options = Smartcrawl_Settings::get_component_options( self::COMP_AUTOLINKS );
-		$result = array();
+		$result  = array();
 
 		foreach ( $this->get_linkto_keys() as $key => $label ) {
 			$result[ $key ] = array(
 				'label' => $label,
-				'value' => empty( $options[ $key ] ) ? false : true,
+				'value' => ! empty( $options[ $key ] ),
 			);
 		}
 
 		return $result;
 	}
 
+	/**
+	 * Get link to keys.
+	 *
+	 * @return array
+	 */
 	private function get_linkto_keys() {
 		$post_types = array();
 		foreach ( self::get_post_types() as $post_type => $pt ) {
-			$key = strtolower( $pt->name );
-			$post_types["l{$key}"] = $pt->labels->name;
+			$key                      = strtolower( $pt->name );
+			$post_types[ 'l' . $key ] = $pt->labels->name;
 		}
 
 		$taxonomies = array();
@@ -550,7 +571,7 @@ class Smartcrawl_Autolinks_Settings extends Smartcrawl_Settings_Admin {
 				$tax = get_taxonomy( $taxonomy );
 				$key = strtolower( $tax->labels->name );
 
-				$taxonomies["l{$key}"] = $tax->labels->name;
+				$taxonomies[ 'l' . $key ] = $tax->labels->name;
 			}
 		}
 

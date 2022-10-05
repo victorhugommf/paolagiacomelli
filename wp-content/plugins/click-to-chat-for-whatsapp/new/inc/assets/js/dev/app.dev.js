@@ -480,7 +480,7 @@
             }
 
             // 3.specs - specs - if popup then add 'pop_window_features' else 'noopener'
-            var pop_window_features = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=750,height=400,left=100,top=100';
+            var pop_window_features = 'scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=788,height=514,left=100,top=100';
             var specs = ('popup' == url_target) ? pop_window_features : 'noopener';
             console.log('-- specs: ' + specs + ' --');
 

@@ -1,15 +1,8 @@
 <?php
 
 class Smartcrawl_Controller_Robots extends Smartcrawl_Base_Controller {
-	private static $_instance;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
+	use Smartcrawl_Singleton;
 
 	protected function init() {
 		add_action( 'template_redirect', array( $this, 'hook_robots' ), 999 );
@@ -29,9 +22,7 @@ class Smartcrawl_Controller_Robots extends Smartcrawl_Base_Controller {
 	}
 
 	public function robots_active() {
-		return $this->robots_enabled()
-		       && ! $this->file_exists()
-		       && $this->is_rootdir_install();
+		return $this->robots_enabled() && ! $this->file_exists() && $this->is_rootdir_install();
 	}
 
 	public function serve_robots_file() {
@@ -44,7 +35,7 @@ class Smartcrawl_Controller_Robots extends Smartcrawl_Base_Controller {
 	}
 
 	public function is_rootdir_install() {
-		$home_path = parse_url( home_url() );
+		$home_path = wp_parse_url( home_url() );
 		return empty( $home_path['path'] ) || '/' === $home_path['path'];
 	}
 
@@ -53,7 +44,7 @@ class Smartcrawl_Controller_Robots extends Smartcrawl_Base_Controller {
 			status_header( 200 );
 			header( 'Content-Type: text/plain; charset=UTF-8' );
 
-			die( $text );
+			die( $text ); // phpcs:ignore
 		}
 	}
 
@@ -62,8 +53,8 @@ class Smartcrawl_Controller_Robots extends Smartcrawl_Base_Controller {
 	}
 
 	public function get_final_sitemap_url() {
-		$options = $this->get_options();
-		$disabled = (boolean) smartcrawl_get_array_value( $options, 'sitemap_directive_disabled' );
+		$options  = $this->get_options();
+		$disabled = (bool) smartcrawl_get_array_value( $options, 'sitemap_directive_disabled' );
 		if ( $disabled ) {
 			return '';
 		}
@@ -84,7 +75,7 @@ class Smartcrawl_Controller_Robots extends Smartcrawl_Base_Controller {
 	}
 
 	public function get_custom_directives() {
-		$options = $this->get_options();
+		$options      = $this->get_options();
 		$option_value = smartcrawl_get_array_value( $options, 'custom_directives' );
 		if ( ! empty( $option_value ) ) {
 			return $option_value;

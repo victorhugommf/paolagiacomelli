@@ -9,37 +9,22 @@
  * Admin handling root class
  */
 class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
-	/**
-	 * Static instance
-	 *
-	 * @var self
-	 */
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
 
 	/**
 	 * Admin page handlers
 	 *
 	 * @var array
 	 */
-	private $_handlers = array();
-
-	/**
-	 * Static instance getter
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
+	private $handlers = array();
 
 	/**
 	 * Initializing method
 	 */
 	protected function init() {
 		// Set up dash.
-		// TODO: dash setup probably needs its own controller
+		// TODO: dash setup probably needs its own controller.
 		if ( file_exists( SMARTCRAWL_PLUGIN_DIR . 'external/dash/wpmudev-dash-notification.php' ) ) {
 			global $wpmudev_notices;
 			if ( ! is_array( $wpmudev_notices ) ) {
@@ -84,14 +69,14 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 			add_action( 'admin_notices', array( $this, 'blog_not_public_notice' ) );
 		}
 
-		$this->_handlers['dashboard'] = Smartcrawl_Settings_Dashboard::get_instance();
-		$this->_handlers['health'] = Smartcrawl_Health_Settings::get_instance();
-		$this->_handlers['onpage'] = Smartcrawl_Onpage_Settings::get_instance();
-		$this->_handlers['schema'] = Smartcrawl_Schema_Settings::get_instance();
-		$this->_handlers['social'] = Smartcrawl_Social_Settings::get_instance();
-		$this->_handlers['sitemap'] = Smartcrawl_Sitemap_Settings::get_instance();
-		$this->_handlers['autolinks'] = Smartcrawl_Autolinks_Settings::get_instance();
-		$this->_handlers['settings'] = Smartcrawl_Settings_Settings::get_instance();
+		$this->handlers['dashboard'] = Smartcrawl_Settings_Dashboard::get();
+		$this->handlers['health']    = Smartcrawl_Health_Settings::get();
+		$this->handlers['onpage']    = Smartcrawl_Onpage_Settings::get();
+		$this->handlers['schema']    = Smartcrawl_Schema_Settings::get();
+		$this->handlers['social']    = Smartcrawl_Social_Settings::get();
+		$this->handlers['sitemap']   = Smartcrawl_Sitemap_Settings::get();
+		$this->handlers['autolinks'] = Smartcrawl_Autolinks_Settings::get();
+		$this->handlers['settings']  = Smartcrawl_Settings_Settings::get();
 	}
 
 	/**
@@ -103,34 +88,62 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 	 * In response to "Unable to save options multiple times" bug.
 	 */
 	public function register_setting() {
-		register_setting( 'wds_settings_options', 'wds_settings_options', array(
-			$this->get_handler( 'settings' ),
-			'validate',
-		) );
-		register_setting( 'wds_sitemap_options', 'wds_sitemap_options', array(
-			$this->get_handler( 'sitemap' ),
-			'validate',
-		) );
-		register_setting( 'wds_onpage_options', 'wds_onpage_options', array(
-			$this->get_handler( 'onpage' ),
-			'validate',
-		) );
-		register_setting( 'wds_social_options', 'wds_social_options', array(
-			$this->get_handler( 'social' ),
-			'validate',
-		) );
-		register_setting( 'wds_schema_options', 'wds_schema_options', array(
-			$this->get_handler( 'schema' ),
-			'validate',
-		) );
-		register_setting( 'wds_autolinks_options', 'wds_autolinks_options', array(
-			$this->get_handler( 'autolinks' ),
-			'validate',
-		) );
-		register_setting( 'wds_redirections_options', 'wds_redirections_options', array(
-			$this->get_handler( 'redirections' ),
-			'validate',
-		) );
+		register_setting(
+			'wds_settings_options',
+			'wds_settings_options',
+			array(
+				$this->get_handler( 'settings' ),
+				'validate',
+			)
+		);
+		register_setting(
+			'wds_sitemap_options',
+			'wds_sitemap_options',
+			array(
+				$this->get_handler( 'sitemap' ),
+				'validate',
+			)
+		);
+		register_setting(
+			'wds_onpage_options',
+			'wds_onpage_options',
+			array(
+				$this->get_handler( 'onpage' ),
+				'validate',
+			)
+		);
+		register_setting(
+			'wds_social_options',
+			'wds_social_options',
+			array(
+				$this->get_handler( 'social' ),
+				'validate',
+			)
+		);
+		register_setting(
+			'wds_schema_options',
+			'wds_schema_options',
+			array(
+				$this->get_handler( 'schema' ),
+				'validate',
+			)
+		);
+		register_setting(
+			'wds_autolinks_options',
+			'wds_autolinks_options',
+			array(
+				$this->get_handler( 'autolinks' ),
+				'validate',
+			)
+		);
+		register_setting(
+			'wds_redirections_options',
+			'wds_redirections_options',
+			array(
+				$this->get_handler( 'redirections' ),
+				'validate',
+			)
+		);
 	}
 
 	/**
@@ -141,8 +154,8 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 	 * @return object Handler
 	 */
 	public function get_handler( $hndl ) {
-		return isset( $this->_handlers[ $hndl ] )
-			? $this->_handlers[ $hndl ]
+		return isset( $this->handlers[ $hndl ] )
+			? $this->handlers[ $hndl ]
 			: $this;
 	}
 
@@ -160,7 +173,7 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 		if ( ! is_admin_bar_showing() ) {
 			return false;
 		}
-		if ( ! apply_filters( 'wds-admin-ui-show_bar', true ) ) {
+		if ( ! apply_filters( 'wds-admin-ui-show_bar', true ) ) { // phpcs:ignore
 			return false;
 		}
 		// Do not show if only superadmin can view settings and the current user is not super admin.
@@ -172,13 +185,13 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 			return false;
 		}
 
-		// On single site don't show for non-admins
+		// On single site don't show for non-admins.
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return false;
 		}
 
 		$optional_nodes = array();
-		foreach ( $this->_handlers as $handler ) {
+		foreach ( $this->handlers as $handler ) {
 			if ( empty( $handler ) || empty( $handler->slug ) ) {
 				continue;
 			}
@@ -201,6 +214,11 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 		return true;
 	}
 
+	/**
+	 * @param $slug
+	 *
+	 * @return bool
+	 */
 	private function is_admin_bar_node_allowed( $slug ) {
 		if ( is_multisite() ) {
 			return Smartcrawl_Settings_Admin::is_tab_allowed( $slug );
@@ -209,6 +227,13 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 		return true;
 	}
 
+	/**
+	 * @param $id
+	 * @param $title
+	 * @param $slug
+	 *
+	 * @return array
+	 */
 	private function create_admin_bar_node( $id, $title, $slug = '' ) {
 		$node = array(
 			'id'    => $id,
@@ -245,7 +270,7 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 	 */
 	public function blog_not_public_notice() {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			return false;
+			return;
 		}
 
 		$message = sprintf(
@@ -262,7 +287,7 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 	 * Process message dismissal request
 	 */
 	public function smartcrawl_dismiss_message() {
-		$data = $this->get_request_data();
+		$data    = $this->get_request_data();
 		$message = sanitize_key( smartcrawl_get_array_value( $data, 'message' ) );
 		if ( null === $message ) {
 			wp_send_json_error();
@@ -270,25 +295,31 @@ class Smartcrawl_Admin extends Smartcrawl_Base_Controller {
 			return;
 		}
 
-		$dismissed_messages = get_user_meta( get_current_user_id(), 'wds_dismissed_messages', true );
-		$dismissed_messages = '' === $dismissed_messages ? array() : $dismissed_messages;
+		$dismissed_messages             = get_user_meta( get_current_user_id(), 'wds_dismissed_messages', true );
+		$dismissed_messages             = '' === $dismissed_messages ? array() : $dismissed_messages;
 		$dismissed_messages[ $message ] = true;
 		update_user_meta( get_current_user_id(), 'wds_dismissed_messages', $dismissed_messages );
 		wp_send_json_success();
 	}
 
 	/**
-	 * TODO: we should remove widgets from the wordpress dashboard making dashboard resources unnecessary
+	 * TODO: we should remove widgets from the WordPress dashboard making dashboard resources unnecessary.
 	 */
 	public function enqueue_dashboard_resources() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_dashboard_css' ) );
 	}
 
-	function enqueue_dashboard_css() {
+	/**
+	 * @return void
+	 */
+	public function enqueue_dashboard_css() {
 		wp_enqueue_style( Smartcrawl_Controller_Assets::WP_DASHBOARD_CSS );
 	}
 
+	/**
+	 * @return array|mixed
+	 */
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-admin-nonce' ) ? stripslashes_deep( $_POST ) : array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-admin-nonce' ) ? stripslashes_deep( $_POST ) : array(); // phpcs:ignore
 	}
 }

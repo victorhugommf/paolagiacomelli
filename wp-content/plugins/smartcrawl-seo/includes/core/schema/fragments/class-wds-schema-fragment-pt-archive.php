@@ -7,7 +7,13 @@ class Smartcrawl_Schema_Fragment_PT_Archive extends Smartcrawl_Schema_Fragment {
 	 * @var Smartcrawl_Schema_Utils
 	 */
 	private $utils;
+	/**
+	 * @var
+	 */
 	private $title;
+	/**
+	 * @var
+	 */
 	private $description;
 
 	/**
@@ -19,24 +25,29 @@ class Smartcrawl_Schema_Fragment_PT_Archive extends Smartcrawl_Schema_Fragment {
 	 * @param $description
 	 */
 	public function __construct( $post_type, $posts, $title, $description ) {
-		$this->post_type = $post_type;
-		$this->posts = $posts;
-		$this->title = $title;
+		$this->post_type   = $post_type;
+		$this->posts       = $posts;
+		$this->title       = $title;
 		$this->description = $description;
-		$this->utils = Smartcrawl_Schema_Utils::get();
+		$this->utils       = Smartcrawl_Schema_Utils::get();
 	}
 
+	/**
+	 * @return array|mixed|Smartcrawl_Schema_Fragment_Archive
+	 */
 	protected function get_raw() {
-		$enabled = (bool) $this->utils->get_schema_option( 'schema_enable_post_type_archives' );
-		$disabled = (bool) $this->utils->get_schema_option( array(
-			'schema_disabled_post_type_archives',
-			$this->post_type->name,
-		) );
+		$enabled                = (bool) $this->utils->get_schema_option( 'schema_enable_post_type_archives' );
+		$disabled               = (bool) $this->utils->get_schema_option(
+			array(
+				'schema_disabled_post_type_archives',
+				$this->post_type->name,
+			)
+		);
 		$post_type_archive_link = get_post_type_archive_link( $this->post_type->name );
 
 		if ( $enabled && ! $disabled ) {
 			return new Smartcrawl_Schema_Fragment_Archive(
-				"CollectionPage",
+				'CollectionPage',
 				$post_type_archive_link,
 				$this->posts,
 				$this->title,

@@ -3,8 +3,6 @@
     // ready
     $(function () {
 
-        console.log('greetings.js');
-
         if (document.querySelector('.pr_greetings_template')) {
             try {
                 greetings_template();
@@ -24,6 +22,12 @@
 
             var greetings_template = $('.pr_greetings_template select').find(":selected").val();
 
+            if (greetings_template == 'no' || '' == greetings_template) {
+                $('.ctc_g_content').hide();
+            } else {
+                $('.ctc_g_content').show();
+            }
+            
             // greetings-1
             if (greetings_template == 'greetings-1') {
                 $('.ctc_greetings_settings.ctc_g_1').show();
@@ -48,9 +52,12 @@
 
                 // ctc_greetings_settings 
                 if (greetings_template == 'no') {
-                    $(" .ctc_greetings_settings").hide(100);
+                    $('.ctc_g_content').hide(100);
+                    $(" .ctc_greetings_settings").hide();
                 } else {
                     // $(" ." + greetings_template).show(100);
+                    
+                    $('.ctc_g_content').show();
 
                     // if not no - then first hide all and again display required fields..
                     $(" .ctc_greetings_settings").hide();

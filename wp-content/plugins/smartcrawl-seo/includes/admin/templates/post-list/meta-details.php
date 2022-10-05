@@ -1,5 +1,5 @@
 <?php
-$post = empty( $post ) ? null : $post;
+$post = empty( $post ) ? null : $post; // phpcs:ignore
 if ( ! $post ) {
 	return;
 }
@@ -8,19 +8,17 @@ if ( ! $smartcrawl_post ) {
 	return;
 }
 
-$title = $smartcrawl_post->get_meta_title();
-$title_length = mb_strlen( trim( $title ) );
-$title_tag_class = $title_length >= smartcrawl_title_min_length()
-                   && $title_length <= smartcrawl_title_max_length() ? 'wds-tag-success' : 'wds-tag-warning';
+$title           = $smartcrawl_post->get_meta_title(); // phpcs:ignore
+$title_length    = mb_strlen( trim( $title ) );
+$title_tag_class = $title_length >= smartcrawl_title_min_length() && $title_length <= smartcrawl_title_max_length() ? 'wds-tag-success' : 'wds-tag-warning';
 
-$metadesc = $smartcrawl_post->get_meta_description();
-$metadesc_length = mb_strlen( trim( $metadesc ) );
-$metadesc_tag_class = $metadesc_length >= smartcrawl_metadesc_min_length()
-                      && $metadesc_length <= smartcrawl_metadesc_max_length() ? 'wds-tag-success' : 'wds-tag-warning';
+$metadesc           = $smartcrawl_post->get_meta_description();
+$metadesc_length    = mb_strlen( trim( $metadesc ) );
+$metadesc_tag_class = $metadesc_length >= smartcrawl_metadesc_min_length() && $metadesc_length <= smartcrawl_metadesc_max_length() ? 'wds-tag-success' : 'wds-tag-warning';
 
-$of = esc_html__( 'of', 'wds' );
-$title_min = smartcrawl_title_min_length();
-$title_max = smartcrawl_title_max_length();
+$of           = esc_html__( 'of', 'wds' );
+$title_min    = smartcrawl_title_min_length();
+$title_max    = smartcrawl_title_max_length();
 $metadesc_min = smartcrawl_metadesc_min_length();
 $metadesc_max = smartcrawl_metadesc_max_length();
 ?>
@@ -35,7 +33,7 @@ $metadesc_max = smartcrawl_metadesc_max_length();
 	</strong>
 
 	<div class="wds-meta-details-inner hidden">
-		<?php if ( $title ): ?>
+		<?php if ( $title ) : ?>
 			<div>
 				<strong>
 					<?php esc_html_e( 'Title', 'wds' ); ?>
@@ -47,7 +45,7 @@ $metadesc_max = smartcrawl_metadesc_max_length();
 			</div>
 		<?php endif; ?>
 
-		<?php if ( $metadesc ): ?>
+		<?php if ( $metadesc ) : ?>
 			<div>
 				<strong>
 					<?php esc_html_e( 'Description', 'wds' ); ?>

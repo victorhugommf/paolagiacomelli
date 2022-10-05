@@ -1,22 +1,22 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of mappings
 
 return array(
 	/**
 	 * YOAST > GENERAL
 	 */
-	// Features
+	// Features.
 	'wpseo/keyword_analysis_active'            => 'wds_settings_options/analysis-seo',
 	'wpseo/content_analysis_active'            => 'wds_settings_options/analysis-readability',
 	'wpseo/enable_xml_sitemap'                 => 'wds_settings_options/sitemap',
 	'wpseo/enable_admin_bar_menu'              => 'wds_settings_options/extras-admin_bar',
-	//Webmaster Tools
+	// Webmaster Tools.
 	'wpseo/googleverify'                       => 'wds_sitemap_options/verification-google-meta',
 	'wpseo/msverify'                           => 'wds_sitemap_options/verification-bing-meta',
 
 	/**
 	 * YOAST > SEARCH APPEARANCE
 	 */
-	// General
+	// General.
 	'wpseo_titles/separator'                   => 'wds_onpage_options/preset-separator',
 	'wpseo_titles/title-home-wpseo'            => 'wds_onpage_options/title-home',
 	'wpseo_titles/metadesc-home-wpseo'         => 'wds_onpage_options/metadesc-home',
@@ -25,17 +25,17 @@ return array(
 	'wpseo_titles/company_or_person'           => 'wds_social_options/schema_type',
 	'wpseo_titles/person_name'                 => 'wds_social_options/override_name',
 	'wpseo_titles/website_name'                => 'wds_social_options/sitename',
-	// Content types
+	// Content types.
 	'wpseo_titles/noindex-POSTTYPE'            => false,
 	'wpseo_titles/title-POSTTYPE'              => 'wds_onpage_options/title-POSTTYPE',
 	'wpseo_titles/metadesc-POSTTYPE'           => 'wds_onpage_options/metadesc-POSTTYPE',
-	// Media
+	// Media.
 	'wpseo_titles/disable-attachment'          => 'wds_autolinks_options/redirect-attachments',
-	// Taxonomies
+	// Taxonomies.
 	'wpseo_titles/noindex-tax-TAXONOMY'        => false,
 	'wpseo_titles/title-tax-TAXONOMY'          => 'wds_onpage_options/title-TAXONOMY',
 	'wpseo_titles/metadesc-tax-TAXONOMY'       => 'wds_onpage_options/metadesc-TAXONOMY',
-	// Archives
+	// Archives.
 	'wpseo_titles/disable-author'              => '!wds_onpage_options/enable-author-archive',
 	'wpseo_titles/noindex-author-wpseo'        => 'wds_onpage_options/meta_robots-noindex-author',
 	'wpseo_titles/title-author-wpseo'          => 'wds_onpage_options/title-author',
@@ -50,7 +50,7 @@ return array(
 	'wpseo_titles/metadesc-ptarchive-POSTTYPE' => false,
 
 	/**
-	 * YOAST > SOCIAL
+	 * YOAST > SOCIAL.
 	 */
 	'wpseo_social/facebook_site'               => 'wds_social_options/facebook_url',
 	'wpseo_social/instagram_url'               => 'wds_social_options/instagram_url',

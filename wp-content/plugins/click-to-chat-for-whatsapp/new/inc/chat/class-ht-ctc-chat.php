@@ -291,6 +291,7 @@ class HT_CTC_Chat {
                 $on = "on=\"tap:AMP.navigateTo(url='$wame_link', target='_blank', opener='')\"";
 
                 wp_deregister_script( 'ht_ctc_app_js' );
+                wp_deregister_script( 'ht_ctc_woo_js' );
             }
         }
         
@@ -310,8 +311,6 @@ class HT_CTC_Chat {
         
         /**
          * ctc
-         * 
-         * v - plugin version
          */
         $ctc = array(
 

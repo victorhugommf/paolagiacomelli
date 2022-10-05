@@ -1,12 +1,16 @@
 <?php
 
 class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
-	const NOINDEX_KEY_FORMAT = 'meta_robots-noindex-%s';
-	const NOFOLLOW_KEY_FORMAT = 'meta_robots-nofollow-%s';
+
+	const NOINDEX_KEY_FORMAT          = 'meta_robots-noindex-%s';
+
+	const NOFOLLOW_KEY_FORMAT         = 'meta_robots-nofollow-%s';
+
 	const SUBSEQUENT_PAGES_KEY_FORMAT = 'meta_robots-%s-subsequent_pages';
 
 	/**
 	 * The value to display in the robots tag
+	 *
 	 * @var string
 	 */
 	private $value;
@@ -26,8 +30,8 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 
 		global $paged;
 
-		$noindex = $this->is_noindex( 'main_blog_archive' ) ? 'noindex' : 'index';
-		$nofollow = $this->is_nofollow( 'main_blog_archive' ) ? 'nofollow' : 'follow';
+		$noindex               = $this->is_noindex( 'main_blog_archive' ) ? 'noindex' : 'index';
+		$nofollow              = $this->is_nofollow( 'main_blog_archive' ) ? 'nofollow' : 'follow';
 		$subsequent_pages_only = $this->is_active_on_subsequent_pages( 'main_blog_archive' );
 
 		$this->value = ! $subsequent_pages_only || $paged > 1
@@ -38,7 +42,7 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	private function is_noindex( $place ) {
 		$options = $this->get_options();
 
-		return (boolean) smartcrawl_get_array_value(
+		return (bool) smartcrawl_get_array_value(
 			$options,
 			sprintf( self::NOINDEX_KEY_FORMAT, $place )
 		);
@@ -51,7 +55,7 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	private function is_nofollow( $place ) {
 		$options = $this->get_options();
 
-		return (boolean) smartcrawl_get_array_value(
+		return (bool) smartcrawl_get_array_value(
 			$options,
 			sprintf( self::NOFOLLOW_KEY_FORMAT, $place )
 		);
@@ -60,7 +64,7 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	private function is_active_on_subsequent_pages( $place ) {
 		$options = $this->get_options();
 
-		return (boolean) smartcrawl_get_array_value(
+		return (bool) smartcrawl_get_array_value(
 			$options,
 			sprintf( self::SUBSEQUENT_PAGES_KEY_FORMAT, $place )
 		);
@@ -75,7 +79,7 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	public function handle_search() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
-		$noindex = $this->is_noindex( 'search' ) ? 'noindex' : 'index';
+		$noindex  = $this->is_noindex( 'search' ) ? 'noindex' : 'index';
 		$nofollow = $this->is_nofollow( 'search' ) ? 'nofollow' : 'follow';
 
 		$this->value = "{$noindex},{$nofollow}";
@@ -83,13 +87,11 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 
 	public function handle_404() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
 		// TODO: Implement handle_404() method.
 	}
 
 	public function handle_archive() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
 		// TODO: Implement handle_archive() method.
 	}
 
@@ -102,8 +104,8 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 		if ( empty( $options['enable-date-archive'] ) ) {
 			$this->value = 'noindex,follow';
 		} else {
-			$noindex = $this->is_noindex( 'date' ) ? 'noindex' : 'index';
-			$nofollow = $this->is_nofollow( 'date' ) ? 'nofollow' : 'follow';
+			$noindex               = $this->is_noindex( 'date' ) ? 'noindex' : 'index';
+			$nofollow              = $this->is_nofollow( 'date' ) ? 'nofollow' : 'follow';
 			$subsequent_pages_only = $this->is_active_on_subsequent_pages( 'date' );
 
 			$this->value = ! $subsequent_pages_only || $paged > 1
@@ -116,11 +118,11 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
 		global $paged;
-		$post_type = get_queried_object();
+		$post_type         = get_queried_object();
 		$archive_post_type = 'pt-archive-' . $post_type->name;
 
-		$noindex = $this->is_noindex( $archive_post_type ) ? 'noindex' : 'index';
-		$nofollow = $this->is_nofollow( $archive_post_type ) ? 'nofollow' : 'follow';
+		$noindex               = $this->is_noindex( $archive_post_type ) ? 'noindex' : 'index';
+		$nofollow              = $this->is_nofollow( $archive_post_type ) ? 'nofollow' : 'follow';
 		$subsequent_pages_only = $this->is_active_on_subsequent_pages( $archive_post_type );
 
 		$this->value = ! $subsequent_pages_only || $paged > 1
@@ -132,12 +134,12 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
 		global $paged;
-		$term = get_queried_object();
+		$term     = get_queried_object();
 		$taxonomy = $term->taxonomy;
 
 		$noindex_in_settings = $this->is_noindex( $taxonomy );
-		$noindex_overridden = (bool) smartcrawl_get_term_meta( $term, $taxonomy, 'wds_override_noindex' );
-		$noindex_in_meta = (bool) smartcrawl_get_term_meta( $term, $taxonomy, 'wds_noindex' );
+		$noindex_overridden  = (bool) smartcrawl_get_term_meta( $term, $taxonomy, 'wds_override_noindex' );
+		$noindex_in_meta     = (bool) smartcrawl_get_term_meta( $term, $taxonomy, 'wds_noindex' );
 		if ( $noindex_in_settings ) {
 			$noindex = ! $noindex_overridden;
 		} else {
@@ -145,16 +147,16 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 		}
 
 		$nofollow_in_settings = $this->is_nofollow( $taxonomy );
-		$nofollow_overridden = (bool) smartcrawl_get_term_meta( $term, $taxonomy, 'wds_override_nofollow' );
-		$nofollow_in_meta = (bool) smartcrawl_get_term_meta( $term, $taxonomy, 'wds_nofollow' );
+		$nofollow_overridden  = (bool) smartcrawl_get_term_meta( $term, $taxonomy, 'wds_override_nofollow' );
+		$nofollow_in_meta     = (bool) smartcrawl_get_term_meta( $term, $taxonomy, 'wds_nofollow' );
 		if ( $nofollow_in_settings ) {
 			$nofollow = ! $nofollow_overridden;
 		} else {
 			$nofollow = $nofollow_in_meta;
 		}
 
-		$noindex_string = $noindex ? 'noindex' : 'index';
-		$nofollow_string = $nofollow ? 'nofollow' : 'follow';
+		$noindex_string        = $noindex ? 'noindex' : 'index';
+		$nofollow_string       = $nofollow ? 'nofollow' : 'follow';
 		$subsequent_pages_only = $this->is_active_on_subsequent_pages( $taxonomy );
 
 		$this->value = ! $subsequent_pages_only || $paged > 1
@@ -170,8 +172,8 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 		if ( empty( $options['enable-author-archive'] ) ) {
 			$this->value = 'noindex,follow';
 		} else {
-			$noindex = $this->is_noindex( 'author' ) ? 'noindex' : 'index';
-			$nofollow = $this->is_nofollow( 'author' ) ? 'nofollow' : 'follow';
+			$noindex               = $this->is_noindex( 'author' ) ? 'noindex' : 'index';
+			$nofollow              = $this->is_nofollow( 'author' ) ? 'nofollow' : 'follow';
 			$subsequent_pages_only = $this->is_active_on_subsequent_pages( 'author' );
 
 			$this->value = ! $subsequent_pages_only || $paged > 1
@@ -183,7 +185,7 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	public function handle_bp_groups() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
-		$noindex = $this->is_noindex( 'bp_groups' ) ? 'noindex' : 'index';
+		$noindex  = $this->is_noindex( 'bp_groups' ) ? 'noindex' : 'index';
 		$nofollow = $this->is_nofollow( 'bp_groups' ) ? 'nofollow' : 'follow';
 
 		$this->value = "{$noindex},{$nofollow}";
@@ -192,7 +194,7 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	public function handle_bp_profile() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
-		$noindex = $this->is_noindex( 'bp_profile' ) ? 'noindex' : 'index';
+		$noindex  = $this->is_noindex( 'bp_profile' ) ? 'noindex' : 'index';
 		$nofollow = $this->is_nofollow( 'bp_profile' ) ? 'nofollow' : 'follow';
 
 		$this->value = "{$noindex},{$nofollow}";
@@ -224,7 +226,7 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 			}
 		}
 
-		$post_id = $post->ID;
+		$post_id  = $post->ID;
 		$robots[] = $this->is_singular_noindex( $post_id ) ? 'noindex' : 'index';
 		$robots[] = $this->is_singular_nofollow( $post_id ) ? 'nofollow' : 'follow';
 
@@ -237,16 +239,15 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function is_woo_product( $post ) {
-		return smartcrawl_woocommerce_active()
-		       && $post->post_type === 'product';
+		return smartcrawl_woocommerce_active() && 'product' === $post->post_type;
 	}
 
 	private function get_woo_product_robots( $post ) {
-		$data = new Smartcrawl_Woocommerce_Data();
-		$woo_options = $data->get_options();
-		$woo_enabled = smartcrawl_get_array_value( $woo_options, 'woocommerce_enabled' );
+		$data                    = new Smartcrawl_Woocommerce_Data();
+		$woo_options             = $data->get_options();
+		$woo_enabled             = smartcrawl_get_array_value( $woo_options, 'woocommerce_enabled' );
 		$noindex_hidden_products = smartcrawl_get_array_value( $woo_options, 'noindex_hidden_products' );
-		$product = wc_get_product( $post );
+		$product                 = wc_get_product( $post );
 		if (
 			$woo_enabled
 			&& $noindex_hidden_products
@@ -260,18 +261,18 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function is_singular_noindex( $post_id ) {
-		// Check if a comment page
+		// Check if a comment page.
 		$current_comments_page = (int) get_query_var( 'cpage' );
 		if ( $current_comments_page ) {
 			return true;
 		}
 
-		// Check at post type level
+		// Check at post type level.
 		$post_type_noindexed = $this->is_noindex( get_post_type( $post_id ) );
 
-		// Check at post level
-		$index = (boolean) smartcrawl_get_value( 'meta-robots-index', $post_id );
-		$noindex = (boolean) smartcrawl_get_value( 'meta-robots-noindex', $post_id );
+		// Check at post level.
+		$index   = (bool) smartcrawl_get_value( 'meta-robots-index', $post_id );
+		$noindex = (bool) smartcrawl_get_value( 'meta-robots-noindex', $post_id );
 
 		if ( $post_type_noindexed ) {
 			return ! $index;
@@ -281,12 +282,12 @@ class Smartcrawl_Robots_Value_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function is_singular_nofollow( $post_id ) {
-		// Check at post type level
+		// Check at post type level.
 		$post_type_nofollowed = $this->is_nofollow( get_post_type( $post_id ) );
 
-		// Check at post level
-		$follow = (boolean) smartcrawl_get_value( 'meta-robots-follow', $post_id );
-		$nofollow = (boolean) smartcrawl_get_value( 'meta-robots-nofollow', $post_id );
+		// Check at post level.
+		$follow   = (bool) smartcrawl_get_value( 'meta-robots-follow', $post_id );
+		$nofollow = (bool) smartcrawl_get_value( 'meta-robots-nofollow', $post_id );
 
 		if ( $post_type_nofollowed ) {
 			return ! $follow;

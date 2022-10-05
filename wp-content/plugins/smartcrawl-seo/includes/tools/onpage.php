@@ -5,7 +5,7 @@
  * Smartcrawl_OnPage::smartcrawl_title(), Smartcrawl_OnPage::smartcrawl_head(), Smartcrawl_OnPage::smartcrawl_metadesc()
  * inspired by WordPress SEO by Joost de Valk (http://yoast.com/wordpress/seo/).
  *
- * @package wpmu-dev-seo
+ * @package Smartcrawl
  */
 
 /**
@@ -13,37 +13,30 @@
  */
 class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 
-	/**
-	 * Static instance
-	 *
-	 * @var Smartcrawl_OnPage
-	 */
-	private static $_instance;
+	use Smartcrawl_Singleton;
 
 	/**
-	 * @var Smartcrawl_Entity
+	 * Queried entity.
+	 *
+	 * @var Smartcrawl_Entity $queried_entity
 	 */
 	private $queried_entity;
 
 	/**
-	 * Static instance getter
+	 * Is module active?
+	 *
+	 * @return bool
 	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 	public function is_onpage_module_active() {
-		return Smartcrawl_Settings::get_setting( 'onpage' )
-		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE )
-		       && $this->run_on_simplepress();
+		return (
+			Smartcrawl_Settings::get_setting( 'onpage' ) &&
+			Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE ) &&
+			$this->run_on_simplepress()
+		);
 	}
 
 	/**
-	 * Binds processing actions
+	 * Binds processing actions.
 	 */
 	protected function init() {
 		$options = Smartcrawl_Settings::get_options();
@@ -61,7 +54,7 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		if ( ! $this->is_onpage_module_active() ) {
 			add_action( 'wp_head', array( $this, 'smartcrawl_head_extras' ), 10, 1 );
 
-			// The rest is only supposed to work when the onpage module is active
+			// The rest is only supposed to work when the onpage module is active.
 			return;
 		}
 
@@ -72,8 +65,8 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		// wp_title isn't enough. We'll do it anyway: suspenders and belt approach.
 		add_filter( 'wp_title', array( $this, 'smartcrawl_title' ), 100, 3 );
 
-		// For newer themes using wp_get_document_title()
-		// TODO: instead of pre_get_document_title use the document_title filter so that if our value is empty we can let the original title get printed
+		// For newer themes using wp_get_document_title().
+		// TODO: instead of pre_get_document_title use the document_title filter so that if our value is empty we can let the original title get printed.
 		add_filter( 'pre_get_document_title', array( $this, 'smartcrawl_title' ), 100 );
 
 		// Buffer the header output and process it instead.
@@ -85,13 +78,14 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		add_filter( 'bp_page_title', array( $this, 'smartcrawl_title' ), 10, 3 );
 
 		if ( $this->wp_robots_api_available() ) {
-			remove_filter( 'wp_robots', 'wp_robots_noindex_search' ); // SmartCrawl is going to handle the search archive
+			remove_filter( 'wp_robots', 'wp_robots_noindex_search' ); // SmartCrawl is going to handle the search archive.
 			add_filter( 'wp_robots', array( $this, 'add_smartcrawl_robots_to_wp_robots' ) );
 		}
 	}
 
 	/**
 	 * Can't fully handle SimplePress installs properly.
+	 *
 	 * For non-forum pages, do our thing all the way.
 	 * For forum pages, do nothing.
 	 */
@@ -110,6 +104,7 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 
 	/**
 	 * Starts buffering the header.
+	 *
 	 * The buffer output will be used to replace the title.
 	 */
 	public function smartcrawl_start_title_buffer() {
@@ -130,9 +125,9 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 			return $head;
 		}
 
-		$title_rx = '<title[^>]*?>.*?' . preg_quote( '</title>' );
-		$head_rx = '<head [^>]*? >';
-		$head = preg_replace( '/\n/', '__SMARTCRAWL_NL__', $head );
+		$title_rx = '<title[^>]*?>.*?' . preg_quote( '</title>', null );
+		$head_rx  = '<head [^>]*? >';
+		$head     = preg_replace( '/\n/', '__SMARTCRAWL_NL__', $head );
 		// Dollar signs throw off replacement...
 		$title = preg_replace( '/\$/', '__SMARTCRAWL_DOLLAR__', $this->smartcrawl_title( '' ) ); // ... so temporarily escape them, then
 		// Make sure we're replacing TITLE that's actually in the HEAD.
@@ -143,10 +138,16 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		return preg_replace( '/__SMARTCRAWL_NL__/', "\n", preg_replace( '/__SMARTCRAWL_DOLLAR__/', '\$', $head ) );
 	}
 
+	/**
+	 * Get queried entity.
+	 *
+	 * @return Smartcrawl_Entity
+	 */
 	private function get_queried_entity() {
 		if ( ! $this->queried_entity ) {
 			$this->queried_entity = Smartcrawl_Endpoint_Resolver::resolve()->get_queried_entity();
 		}
+
 		return $this->queried_entity;
 	}
 
@@ -159,8 +160,9 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 	 */
 	public function smartcrawl_title( $title ) {
 		$entity = $this->get_queried_entity();
+
 		return $entity
-			? esc_html( strip_tags( stripslashes( $entity->get_meta_title() ) ) )
+			? esc_html( wp_strip_all_tags( stripslashes( $entity->get_meta_title() ) ) )
 			: $title;
 	}
 
@@ -185,42 +187,57 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		$this->head_end();
 	}
 
+	/**
+	 * Extra items for head.
+	 *
+	 * @return void
+	 */
 	public function smartcrawl_head_extras() {
 		$this->head_start();
 		$this->print_meta_tags();
 		$this->head_end();
 	}
 
+	/**
+	 * Print html tag.
+	 *
+	 * @param string $html HTML content.
+	 *
+	 * @return bool
+	 */
 	private function print_html_tag( $html ) {
 		if ( ! preg_match( '/\<(link|meta)/', $html ) ) {
 			// Do not allow plaintext output.
 			return false;
 		}
-		echo wp_kses( $html, array(
-			'meta' => array(
-				'name'       => array(),
-				'content'    => array(),
-				'http-equiv' => array(),
-				'charset'    => array(),
-				'scheme'     => array(),
-			),
-			'link' => array(
-				'charset'         => array(),
-				'crossorigin'     => array(),
-				'use-credentials' => array(),
-				'href'            => array(),
-				'hreflang'        => array(),
-				'media'           => array(),
-				'rel'             => array(),
-				'stylesheet'      => array(),
-				'rev'             => array(),
-				'sizes'           => array(),
-				'any'             => array(),
-				'target'          => array(),
-				'frame_name'      => array(),
-				'type'            => array(),
-			),
-		) );
+		echo wp_kses(
+			$html,
+			array(
+				'meta' => array(
+					'name'       => array(),
+					'content'    => array(),
+					'http-equiv' => array(),
+					'charset'    => array(),
+					'scheme'     => array(),
+				),
+				'link' => array(
+					'charset'         => array(),
+					'crossorigin'     => array(),
+					'use-credentials' => array(),
+					'href'            => array(),
+					'hreflang'        => array(),
+					'media'           => array(),
+					'rel'             => array(),
+					'stylesheet'      => array(),
+					'rev'             => array(),
+					'sizes'           => array(),
+					'any'             => array(),
+					'target'          => array(),
+					'frame_name'      => array(),
+					'type'            => array(),
+				),
+			)
+		);
 
 		return true;
 	}
@@ -235,7 +252,7 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 			$active_handlers = array();
 		}
 		if ( count( $active_handlers ) > 0 ) {
-			$offset = count( $active_handlers ) - 1;
+			$offset  = count( $active_handlers ) - 1;
 			$handler = ! empty( $active_handlers[ $offset ] ) && is_string( $active_handlers[ $offset ] )
 				? trim( $active_handlers[ $offset ] )
 				: '';
@@ -252,11 +269,11 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 	 */
 	private function smartcrawl_canonical() {
 		if (
-			function_exists( 'bp_is_blog_page' ) // If we have BuddyPress ...
+			function_exists( 'bp_is_blog_page' ) // If we have BuddyPress.
 			&& // ... and
 			! ( bp_is_blog_page() || is_404() ) // ... we're on a BP page.
 		) {
-			// Because apparently BP prints it's own canonical URLs
+			// Because apparently BP prints it's own canonical URLs.
 			return false;
 		}
 
@@ -269,7 +286,7 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		// Let's check if we're dealing with the redundant canonical.
 		if ( smartcrawl_is_switch_active( 'SMARTCRAWL_SUPPRESS_REDUNDANT_CANONICAL' ) ) {
 			global $wp;
-			$current_url = add_query_arg( $_GET, trailingslashit( home_url( $wp->request ) ) ); // phpcs:ignore -- Nonce not applicable
+			$current_url = add_query_arg( $_GET, trailingslashit( home_url( $wp->request ) ) ); // phpcs:ignore -- Nonce not applicable.
 			if ( $current_url === $canonical ) {
 				$canonical = false;
 			}
@@ -283,17 +300,20 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 	}
 
 	/**
+	 * Get canonical URL.
+	 *
 	 * @return bool|mixed|string|WP_Error
 	 */
 	public function get_canonical_url() {
 		$entity = $this->get_queried_entity();
+
 		return $entity
 			? $entity->get_canonical_url()
 			: '';
 	}
 
 	/**
-	 * Output link rel tags
+	 * Output link rel tags.
 	 */
 	private function smartcrawl_rel_links() {
 		global $wp_query, $paged;
@@ -305,19 +325,19 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 			return false;
 		} // Allow optional filtering out.
 
-		$is_taxonomy = ( is_tax() || is_tag() || is_category() || is_date() );
-		$requested_year = get_query_var( 'year' );
+		$is_taxonomy     = ( is_tax() || is_tag() || is_category() || is_date() );
+		$requested_year  = get_query_var( 'year' );
 		$requested_month = get_query_var( 'monthnum' );
-		$is_date = is_date() && ! empty( $requested_year );
-		$date_callback = ! empty( $requested_year ) && empty( $requested_month )
+		$is_date         = is_date() && ! empty( $requested_year );
+		$date_callback   = ! empty( $requested_year ) && empty( $requested_month )
 			? 'get_year_link'
 			: 'get_month_link';
-		$pageable = ( $is_taxonomy || ( is_home() && 'posts' === get_option( 'show_on_front' ) ) );
+		$pageable        = ( $is_taxonomy || ( is_home() && 'posts' === get_option( 'show_on_front' ) ) );
 		if ( ! $pageable ) {
 			return false;
 		}
 
-		$term = $wp_query->get_queried_object();
+		$term      = $wp_query->get_queried_object();
 		$canonical = ! empty( $term->taxonomy ) && $is_taxonomy ? smartcrawl_get_term_meta( $term, $term->taxonomy, 'wds_canonical' ) : false;
 		if ( ! $canonical ) {
 			if ( (int) $paged > 1 ) {
@@ -334,16 +354,16 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 			}
 			$is_paged = (int) $paged ? (int) $paged : 1;
 			if ( $is_paged && $is_paged < $wp_query->max_num_pages ) {
-				$next = is_home() ? home_url() : (
+				$next      = is_home() ? home_url() : (
 				$is_date
 					? $date_callback( $requested_year, $requested_month )
 					: get_term_link( $term, $term->taxonomy )
 				);
 				$next_page = $is_paged + 1;
-				$next = ( '' === get_option( 'permalink_structure' ) )
+				$next      = ( '' === get_option( 'permalink_structure' ) )
 					? add_query_arg( 'page', $next_page, $next )
 					: trailingslashit( $next ) . 'page/' . $next_page;
-				$next = esc_attr( trailingslashit( $next ) );
+				$next      = esc_attr( trailingslashit( $next ) );
 				$this->print_html_tag( "<link rel='next' href='{$next}' />\n" );
 			}
 		}
@@ -351,6 +371,11 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		return true;
 	}
 
+	/**
+	 * Get robots string.
+	 *
+	 * @return string
+	 */
 	private function get_robots_string() {
 		$entity = $this->get_queried_entity();
 		$robots = $entity
@@ -370,6 +395,8 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 
 	/**
 	 * Output meta robots tag
+	 *
+	 * @return bool
 	 */
 	private function smartcrawl_robots() {
 		if ( $this->robots_processing_disabled() ) {
@@ -384,12 +411,19 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		return true;
 	}
 
+	/**
+	 * Add items to robots.
+	 *
+	 * @param array $wp_robots Robots.
+	 *
+	 * @return mixed
+	 */
 	public function add_smartcrawl_robots_to_wp_robots( $wp_robots ) {
 		if (
-			! $this->is_blog_public() // If user has an override at the blog level
-			|| $this->robots_processing_disabled() // or robots processing is disabled
+			! $this->is_blog_public() // If user has an override at the blog level.
+			|| $this->robots_processing_disabled() // or robots processing is disabled.
 		) {
-			// leave everything to WP
+			// leave everything to WP.
 			return $wp_robots;
 		}
 
@@ -402,43 +436,46 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		foreach ( $sc_robots as $directive ) {
 			$wp_robots[ $directive ] = true;
 		}
+
 		return $wp_robots;
 	}
 
 	/**
-	 * Outputs meta description
+	 * Outputs meta description.
+	 *
+	 * @return bool
 	 */
 	private function smartcrawl_metadesc() {
 		if ( is_admin() ) {
 			return false;
 		}
 
-		$entity = $this->get_queried_entity();
+		$entity   = $this->get_queried_entity();
 		$metadesc = $entity
 			? $entity->get_meta_description()
 			: '';
 		$metadesc = wp_kses(
-			strip_tags( stripslashes( $metadesc ) ),
-			array(), array()
+			strip_tags( stripslashes( $metadesc ) ), // phpcs:ignore
+			array(),
+			array()
 		);
 
 		if ( ! empty( $metadesc ) ) {
-			echo '<meta name="description" content="' .
-			     esc_attr( $metadesc )
-			     . '" />' . "\n";
+			echo '<meta name="description" content="' . esc_attr( $metadesc ) . '" />' . "\n";
 		}
 
 		return true;
 	}
 
 	/**
-	 * Gets (custom) meta tags for output
+	 * Gets (custom) meta tags for output.
+	 *
+	 * @return array
 	 */
 	public function get_meta_tags() {
-		// Sitemap options are shown on the settings page so the decision to fallback should be made after checking
+		// Sitemap options are shown on the settings page so the decision to fallback should be made after checking.
 		// if Smartcrawl_Settings::TAB_SETTINGS is allowed.
-		//
-		// This logic follows the pattern used in Smartcrawl_Settings._populate_options
+		// This logic follows the pattern used in Smartcrawl_Settings._populate_options.
 		$smartcrawl_options = get_option( Smartcrawl_Settings::TAB_SITEMAP . '_options', array() );
 
 		$metas = array();
@@ -474,30 +511,47 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 		return $metas;
 	}
 
+	/**
+	 * Force rewrite title.
+	 *
+	 * @return bool
+	 */
 	private function force_rewrite_title() {
 		return smartcrawl_is_switch_active( 'SMARTCRAWL_FORCE_REWRITE_TITLE' );
 	}
 
+	/**
+	 * Output head start items.
+	 *
+	 * @return void
+	 */
 	private function head_start() {
-		$is_white_label = smartcrawl_is_switch_active( 'SMARTCRAWL_WHITELABEL_ON' )
-		                  || Smartcrawl_White_Label::get()->is_hide_wpmudev_branding();
+		$is_white_label = smartcrawl_is_switch_active( 'SMARTCRAWL_WHITELABEL_ON' ) || Smartcrawl_White_Label::get()->is_hide_wpmudev_branding();
 
 		if ( ! $is_white_label ) {
-			$project = defined( 'SMARTCRAWL_PROJECT_TITLE' )
-				? SMARTCRAWL_PROJECT_TITLE
-				: 'SmartCrawl';
-			echo "<!-- SEO meta tags powered by " . esc_html( $project ) . " -->\n";
+			$project = defined( 'SMARTCRAWL_PROJECT_TITLE' ) ? SMARTCRAWL_PROJECT_TITLE : 'SmartCrawl';
+			echo '<!-- SEO meta tags powered by ' . esc_html( $project ) . " -->\n";
 		}
 	}
 
+	/**
+	 * Output to head end.
+	 *
+	 * @return void
+	 */
 	private function head_end() {
-		do_action( 'wds_head-after_output' );
+		do_action( 'wds_head-after_output' ); // phpcs:ignore
 
 		if ( ! smartcrawl_is_switch_active( 'SMARTCRAWL_WHITELABEL_ON' ) ) {
 			echo "<!-- /SEO -->\n";
 		}
 	}
 
+	/**
+	 * Print meta tags.
+	 *
+	 * @return void
+	 */
 	private function print_meta_tags() {
 		$metas = $this->get_meta_tags();
 		foreach ( $metas as $meta ) {
@@ -506,17 +560,30 @@ class Smartcrawl_OnPage extends Smartcrawl_Base_Controller {
 	}
 
 	/**
+	 * Check if robots processing is disabled.
+	 *
 	 * @return bool
 	 */
 	private function robots_processing_disabled() {
 		return ! apply_filters( 'wds_process_robots', true );
 	}
 
+	/**
+	 * Check if robots API is available.
+	 *
+	 * @return bool
+	 */
 	private function wp_robots_api_available() {
 		global $wp_version;
+
 		return version_compare( $wp_version, '5.7', '>=' );
 	}
 
+	/**
+	 * Check if blog is public.
+	 *
+	 * @return bool
+	 */
 	private function is_blog_public() {
 		return 1 === (int) get_option( 'blog_public' );
 	}

@@ -1,6 +1,6 @@
 <?php
-$option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
-$options = empty( $options ) ? array() : $options;
+$option_name    = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
+$options        = empty( $options ) ? array() : $options;
 $social_options = empty( $social_options ) ? array() : $social_options;
 
 $schema_enable_test_button = (bool) smartcrawl_get_array_value( $options, 'schema_enable_test_button' );
@@ -17,12 +17,17 @@ $schema_enable_test_button = (bool) smartcrawl_get_array_value( $options, 'schem
 	</div>
 
 	<div class="sui-box-settings-col-2">
-		<?php $this->_render( 'toggle-item', array(
-			'field_name' => sprintf( '%s[%s]', $option_name, 'schema_enable_test_button' ),
-			'field_id'   => 'schema_enable_test_button',
-			'checked'    => $schema_enable_test_button,
-			'item_label' => esc_html__( 'Show Test Schema button in admin bar', 'wds' ),
-		) ); ?>
+		<?php
+		$this->render_view(
+			'toggle-item',
+			array(
+				'field_name' => sprintf( '%s[%s]', $option_name, 'schema_enable_test_button' ),
+				'field_id'   => 'schema_enable_test_button',
+				'checked'    => $schema_enable_test_button,
+				'item_label' => esc_html__( 'Show Test Schema button in admin bar', 'wds' ),
+			)
+		);
+		?>
 	</div>
 </div>
 
@@ -38,9 +43,11 @@ $schema_enable_test_button = (bool) smartcrawl_get_array_value( $options, 'schem
 	</div>
 
 	<div class="sui-box-settings-col-2">
-		<button type="button"
-		        id="wds-deactivate-schema-component"
-		        class="sui-button sui-button-ghost">
+		<button
+			type="button"
+			id="wds-deactivate-schema-component"
+			class="sui-button sui-button-ghost"
+		>
 			<span class="sui-icon-power-on-off" aria-hidden="true"></span>
 
 			<?php esc_html_e( 'Deactivate', 'wds' ); ?>

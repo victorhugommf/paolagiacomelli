@@ -1,26 +1,33 @@
 <?php
 
 abstract class Smartcrawl_Entity {
+
 	const NOINDEX_KEY_FORMAT = 'meta_robots-noindex-%s';
+
 	const NOFOLLOW_KEY_FORMAT = 'meta_robots-nofollow-%s';
+
 	const SUBSEQUENT_PAGES_KEY_FORMAT = 'meta_robots-%s-subsequent_pages';
 
 	/**
 	 * @var string
 	 */
 	private $meta_title;
+
 	/**
 	 * @var string
 	 */
 	private $meta_description;
+
 	/**
 	 * @var string
 	 */
 	private $robots;
+
 	/**
 	 * @var string
 	 */
 	private $canonical_url;
+
 	/**
 	 * @var array
 	 */
@@ -29,34 +36,42 @@ abstract class Smartcrawl_Entity {
 	 * @var array
 	 */
 	private $opengraph_tags;
+
 	/**
 	 * @var bool
 	 */
 	private $opengraph_enabled;
+
 	/**
 	 * @var string
 	 */
 	private $opengraph_title;
+
 	/**
 	 * @var string
 	 */
 	private $opengraph_description;
+
 	/**
 	 * @var array
 	 */
 	private $opengraph_images;
+
 	/**
 	 * @var bool
 	 */
 	private $twitter_enabled;
+
 	/**
 	 * @var string
 	 */
 	private $twitter_title;
+
 	/**
 	 * @var array
 	 */
 	private $twitter_images;
+
 	/**
 	 * @var string
 	 */
@@ -66,6 +81,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->meta_title ) ) {
 			$this->meta_title = $this->load_meta_title();
 		}
+
 		return $this->filter_meta_title( $this->meta_title );
 	}
 
@@ -75,6 +91,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->meta_description ) ) {
 			$this->meta_description = $this->load_meta_description();
 		}
+
 		return $this->filter_meta_desc( $this->meta_description );
 	}
 
@@ -84,6 +101,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->robots ) ) {
 			$this->robots = $this->load_robots();
 		}
+
 		return $this->robots;
 	}
 
@@ -93,6 +111,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->canonical_url ) ) {
 			$this->canonical_url = $this->load_canonical_url();
 		}
+
 		return $this->canonical_url;
 	}
 
@@ -102,6 +121,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->schema ) ) {
 			$this->schema = $this->load_schema();
 		}
+
 		return $this->schema;
 	}
 
@@ -111,6 +131,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->opengraph_tags ) ) {
 			$this->opengraph_tags = $this->load_opengraph_tags();
 		}
+
 		return $this->opengraph_tags;
 	}
 
@@ -126,31 +147,31 @@ abstract class Smartcrawl_Entity {
 	}
 
 	/**
-	 * @param array $tags
+	 * @param array $tags Tags.
 	 *
 	 * @return array
 	 */
 	private function add_opengraph_image_tags( $tags ) {
 		$included_urls = array();
-		$images = $this->get_opengraph_images();
-		$images = ! empty( $images ) && is_array( $images )
+		$images        = $this->get_opengraph_images();
+		$images        = ! empty( $images ) && is_array( $images )
 			? $images
 			: array();
 
 		foreach ( $images as $image ) {
-			$url = smartcrawl_get_array_value( $image, 0 );
-			$width = smartcrawl_get_array_value( $image, 1 );
+			$url    = smartcrawl_get_array_value( $image, 0 );
+			$width  = smartcrawl_get_array_value( $image, 1 );
 			$height = smartcrawl_get_array_value( $image, 2 );
 
 			if ( ! $width || ! $height ) {
 				$attachment = smartcrawl_get_attachment_by_url( trim( $url ) );
 				if ( $attachment ) {
-					$width = $attachment['width'];
+					$width  = $attachment['width'];
 					$height = $attachment['height'];
 				}
 			}
 
-			if ( array_search( $url, $included_urls ) !== false ) {
+			if ( array_search( $url, $included_urls, true ) !== false ) {
 				continue;
 			}
 
@@ -169,6 +190,7 @@ abstract class Smartcrawl_Entity {
 				$tags[] = $image_tags;
 			}
 		}
+
 		return $tags;
 	}
 
@@ -176,6 +198,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->opengraph_enabled ) ) {
 			$this->opengraph_enabled = $this->load_opengraph_enabled();
 		}
+
 		return $this->opengraph_enabled;
 	}
 
@@ -185,6 +208,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->opengraph_title ) ) {
 			$this->opengraph_title = $this->load_opengraph_title();
 		}
+
 		return $this->filter_opengraph_title( $this->opengraph_title );
 	}
 
@@ -194,6 +218,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->opengraph_description ) ) {
 			$this->opengraph_description = $this->load_opengraph_description();
 		}
+
 		return $this->filter_opengraph_description( $this->opengraph_description );
 	}
 
@@ -203,6 +228,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->opengraph_images ) ) {
 			$this->opengraph_images = $this->load_opengraph_images();
 		}
+
 		return $this->filter_opengraph_images( $this->opengraph_images );
 	}
 
@@ -224,6 +250,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->twitter_enabled ) ) {
 			$this->twitter_enabled = $this->load_twitter_enabled();
 		}
+
 		return $this->twitter_enabled;
 	}
 
@@ -233,6 +260,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->twitter_title ) ) {
 			$this->twitter_title = $this->load_twitter_title();
 		}
+
 		return $this->filter_twitter_title( $this->twitter_title );
 	}
 
@@ -242,6 +270,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->twitter_description ) ) {
 			$this->twitter_description = $this->load_twitter_description();
 		}
+
 		return $this->filter_twitter_description( $this->twitter_description );
 	}
 
@@ -251,6 +280,7 @@ abstract class Smartcrawl_Entity {
 		if ( is_null( $this->twitter_images ) ) {
 			$this->twitter_images = $this->load_twitter_images();
 		}
+
 		return $this->filter_twitter_images( $this->twitter_images );
 	}
 
@@ -328,6 +358,7 @@ abstract class Smartcrawl_Entity {
 				return '';
 			}
 		}
+
 		return $string;
 	}
 
@@ -342,7 +373,7 @@ abstract class Smartcrawl_Entity {
 	protected function get_noindex_setting( $place ) {
 		$options = $this->get_onpage_options();
 
-		return (boolean) smartcrawl_get_array_value(
+		return (bool) smartcrawl_get_array_value(
 			$options,
 			sprintf( self::NOINDEX_KEY_FORMAT, $place )
 		);
@@ -351,7 +382,7 @@ abstract class Smartcrawl_Entity {
 	protected function get_nofollow_setting( $place ) {
 		$options = $this->get_onpage_options();
 
-		return (boolean) smartcrawl_get_array_value(
+		return (bool) smartcrawl_get_array_value(
 			$options,
 			sprintf( self::NOFOLLOW_KEY_FORMAT, $place )
 		);
@@ -368,10 +399,10 @@ abstract class Smartcrawl_Entity {
 		);
 
 		$macros = apply_filters(
-			'wds-known_macros',
+			'wds-known_macros', // phpcs:ignore
 			array_combine(
-				apply_filters( 'wds-known_macros-keys', array_keys( $macros ) ),
-				apply_filters( 'wds-known_macros-values', array_values( $macros ) )
+				apply_filters( 'wds-known_macros-keys', array_keys( $macros ) ), // phpcs:ignore
+				apply_filters( 'wds-known_macros-values', array_values( $macros ) ) // phpcs:ignore
 			)
 		);
 
@@ -395,6 +426,7 @@ abstract class Smartcrawl_Entity {
 		foreach ( $this->get_macros() as $macro => $get_replacement ) {
 			$resolved[ $macro ] = $this->resolve_macro( $macro, $get_replacement );
 		}
+
 		return $resolved;
 	}
 
@@ -407,24 +439,24 @@ abstract class Smartcrawl_Entity {
 			$replacement = '';
 		}
 
-		$replacement = apply_filters( 'wds-macro-variable_replacement', $replacement, $macro );
+		$replacement = apply_filters( 'wds-macro-variable_replacement', $replacement, $macro ); // phpcs:ignore
 
 		return $this->process_macro_replacement_value( $replacement );
 	}
 
 	private function get_general_macros() {
 		global $wp_query;
-		$paged = intval( $wp_query->get( 'paged' ) );
+		$paged         = intval( $wp_query->get( 'paged' ) );
 		$max_num_pages = isset( $wp_query->max_num_pages ) ? $wp_query->max_num_pages : 1;
-		$page_x_of_y = esc_html__( 'Page %1$s of %2$s', 'wds' );
-		$options = $this->get_onpage_options();
-		$preset_sep = ! empty( $options['preset-separator'] )
+		$page_x_of_y   = esc_html__( 'Page %1$s of %2$s', 'wds' );
+		$options       = $this->get_onpage_options();
+		$preset_sep    = ! empty( $options['preset-separator'] )
 			? $options['preset-separator']
 			: 'pipe';
-		$separator = ! empty( $options['separator'] )
+		$separator     = ! empty( $options['separator'] )
 			? $options['separator']
 			: smartcrawl_get_separators( $preset_sep );
-		$pagenum = $paged;
+		$pagenum       = $paged;
 		if ( 0 === $pagenum ) {
 			$pagenum = $max_num_pages > 1 ? 1 : '';
 		}
@@ -447,7 +479,7 @@ abstract class Smartcrawl_Entity {
 	}
 
 	private function process_macro_replacement_value( $replacement ) {
-		if ( $replacement === '<' ) {
+		if ( '<' === $replacement ) {
 			return $replacement;
 		}
 
@@ -460,17 +492,16 @@ abstract class Smartcrawl_Entity {
 
 	private function get_onpage_options() {
 		$onpage_options = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_ONPAGE );
-		return empty( $onpage_options )
-			? array()
-			: $onpage_options;
+
+		return empty( $onpage_options ) ? array() : $onpage_options;
 	}
 
 	protected function find_dynamic_replacements( $subject, $get_terms, $get_meta ) {
 		$term_desc_replacements = $this->find_term_field_replacements( $subject, $get_terms, 'ct_desc_', 'description' );
-		$subject = str_replace( array_keys( $term_desc_replacements ), '', $subject );
+		$subject                = str_replace( array_keys( $term_desc_replacements ), '', $subject );
 
 		$term_name_replacements = $this->find_term_field_replacements( $subject, $get_terms, 'ct_', 'name' );
-		$subject = str_replace( array_keys( $term_name_replacements ), '', $subject );
+		$subject                = str_replace( array_keys( $term_name_replacements ), '', $subject );
 
 		$meta_replacements = $this->find_meta_replacements( $subject, $get_meta );
 
@@ -478,8 +509,8 @@ abstract class Smartcrawl_Entity {
 	}
 
 	private function find_term_field_replacements( $subject, $get_terms, $prefix, $term_field ) {
-		$pattern = "/(%%{$prefix}[a-z_\-]+%%)/";
-		$matches = array();
+		$pattern      = "/(%%{$prefix}[a-z_\-]+%%)/";
+		$matches      = array();
 		$replacements = array();
 		$match_result = preg_match_all( $pattern, $subject, $matches, PREG_PATTERN_ORDER );
 		if ( ! empty( $match_result ) ) {
@@ -498,6 +529,7 @@ abstract class Smartcrawl_Entity {
 						return '';
 					}
 					$term = array_shift( $terms );
+
 					return wp_strip_all_tags( get_term_field( $term_field, $term, $taxonomy_name ) );
 				};
 			}
@@ -507,9 +539,9 @@ abstract class Smartcrawl_Entity {
 	}
 
 	private function find_meta_replacements( $subject, $get_meta ) {
-		$prefix = 'cf_';
-		$pattern = "/(%%{$prefix}[a-z_\-]+%%)/";
-		$matches = array();
+		$prefix       = 'cf_';
+		$pattern      = "/(%%{$prefix}[a-z_\-]+%%)/";
+		$matches      = array();
 		$replacements = array();
 		$match_result = preg_match_all( $pattern, $subject, $matches, PREG_PATTERN_ORDER );
 		if ( ! empty( $match_result ) ) {
@@ -522,6 +554,7 @@ abstract class Smartcrawl_Entity {
 					if ( empty( $meta_value ) || ! is_scalar( $meta_value ) ) {
 						return '';
 					}
+
 					return wp_strip_all_tags( $meta_value );
 				};
 
@@ -536,7 +569,7 @@ abstract class Smartcrawl_Entity {
 			return '';
 		}
 
-		// Check if a meta value is available for this item
+		// Check if a meta value is available for this item.
 		$from_meta = call_user_func( $load_from_meta );
 		if ( $from_meta ) {
 			$from_meta = $this->sanitize_string( $from_meta );
@@ -553,7 +586,7 @@ abstract class Smartcrawl_Entity {
 			return '';
 		}
 
-		// Check if an option is available
+		// Check if an option is available.
 		$from_options = call_user_func( $load_from_options, $option_key_part );
 		if ( $from_options ) {
 			$from_options = $this->sanitize_string( $from_options );
@@ -562,7 +595,7 @@ abstract class Smartcrawl_Entity {
 			}
 		}
 
-		// Use fallback value
+		// Use fallback value.
 		$fallback = call_user_func( $load_fallback );
 		if ( $fallback ) {
 			$fallback = $this->sanitize_string( $fallback );
@@ -584,7 +617,7 @@ abstract class Smartcrawl_Entity {
 	}
 
 	protected function show_robots_on_subsequent_pages_only( $location ) {
-		return (boolean) smartcrawl_get_array_value(
+		return (bool) smartcrawl_get_array_value(
 			$this->get_onpage_options(),
 			sprintf( self::SUBSEQUENT_PAGES_KEY_FORMAT, $location )
 		);
@@ -609,7 +642,7 @@ abstract class Smartcrawl_Entity {
 		}
 
 		if ( is_numeric( $image_id ) ) {
-			$attachment = wp_get_attachment_image_src( $image_id, 'full' );
+			$attachment     = wp_get_attachment_image_src( $image_id, 'full' );
 			$attachment_url = smartcrawl_get_array_value( $attachment, 0 );
 			if ( $attachment_url ) {
 				$images[ $attachment_url ] = $attachment;

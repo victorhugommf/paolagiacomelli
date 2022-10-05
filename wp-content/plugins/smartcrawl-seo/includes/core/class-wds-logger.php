@@ -2,6 +2,8 @@
 
 class Smartcrawl_Logger {
 
+	use Smartcrawl_Singleton;
+
 	const L_DEBUG = 10;
 	const L_INFO = 20;
 	const L_NOTICE = 30;
@@ -15,11 +17,6 @@ class Smartcrawl_Logger {
 	 */
 	const L_DEFAULT = 30;
 
-	private static $_instance;
-
-	private function __construct() {
-	}
-
 	public static function debug( $message ) {
 		return self::get()->log( self::L_DEBUG, $message );
 	}
@@ -31,14 +28,14 @@ class Smartcrawl_Logger {
 	 * an appropriate action - logs the message
 	 * or not.
 	 *
-	 * @param int $level Log level that the message belongs to (see constants)
-	 * @param string $message Message to log
+	 * @param int    $level   Log level that the message belongs to (see constants).
+	 * @param string $message Message to log.
 	 *
 	 * @return bool|int Operation status, or (int)log level if we're above listening
 	 */
 	public function log( $level, $message ) {
 		if ( ! smartcrawl_is_switch_active( 'SMARTCRAWL_ENABLE_LOGGING' ) ) {
-			return false; // Require explicit logging
+			return false; // Require explicit logging.
 		}
 		if ( ! is_numeric( $level ) ) {
 			return false;
@@ -58,7 +55,7 @@ class Smartcrawl_Logger {
 			return false;
 		}
 
-		$timestamp = date( 'Y-m-d H:i:s' );
+		$timestamp = date( 'Y-m-d H:i:s' ); // phpcs:ignore
 
 		$line = "[{$timestamp}][{$level}] {$message}\n";
 
@@ -83,7 +80,7 @@ class Smartcrawl_Logger {
 	/**
 	 * Check if we're logging this level
 	 *
-	 * @param int $level Level to check
+	 * @param int $level Level to check.
 	 *
 	 * @return bool Logging or not
 	 */
@@ -103,10 +100,7 @@ class Smartcrawl_Logger {
 			? SMARTCRAWL_DEBUG_LOG_LEVEL
 			: self::L_DEFAULT;
 
-		return (int) apply_filters(
-			'wds-log-level',
-			$level
-		);
+		return (int) apply_filters( 'wds-log-level', $level ); // phpcs:ignore
 	}
 
 	/**
@@ -155,19 +149,6 @@ class Smartcrawl_Logger {
 		}
 
 		return smartcrawl_file_put_contents( $file, "<?php die(); ?>\n" );
-	}
-
-	/**
-	 * Singleton instance getter
-	 *
-	 * @return Smartcrawl_Logger instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	public static function info( $message ) {

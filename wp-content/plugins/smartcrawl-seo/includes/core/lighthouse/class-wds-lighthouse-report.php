@@ -1,10 +1,10 @@
 <?php
 
 class Smartcrawl_Lighthouse_Report {
-	const GROUP_CONTENT = 'content';
+	const GROUP_CONTENT    = 'content';
 	const GROUP_VISIBILITY = 'visibility';
 	const GROUP_RESPONSIVE = 'responsive';
-	const GROUP_MANUAL = 'manual';
+	const GROUP_MANUAL     = 'manual';
 	/**
 	 * @var int
 	 */
@@ -59,10 +59,10 @@ class Smartcrawl_Lighthouse_Report {
 	}
 
 	public function populate( $raw_report ) {
-		$this->score = empty( $raw_report['seo_score'] ) ? 0 : $raw_report['seo_score'];
-		$metrics = empty( $raw_report['metrics'] ) ? array() : $raw_report['metrics'];
+		$this->score   = empty( $raw_report['seo_score'] ) ? 0 : $raw_report['seo_score'];
+		$metrics       = empty( $raw_report['metrics'] ) ? array() : $raw_report['metrics'];
 		$passed_checks = 0;
-		$total_checks = 0;
+		$total_checks  = 0;
 
 		$this->populate_screenshot_data( $metrics );
 
@@ -70,8 +70,8 @@ class Smartcrawl_Lighthouse_Report {
 			foreach ( $group->get_checks() as $check ) {
 				$metric = smartcrawl_get_array_value( $metrics, $check->get_id() );
 
-				$score = smartcrawl_get_array_value( $metric, 'score' );
-				$passed = $score === null || $score === 1; // Set passed to true when score is either not available or is 1
+				$score  = smartcrawl_get_array_value( $metric, 'score' );
+				$passed = null === $score || 1 === $score; // Set passed to true when score is either not available or is 1.
 				$check->set_passed( $passed );
 
 				$details = smartcrawl_get_array_value( $metric, 'details' );
@@ -89,7 +89,7 @@ class Smartcrawl_Lighthouse_Report {
 			}
 		}
 
-		$this->total_audits_count = $total_checks;
+		$this->total_audits_count  = $total_checks;
 		$this->passed_audits_count = $passed_checks;
 	}
 
@@ -157,6 +157,12 @@ class Smartcrawl_Lighthouse_Report {
 		return smartcrawl_get_array_value( $this->groups, $group_id );
 	}
 
+	/**
+	 * @param $group_id
+	 * @param $check_id
+	 *
+	 * @return Smartcrawl_Lighthouse_Check|null
+	 */
 	public function get_check( $group_id, $check_id ) {
 		$group = $this->get_group( $group_id );
 		if ( ! $group ) {
@@ -173,11 +179,14 @@ class Smartcrawl_Lighthouse_Report {
 		return $this->score;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_score_grade() {
 		$score = $this->get_score();
 		if ( $score >= 90 ) {
 			$grade = 'a';
-		} else if ( $score >= 50 ) {
+		} elseif ( $score >= 50 ) {
 			$grade = 'c';
 		} else {
 			$grade = 'f';
@@ -186,6 +195,9 @@ class Smartcrawl_Lighthouse_Report {
 		return $grade;
 	}
 
+	/**
+	 * @return int
+	 */
 	public function get_failed_audits_count() {
 		return $this->total_audits_count - $this->passed_audits_count;
 	}
@@ -204,28 +216,44 @@ class Smartcrawl_Lighthouse_Report {
 		return $this->passed_audits_count;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_cooling_down() {
 		return $this->is_fresh();
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_fresh() {
 		if ( ! $this->has_data() ) {
 			return false;
 		}
 
 		$last_checked = $this->get_timestamp();
+
 		return ( time() - $last_checked ) / 60 < 5;
 	}
 
+	/**
+	 * @return false|float|int
+	 */
 	public function get_remaining_cooldown_minutes() {
 		if ( ! $this->is_cooling_down() ) {
 			return 0;
 		}
 
 		$minutes_since_last_scan = ( time() - $this->get_timestamp() ) / 60;
+
 		return ceil( 5 - $minutes_since_last_scan );
 	}
 
+	/**
+	 * @param $format
+	 *
+	 * @return false|string
+	 */
 	public function get_last_checked( $format = false ) {
 		$time = $this->get_timestamp();
 		if ( empty( $time ) ) {
@@ -234,7 +262,7 @@ class Smartcrawl_Lighthouse_Report {
 
 		if ( empty( $format ) ) {
 			return sprintf(
-				esc_html__( '%s at %s', 'wds' ),
+				esc_html__( '%1$s at %2$s', 'wds' ),
 				wp_date( get_option( 'date_format' ), $time ),
 				wp_date( get_option( 'time_format' ), $time )
 			);
@@ -243,50 +271,88 @@ class Smartcrawl_Lighthouse_Report {
 		return wp_date( $format, $time );
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_status_message() {
-		if ( $this->score === 100 ) {
+		if ( 100 === $this->score ) {
 			return esc_html__( 'Excellent! Your site is fully optimized!', 'wds' );
-		} else if ( $this->score > 89 ) {
+		} elseif ( $this->score > 89 ) {
 			return esc_html__( 'Follow the pending SEO audits for a perfect SEO score.', 'wds' );
-		} else if ( $this->score > 49 ) {
+		} elseif ( $this->score > 49 ) {
 			return esc_html__( 'You can improve your score by following the outstanding SEO audits.', 'wds' );
 		} else {
 			return esc_html__( 'You need to improve your score by following the outstanding SEO audits.', 'wds' );
 		}
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function has_data() {
 		return ! empty( $this->timestamp );
 	}
 
+	/**
+	 * @return int
+	 */
 	public function get_timestamp() {
 		return (int) $this->timestamp;
 	}
 
+	/**
+	 * @param $timestamp
+	 *
+	 * @return void
+	 */
 	public function set_timestamp( $timestamp ) {
 		$this->timestamp = $timestamp;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function has_errors() {
 		return $this->errors->has_errors();
 	}
 
+	/**
+	 * @param $code
+	 * @param $message
+	 * @param $data
+	 *
+	 * @return void
+	 */
 	public function set_error( $code, $message, $data = null ) {
 		$this->errors->add( $code, $message, $data );
 	}
 
+	/**
+	 * @return int|string
+	 */
 	public function get_error_code() {
 		return $this->errors->get_error_code();
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_error_message() {
 		return $this->errors->get_error_message();
 	}
 
+	/**
+	 * @param $screenshot
+	 *
+	 * @return void
+	 */
 	public function set_screenshot( $screenshot ) {
 		$this->screenshot = $screenshot;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_screenshot() {
 		return $this->screenshot;
 	}
@@ -319,24 +385,43 @@ class Smartcrawl_Lighthouse_Report {
 		$this->screenshot_height = $screenshot_height;
 	}
 
+	/**
+	 * @param $nodes
+	 *
+	 * @return void
+	 */
 	private function set_screenshot_nodes( $nodes ) {
 		$this->screenshot_nodes = empty( $nodes )
 			? array()
 			: $nodes;
 	}
 
+	/**
+	 * @param $id
+	 *
+	 * @return array|mixed
+	 */
 	public function get_screenshot_node( $id ) {
 		$node = smartcrawl_get_array_value( $this->screenshot_nodes, $id );
+
 		return empty( $node )
 			? array()
 			: $node;
 	}
 
+	/**
+	 * @param $metrics
+	 *
+	 * @return void
+	 */
 	private function populate_screenshot_data( $metrics ) {
-		$screenshot_details = smartcrawl_get_array_value( $metrics, array(
-			'full-page-screenshot',
-			'details',
-		) );
+		$screenshot_details = smartcrawl_get_array_value(
+			$metrics,
+			array(
+				'full-page-screenshot',
+				'details',
+			)
+		);
 
 		$nodes = smartcrawl_get_array_value( $screenshot_details, 'nodes' );
 		$this->set_screenshot_nodes( $nodes );
@@ -353,10 +438,18 @@ class Smartcrawl_Lighthouse_Report {
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_device() {
 		return $this->device;
 	}
 
+	/**
+	 * @param $device
+	 *
+	 * @return void
+	 */
 	public function set_device( $device ) {
 		$this->device = $device;
 	}

@@ -3,16 +3,29 @@
 class Smartcrawl_Schema_Source_Woocommerce_Review extends Smartcrawl_Schema_Property_Source {
 	const ID = 'woocommerce_review';
 
+	/**
+	 * @var
+	 */
 	private $comment;
+	/**
+	 * @var
+	 */
 	private $field;
 
+	/**
+	 * @param $comment
+	 * @param $field
+	 */
 	public function __construct( $comment, $field ) {
 		parent::__construct();
 
 		$this->comment = $comment;
-		$this->field = $field;
+		$this->field   = $field;
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	public function get_value() {
 		if ( empty( $this->comment ) ) {
 			return '';

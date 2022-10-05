@@ -1,19 +1,55 @@
 <?php
 
 abstract class Smartcrawl_Lighthouse_Check {
+
+	/**
+	 * @var string
+	 */
 	private $success_title = '';
+
+	/**
+	 * @var string
+	 */
 	private $failure_title = '';
+
+	/**
+	 * @var string
+	 */
 	private $success_description = '';
+
+	/**
+	 * @var string
+	 */
 	private $failure_description = '';
+
+	/**
+	 * @var string
+	 */
 	private $copy_description = '';
+
+	/**
+	 * @var bool
+	 */
 	private $passed = false;
+
+	/**
+	 * @var array
+	 */
 	private $raw_details = array();
+
+	/**
+	 * @var
+	 */
 	private $weight;
+
 	/**
 	 * @var Smartcrawl_Lighthouse_Report
 	 */
 	private $report;
 
+	/**
+	 * @param $report
+	 */
 	public function __construct( $report ) {
 		$this->report = $report;
 	}
@@ -61,6 +97,11 @@ abstract class Smartcrawl_Lighthouse_Check {
 		$this->success_description = $description;
 	}
 
+	/**
+	 * @param $description
+	 *
+	 * @return void
+	 */
 	public function set_failure_description( $description ) {
 		$this->failure_description = $description;
 	}
@@ -79,10 +120,18 @@ abstract class Smartcrawl_Lighthouse_Check {
 		$this->passed = $passed;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function get_weight() {
 		return $this->weight;
 	}
 
+	/**
+	 * @param $weight
+	 *
+	 * @return void
+	 */
 	public function set_weight( $weight ) {
 		$this->weight = $weight;
 	}
@@ -112,9 +161,13 @@ abstract class Smartcrawl_Lighthouse_Check {
 		return null;
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_flattened_details() {
-		$table = $this->get_details_table();
+		$table             = $this->get_details_table();
 		$flattened_details = array();
+
 		if ( empty( $table ) ) {
 			return $flattened_details;
 		}
@@ -178,6 +231,9 @@ abstract class Smartcrawl_Lighthouse_Check {
 		return null;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function print_details_table() {
 		$table = $this->get_details_table();
 		if ( ! empty( $table ) ) {
@@ -185,23 +241,42 @@ abstract class Smartcrawl_Lighthouse_Check {
 		}
 	}
 
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
 	public function tag( $value ) {
 		return '<span class="wds-lh-tag">' . esc_html( $value ) . '</span>';
 	}
 
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
 	public function attr( $value ) {
 		return '<span class="wds-lh-attr">' . esc_html( $value ) . '</span>';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_action_button() {
 		return '';
 	}
 
+	/**
+	 * @param $text
+	 * @param $url
+	 * @param $icon
+	 *
+	 * @return false|string
+	 */
 	protected function button_markup( $text, $url, $icon ) {
 		ob_start();
 		?>
-		<a class="wds-action-button sui-button"
-		   href="<?php echo esc_url( $url ); ?>">
+		<a class="wds-action-button sui-button" href="<?php echo esc_url( $url ); ?>">
 
 			<span class="<?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
 			<?php echo esc_html( $text ); ?>
@@ -210,6 +285,9 @@ abstract class Smartcrawl_Lighthouse_Check {
 		return ob_get_clean();
 	}
 
+	/**
+	 * @return false|string
+	 */
 	public function edit_homepage_button() {
 		$page_on_front = get_option( 'page_on_front' );
 		$show_on_front = get_option( 'show_on_front' );
@@ -220,28 +298,50 @@ abstract class Smartcrawl_Lighthouse_Check {
 		}
 
 		return $this->button_markup(
-			esc_html__( 'Edit Homepage', 'wds' ), get_edit_post_link( $page_on_front ), 'sui-icon-pencil'
+			esc_html__( 'Edit Homepage', 'wds' ),
+			get_edit_post_link( $page_on_front ),
+			'sui-icon-pencil'
 		);
 	}
 
+	/**
+	 * @return mixed
+	 */
 	abstract function get_id();
 
+	/**
+	 * @return mixed
+	 */
 	abstract public function prepare();
 
+	/**
+	 * @return string
+	 */
 	public function get_copy_description() {
 		return $this->copy_description;
 	}
 
+	/**
+	 * @param $copy_description
+	 *
+	 * @return void
+	 */
 	public function set_copy_description( $copy_description ) {
 		$this->copy_description = $copy_description;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_device_label() {
 		return $this->report->get_device() === 'desktop'
 			? esc_html__( 'Desktop', 'wds' )
 			: esc_html__( 'Mobile', 'wds' );
 	}
 
+	/**
+	 * @return Smartcrawl_Lighthouse_Report
+	 */
 	public function get_report() {
 		return $this->report;
 	}

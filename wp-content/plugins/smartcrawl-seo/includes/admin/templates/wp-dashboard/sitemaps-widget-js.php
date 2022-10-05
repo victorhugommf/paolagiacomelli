@@ -1,8 +1,8 @@
 <?php
-$updating = empty( $updating ) ? '' : $updating;
-$updated = empty( $updated ) ? '' : $updated;
+$updating  = empty( $updating ) ? '' : $updating;
+$updated   = empty( $updated ) ? '' : $updated;
 $notifying = empty( $notifying ) ? '' : $notifying;
-$notified = empty( $notified ) ? '' : $notified;
+$notified  = empty( $notified ) ? '' : $notified;
 ?>
 <script type="text/javascript">
 	;(function ($) {

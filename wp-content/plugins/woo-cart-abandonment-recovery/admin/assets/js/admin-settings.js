@@ -212,7 +212,10 @@
 					type: 'POST',
 					data: sample_data,
 					success( data ) {
-						if ( data.status === 'success' ) {
+						const response = ZapierSettings.handle_zapier_response(
+							data
+						);
+						if ( response ) {
 							$(
 								'#wcf_ca_' +
 									event.data.order_status +
@@ -255,6 +258,23 @@
 					.delay( 2000 )
 					.fadeOut();
 			}
+		},
+		handle_zapier_response( data ) {
+			let status = false;
+			if (
+				typeof data === 'object' &&
+				[ 'success', 'accepted' ].includes( data.status )
+			) {
+				status = true;
+			} else if ( typeof data === 'string' ) {
+				const resp_string = data.toLowerCase();
+
+				if ( [ 'success', 'accepted' ].includes( resp_string ) ) {
+					status = true;
+				}
+			}
+
+			return status;
 		},
 	};
 

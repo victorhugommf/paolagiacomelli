@@ -3,9 +3,13 @@
 class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 
 	const ERR_BASE_API_ISSUE = 40;
+
 	const ERR_BASE_CRAWL_RUN = 51;
+
 	const ERR_BASE_COOLDOWN = 52;
+
 	const ERR_BASE_CRAWL_ERR = 53;
+
 	const ERR_BASE_GENERIC = 59;
 
 	public function get_known_verbs() {
@@ -47,7 +51,7 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 
 		$expected_timeout = intval( $flag ) + ( HOUR_IN_SECONDS / 4 );
 		if ( ! empty( $flag ) && is_numeric( $flag ) && time() > $expected_timeout ) {
-			// Over timeout threshold, clear flag forcefully
+			// Over timeout threshold, clear flag forcefully.
 			$this->stop();
 		}
 
@@ -75,9 +79,9 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 	}
 
 	/**
-	 * Sets progress flag state
+	 * Sets progress flag state.
 	 *
-	 * param bool $flag Whether the service check is in progress
+	 * @param bool $flag Whether the service check is in progress.
 	 *
 	 * @return bool
 	 */
@@ -92,7 +96,7 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 	/**
 	 * Public wrapper for start service method call
 	 *
-	 * @return mixed Service response hash on success, (bool) on failure
+	 * @return bool Service response hash on success, (bool) on failure
 	 */
 	public function start() {
 		$this->stop();
@@ -103,7 +107,7 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 	/**
 	 * Public wrapper for status service method call
 	 *
-	 * @return mixed Service response hash on success, (bool)false on failure
+	 * @return bool Service response hash on success, (bool)false on failure
 	 */
 	public function status() {
 		return false;
@@ -112,16 +116,18 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 	/**
 	 * Public wrapper for result service method call
 	 *
-	 * @return mixed Service response hash on success, (bool)false on failure
+	 * @return bool Service response hash on success, (bool)false on failure
 	 */
 	public function result() {
 		return false;
 	}
 
 	/**
-	 * Sets result to new value
+	 * Sets result to new value.
 	 *
-	 * Sets both cache and permanent result
+	 * Sets both cache and permanent result.
+	 *
+	 * @param array $result Result.
 	 *
 	 * @return bool
 	 */
@@ -140,7 +146,7 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 	public function get_last_run_timestamp() {
 		$recorded = (int) get_option( $this->get_filter( 'seo-service-last_runtime' ), 0 );
 
-		$raw = $this->get_result();
+		$raw      = $this->get_result();
 		$embedded = ! empty( $raw['end'] ) ? (int) $raw['end'] : 0;
 		if ( empty( $embedded ) && ! empty( $raw['issues']['previous']['timestamp'] ) ) {
 			$embedded = (int) $raw['issues']['previous']['timestamp'];
@@ -169,7 +175,7 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 	 * @return bool
 	 */
 	public function set_last_run_timestamp() {
-		$raw = $this->get_result();
+		$raw       = $this->get_result();
 		$timestamp = ! empty( $raw['end'] ) ? (int) $raw['end'] : 0;
 		if ( empty( $timestamp ) && ! empty( $raw['issues']['previous']['timestamp'] ) ) {
 			$timestamp = (int) $raw['issues']['previous']['timestamp'];
@@ -186,7 +192,7 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 		$body = wp_remote_retrieve_body( $response );
 		$data = json_decode( $body, true );
 		if ( empty( $body ) || empty( $data ) ) {
-			$this->_set_error( __( 'Unspecified error', 'wds' ) );
+			$this->set_error_message( __( 'Unspecified error', 'wds' ) );
 
 			return true;
 		}
@@ -198,18 +204,15 @@ class Smartcrawl_Seo_Service extends Smartcrawl_Service {
 
 		if ( ! empty( $data['data']['manage_link'] ) ) {
 			$url = esc_url( $data['data']['manage_link'] );
+
 			$msg .= ' <a href="' . $url . '">' . __( 'Manage', 'wds' ) . '</a>';
 		}
 
 		if ( ! empty( $msg ) ) {
-			$this->_set_error( $msg );
+			$this->set_error_message( $msg );
 		}
 
 		return true;
-	}
-
-	private function _clear_result() {
-		return ! ! delete_option( $this->get_filter( 'seo-service-result' ) );
 	}
 
 	public function get_report() {

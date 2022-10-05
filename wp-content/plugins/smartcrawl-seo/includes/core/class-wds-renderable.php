@@ -1,18 +1,19 @@
 <?php
 
 abstract class Smartcrawl_Renderable {
+
 	private $view_defaults = null;
 
 	/**
 	 * Renders the view by calling `_load`
 	 *
-	 * @param string $view View file to load
-	 * @param array $args Optional array of arguments to pass to view
+	 * @param string $view View file to load.
+	 * @param array  $args Optional array of arguments to pass to view.
 	 *
 	 * @return bool
 	 */
-	protected function _render( $view, $args = array() ) {
-		$view = $this->_load( $view, $args );
+	protected function render_view( $view, $args = array() ) {
+		$view = $this->load_view( $view, $args );
 		if ( ! empty( $view ) ) {
 			echo $view;  // phpcs:ignore -- The template being rendered could contain anything
 		}
@@ -23,12 +24,12 @@ abstract class Smartcrawl_Renderable {
 	/**
 	 * Loads the view file and returns the output as string
 	 *
-	 * @param string $view View file to load
-	 * @param array $args Optional array of arguments to pass to view
+	 * @param string $view View file to load.
+	 * @param array  $args Optional array of arguments to pass to view.
 	 *
-	 * @return mixed (string)View output on success, (bool)false on failure
+	 * @return mixed (string)View output on success, (bool)false on failure.
 	 */
-	protected function _load( $view, $args = array() ) {
+	protected function load_view( $view, $args = array() ) {
 		$view = preg_replace( '/[^\-_a-z0-9\/]/i', '', $view );
 		if ( empty( $view ) ) {
 			return false;
@@ -44,7 +45,7 @@ abstract class Smartcrawl_Renderable {
 		}
 
 		if ( is_null( $this->view_defaults ) ) {
-			$this->view_defaults = $this->_get_view_defaults();
+			$this->view_defaults = $this->get_view_defaults();
 		}
 
 		$args = wp_parse_args( $args, $this->view_defaults );
@@ -59,5 +60,5 @@ abstract class Smartcrawl_Renderable {
 		return ob_get_clean();
 	}
 
-	abstract protected function _get_view_defaults();
+	abstract protected function get_view_defaults();
 }

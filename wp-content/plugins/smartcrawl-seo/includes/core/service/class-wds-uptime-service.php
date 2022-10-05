@@ -26,15 +26,14 @@ class Smartcrawl_Uptime_Service extends Smartcrawl_Service {
 			return false;
 		}
 
-		$query_url = http_build_query( array(
-			'domain' => $domain,
-		) );
+		$query_url = http_build_query(
+			array(
+				'domain' => $domain,
+			)
+		);
 		$query_url = $query_url && preg_match( '/^\?/', $query_url ) ? $query_url : "?{$query_url}";
 
-		return trailingslashit( $this->get_service_base_url() ) .
-		       'api/uptime/v1/stats/' .
-		       $verb .
-		       $query_url;
+		return trailingslashit( $this->get_service_base_url() ) . 'api/uptime/v1/stats/' . $verb . $query_url;
 	}
 
 	public function get_service_base_url() {
@@ -60,14 +59,14 @@ class Smartcrawl_Uptime_Service extends Smartcrawl_Service {
 	}
 
 	/**
-	 * Overridden to use longer timeouts
+	 * Overridden to use longer timeouts.
+	 *
+	 * @param bool $expiry Expiry.
 	 */
 	public function get_cache_expiry( $expiry = false ) {
-		$expiry = Smartcrawl_Service::ERR_CACHE_EXPIRY === $expiry
+		return Smartcrawl_Service::ERR_CACHE_EXPIRY === $expiry
 			? $expiry
 			: DAY_IN_SECONDS;
-
-		return $expiry;
 	}
 
 	public function handle_error_response( $response, $verb ) {
@@ -75,7 +74,7 @@ class Smartcrawl_Uptime_Service extends Smartcrawl_Service {
 		$data = json_decode( $body, true );
 		if ( empty( $body ) || empty( $data ) ) {
 			$msg = __( 'Unspecified error', 'wds' );
-			$this->_set_error( $msg );
+			$this->set_error_message( $msg );
 			$this->set_cached_error( 'day', $msg );
 
 			return true;
@@ -88,11 +87,12 @@ class Smartcrawl_Uptime_Service extends Smartcrawl_Service {
 
 		if ( ! empty( $data['data']['manage_link'] ) ) {
 			$url = esc_url( $data['data']['manage_link'] );
+
 			$msg .= ' <a href="' . $url . '">' . __( 'Manage', 'wds' ) . '</a>';
 		}
 
 		if ( ! empty( $msg ) ) {
-			$this->_set_error( $msg );
+			$this->set_error_message( $msg );
 			$this->set_cached_error( 'day', $msg );
 		}
 

@@ -1,18 +1,15 @@
 <?php
+/**
+ * Class Smartcrawl_Controller_Upgrade_Page
+ *
+ * @package SmartCrawl
+ */
 
 class Smartcrawl_Controller_Upgrade_Page extends Smartcrawl_Admin_Page {
+
+	use Smartcrawl_Singleton;
+
 	const MENU_SLUG = 'wds_upgrade';
-
-	private static $_instance;
-	private $submenu_page;
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	protected function init() {
 		parent::init();
@@ -21,7 +18,7 @@ class Smartcrawl_Controller_Upgrade_Page extends Smartcrawl_Admin_Page {
 	}
 
 	public function add_page() {
-		$this->submenu_page = add_submenu_page(
+		$submenu_page = add_submenu_page(
 			'wds_wizard',
 			esc_html__( 'SmartCrawl Pro', 'wds' ),
 			esc_html__( 'SmartCrawl Pro', 'wds' ),
@@ -30,7 +27,7 @@ class Smartcrawl_Controller_Upgrade_Page extends Smartcrawl_Admin_Page {
 			array( $this, 'upgrade_page' )
 		);
 
-		add_action( "admin_print_styles-{$this->submenu_page}", array( $this, 'admin_styles' ) );
+		add_action( "admin_print_styles-{$submenu_page}", array( $this, 'admin_styles' ) );
 	}
 
 	public function admin_styles() {

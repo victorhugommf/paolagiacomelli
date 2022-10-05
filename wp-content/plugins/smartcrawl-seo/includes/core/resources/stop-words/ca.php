@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // catalan
-
-static $data = [
+static $data = array(
     'og',
     'i',
     'jeg',
@@ -97,7 +96,7 @@ static $data = [
     'thi',
     'jer',
     'sådan',
-];
+);
 
 $result =& $data;
 unset($data);

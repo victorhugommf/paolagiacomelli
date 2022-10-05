@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf79d2fd083932ed0a7ead54fd272475c
+class ComposerStaticInit7424a2f8aeaf85d46f9e54bc426802ce
 {
     public static $classMap = array (
         'Smartcrawl_Vendor\\SyllableTest' => __DIR__ . '/../..' . '/vendor_prefixed/syllable/tests/SyllableTest.php',
@@ -26,7 +26,7 @@ class ComposerStaticInitf79d2fd083932ed0a7ead54fd272475c
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInitf79d2fd083932ed0a7ead54fd272475c::$classMap;
+            $loader->classMap = ComposerStaticInit7424a2f8aeaf85d46f9e54bc426802ce::$classMap;
 
         }, null, ClassLoader::class);
     }

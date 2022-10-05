@@ -1,5 +1,5 @@
 <?php
-$is_member = empty( $_view['is_member'] ) ? false : true;
+$is_member = ! empty( $_view['is_member'] );
 if ( $is_member ) {
 	return;
 }

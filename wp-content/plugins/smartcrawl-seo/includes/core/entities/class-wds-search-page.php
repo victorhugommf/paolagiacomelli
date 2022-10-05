@@ -1,14 +1,17 @@
 <?php
 
 class Smartcrawl_Search_Page extends Smartcrawl_Entity {
+
 	private $search_phrase;
+
 	private $posts;
+
 	private $page_number;
 
 	public function __construct( $search_phrase, $posts = array(), $page_number = 0 ) {
 		$this->search_phrase = $search_phrase;
-		$this->posts = $posts;
-		$this->page_number = $page_number;
+		$this->posts         = $posts;
+		$this->page_number   = $page_number;
 	}
 
 	/**
@@ -19,7 +22,7 @@ class Smartcrawl_Search_Page extends Smartcrawl_Entity {
 	}
 
 	/**
-	 * @param string $search_phrase
+	 * @param string $search_phrase Search phrase.
 	 */
 	public function set_search_phrase( $search_phrase ) {
 		$this->search_phrase = $search_phrase;
@@ -44,7 +47,7 @@ class Smartcrawl_Search_Page extends Smartcrawl_Entity {
 	}
 
 	protected function load_robots() {
-		$noindex = $this->get_noindex_setting( 'search' ) ? 'noindex' : 'index';
+		$noindex  = $this->get_noindex_setting( 'search' ) ? 'noindex' : 'index';
 		$nofollow = $this->get_nofollow_setting( 'search' ) ? 'nofollow' : 'follow';
 
 		return "{$noindex},{$nofollow}";

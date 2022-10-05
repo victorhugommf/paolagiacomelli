@@ -3,7 +3,7 @@
 * Plugin Name: LoginPress - Customizing the WordPress Login Screen.
 * Plugin URI: https://loginpress.pro/?utm_source=loginpress-lite&utm_medium=plugin-inside&utm_campaign=pro-upgrade&utm_content=plugin_uri
 * Description: LoginPress is the best <code>wp-login</code> Login Page Customizer plugin by <a href="https://wpbrigade.com/?utm_source=loginpress-lite">WPBrigade</a> which allows you to completely change the layout of login, register and forgot password forms.
-* Version: 1.6.1
+* Version: 1.6.2
 * Author: WPBrigade
 * Author URI: https://WPBrigade.com/?utm_source=loginpress-lite
 * Text Domain: loginpress
@@ -22,7 +22,7 @@ if ( ! class_exists( 'LoginPress' ) ) :
     /**
     * @var string
     */
-    public $version = '1.6.1';
+    public $version = '1.6.2';
 
     /**
     * @var The single instance of the class
@@ -310,7 +310,7 @@ if ( ! class_exists( 'LoginPress' ) ) :
     */
     public function register_options_page() {
 
-      add_submenu_page( null, __( 'Activate', 'loginpress' ), __( 'Activate', 'loginpress' ), 'manage_options', 'loginpress-optin', array( $this, 'render_optin' )  );
+      add_submenu_page( 'LoginPress', __( 'Activate', 'loginpress' ), __( 'Activate', 'loginpress' ), 'manage_options', 'loginpress-optin', array( $this, 'render_optin' )  );
 
       add_theme_page( __( 'LoginPress', 'loginpress' ), __( 'LoginPress', 'loginpress' ), 'manage_options', "abw", '__return_null' );
     }

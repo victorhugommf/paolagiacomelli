@@ -33,6 +33,7 @@ class Settings {
 
 		$lightboxSettings = array(
 			'lightboxAutoplay'     => '0',
+			'lightboxContinuous'   => '1',
 			'lightboxAutoplayTime' => 6,
 			'lightboxThumbnails'   => '1',
 			'lightboxImageSize'    => 'full',

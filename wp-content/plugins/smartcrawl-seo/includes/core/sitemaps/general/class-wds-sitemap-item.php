@@ -1,58 +1,10 @@
 <?php
 
 class Smartcrawl_Sitemap_Item extends Smartcrawl_Sitemap_Index_Item {
-	const FREQ_ALWAYS = 'always';
-	const FREQ_HOURLY = 'hourly';
-	const FREQ_DAILY = 'daily';
-	const FREQ_WEEKLY = 'weekly';
-	const FREQ_MONTHLY = 'monthly';
-	const FREQ_YEARLY = 'yearly';
-	const FREQ_NEVER = 'never';
-
-	private $change_frequency = '';
-	private $priority = 0.5;
+	/**
+	 * @var array
+	 */
 	private $images = array();
-
-	/**
-	 * @return string
-	 */
-	public function get_change_frequency() {
-		return apply_filters(
-			'wds_sitemap_changefreq',
-			$this->change_frequency,
-			$this->get_location(),
-			$this->get_priority(),
-			$this->get_last_modified(),
-			$this->get_images()
-		);
-	}
-
-	/**
-	 * @param string $change_frequency
-	 *
-	 * @return $this
-	 */
-	public function set_change_frequency( $change_frequency ) {
-		$this->change_frequency = $change_frequency;
-		return $this;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function get_priority() {
-		return $this->priority;
-	}
-
-	/**
-	 * @param float $priority
-	 *
-	 * @return $this
-	 */
-	public function set_priority( $priority ) {
-		$this->priority = $priority;
-		return $this;
-	}
 
 	/**
 	 * @return array
@@ -62,8 +14,6 @@ class Smartcrawl_Sitemap_Item extends Smartcrawl_Sitemap_Index_Item {
 	}
 
 	/**
-	 * @param array $images
-	 *
 	 * @return $this
 	 */
 	public function set_images( $images ) {
@@ -72,10 +22,9 @@ class Smartcrawl_Sitemap_Item extends Smartcrawl_Sitemap_Index_Item {
 		return $this;
 	}
 
-	protected function format_priority( $priority ) {
-		return sprintf( '%.1f', $priority );
-	}
-
+	/**
+	 * @return string
+	 */
 	private function images_xml() {
 		$images = array();
 		foreach ( $this->get_images() as $image ) {
@@ -84,20 +33,26 @@ class Smartcrawl_Sitemap_Item extends Smartcrawl_Sitemap_Index_Item {
 		return join( "\n", $images );
 	}
 
+	/**
+	 * @return string
+	 */
 	private function image_xml( $image ) {
 		$text = ! empty( $image['title'] )
 			? $image['title']
 			: (string) smartcrawl_get_array_value( $image, 'alt' );
-		$src = (string) smartcrawl_get_array_value( $image, 'src' );
+		$src  = (string) smartcrawl_get_array_value( $image, 'src' );
 
-		$image_tag = '<image:image>';
+		$image_tag  = '<image:image>';
 		$image_tag .= '<image:loc>' . esc_url( $src ) . '</image:loc>';
 		$image_tag .= '<image:title>' . esc_xml( $text ) . '</image:title>';
-		$image_tag .= "</image:image>";
+		$image_tag .= '</image:image>';
 
 		return $image_tag;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function to_xml() {
 		$tags = array();
 
@@ -109,22 +64,10 @@ class Smartcrawl_Sitemap_Item extends Smartcrawl_Sitemap_Index_Item {
 
 		$tags[] = sprintf( '<loc>%s</loc>', esc_url( $location ) );
 
-		// Last modified date
+		// Last modified date.
 		$tags[] = sprintf( '<lastmod>%s</lastmod>', $this->format_timestamp( $this->get_last_modified() ) );
 
-		// Change frequency
-		$change_frequency = $this->get_change_frequency();
-		if ( ! empty( $change_frequency ) ) {
-			$tags[] = sprintf( '<changefreq>%s</changefreq>', strtolower( $change_frequency ) );
-		}
-
-		// Priority
-		$priority = $this->get_priority();
-		if ( ! empty( $priority ) ) {
-			$tags[] = sprintf( '<priority>%s</priority>', $this->format_priority( $priority ) );
-		}
-
-		// Images
+		// Images.
 		$images = $this->images_xml();
 		if ( ! empty( $images ) ) {
 			$tags[] = $images;

@@ -7,15 +7,8 @@ if ( ! file_exists( $file_path ) ) {
 require_once $file_path;
 
 class Smartcrawl_Dashboard_Notices extends Smartcrawl_Base_Controller {
-	private static $_instance;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
+	use Smartcrawl_Singleton;
 
 	protected function init() {
 		add_action( 'admin_init', array( $this, 'register_notices' ) );

@@ -1,10 +1,10 @@
 === Click to Chat ===
 Requires at least: 4.6
-Tested up to: 6.0.1
+Tested up to: 6.0.2
 Requires PHP: 5.6
 Contributors: holithemes
-Stable tag: 3.12
-Tags: whatsapp, whatsapp business, click to chat, whatsapp chat, whatsapp support, whatsapp group, whatsapp message, WhatsApp WooCommerce, whatsapp wordpress, whatsapp floating button, whatsapp icon, holithemes
+Stable tag: 3.12.2
+Tags: whatsapp, whatsapp business, click to chat, whatsapp chat, whatsapp support, whatsapp group, whatsapp share, WhatsApp WooCommerce, whatsapp wordpress, whatsapp floating button, chat, holithemes
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,13 +31,12 @@ Add 'WhatsApp' or 'WhatsApp Business' Number. And let your website visitors cont
 
 Select a Style that matches your Website design.
 
-* 8 pre-defined style/designs
+* 8 pre-defined customizable style/designs
 * Add your own Image/GIF
-* Custom Element/Design
-* Shortcodes
+* Custom Element/Design (convert any element as WhatsApp Chat element)
+* Shortcodes (Add WhatsApp button/icon with inline the content)
 * Different Styles, Positions for Mobile, Desktop
-* All pre-defined styles are customizable
-* Select style and customize it to match the website design.
+* Select the style and customize to match the website design
 
 [list of Styles](https://holithemes.com/plugins/click-to-chat/list-of-styles/)  |  ✏️[Customize Styles](https://holithemes.com/plugins/click-to-chat/customize-styles/)
 
@@ -53,8 +52,8 @@ Convert any Element as a WhatsApp Chat Element by adding
 * Class/ID name: 'ctc_chat' (or)
 * Href/link: '#ctc_chat'
 
-The custom design will navigate to WhatsApp based on plugin settings (WhatsApp Number, pre-filled message, .... ). 
-(e.g. Add WhatsApp in menu)
+The custom design will navigate to WhatsApp based on plugin settings (WhatsApp Number, pre-filled message, Analytics, .... ). 
+(e.g. menu item, button, image, link - just add ctc_chat as a class name)
 
 [Custom Element](https://holithemes.com/plugins/click-to-chat/custom-element/)
 
@@ -152,7 +151,8 @@ PRO:
 * Styles
 * Time Delay
 * Scroll Delay
-* Greetings Template, Content
+* Greetings Template
+* Greetings Header, Main, Bottom Content
 
 [Page-level settings](https://holithemes.com/plugins/click-to-chat/change-values-at-page-level/)
 
@@ -309,7 +309,7 @@ Help by [Translating the plugin](https://translate.wordpress.org/projects/wp-plu
 = From Dashboard ( WordPress admin ) =
 * plugins -> Add New
 * search for 'click to chat'
-* click on Install Now and then Active.
+* click on Install Now and then Activate.
 
 = using FTP or similar =
 * Unzip "Click-to-Chat" file and 
@@ -518,6 +518,14 @@ plugin will update automatically when new version is released
 After Activate the plugin, add WhatsApp Number at plugin settings.
 
 == Changelog ==
+
+= 3.12.2 =
+* Enchantment: Greetings settings
+* WhatsApp popup window width updated to display qr code in initial viewport
+
+= 3.12.1 =
+* WhatsApp popup window dimensions adjusted for better appearance
+* Enchantment: compatibility with amp plugin
 
 = 3.12 =
 * New: URL Open Target window - New, Same, popup.

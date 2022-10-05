@@ -1,8 +1,8 @@
 <?php
-$option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
-$plugin_settings = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
+$option_name              = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
+$plugin_settings          = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
 $current_redirection_code = Smartcrawl_Redirect_Utils::get()->get_default_type();
-$redirection_types = array(
+$redirection_types        = array(
 	301 => __( 'Permanent (301)', 'wds' ),
 	302 => __( 'Temporary (302)', 'wds' ),
 );
@@ -20,14 +20,17 @@ $redirection_types = array(
 
 	<div class="sui-box-settings-col-2">
 		<?php
-		$this->_render( 'toggle-item', array(
-			'field_name'                 => "{$option_name}[redirect-attachments]",
-			'field_id'                   => "{$option_name}[redirect-attachments]",
-			'checked'                    => ! empty( $_view['options']['redirect-attachments'] ),
-			'item_label'                 => esc_html__( 'Redirect attachments', 'wds' ),
-			'sub_settings_template'      => 'advanced-tools/advanced-redirect-image-attachments',
-			'sub_settings_template_args' => array(),
-		) );
+		$this->render_view(
+			'toggle-item',
+			array(
+				'field_name'                 => "{$option_name}[redirect-attachments]",
+				'field_id'                   => "{$option_name}[redirect-attachments]",
+				'checked'                    => ! empty( $_view['options']['redirect-attachments'] ),
+				'item_label'                 => esc_html__( 'Redirect attachments', 'wds' ),
+				'sub_settings_template'      => 'advanced-tools/advanced-redirect-image-attachments',
+				'sub_settings_template_args' => array(),
+			)
+		);
 		?>
 	</div>
 </div>
@@ -43,12 +46,13 @@ $redirection_types = array(
 	</div>
 
 	<div class="sui-box-settings-col-2">
-		<select id="wds-default-redirection-type"
-		        name="<?php echo esc_attr( $option_name ); ?>[redirections-code]"
-		        autocomplete="off"
-		        data-minimum-results-for-search="-1"
-		        class="sui-select">
-			<?php foreach ( $redirection_types as $redirection_type => $redirection_type_label ): ?>
+		<select
+			id="wds-default-redirection-type"
+			name="<?php echo esc_attr( $option_name ); ?>[redirections-code]"
+			autocomplete="off"
+			data-minimum-results-for-search="-1"
+			class="sui-select">
+			<?php foreach ( $redirection_types as $redirection_type => $redirection_type_label ) : ?>
 				<option value="<?php echo esc_attr( $redirection_type ); ?>"
 					<?php echo selected( $redirection_type, $current_redirection_code, false ); ?>>
 					<?php echo esc_html( $redirection_type_label ); ?>

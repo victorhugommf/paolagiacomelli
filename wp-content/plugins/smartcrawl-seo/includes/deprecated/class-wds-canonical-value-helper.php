@@ -55,14 +55,12 @@ class Smartcrawl_Canonical_Value_Helper extends Smartcrawl_Type_Traverser {
 
 	public function handle_search() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
-		// Not needed
+		// Not needed.
 	}
 
 	public function handle_404() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
-		// Not needed
+		// Not needed.
 	}
 
 	public function handle_date_archive() {
@@ -70,9 +68,9 @@ class Smartcrawl_Canonical_Value_Helper extends Smartcrawl_Type_Traverser {
 
 		$wp_query = $this->get_query_context();
 
-		$requested_year = $wp_query->get( 'year' );
+		$requested_year  = $wp_query->get( 'year' );
 		$requested_month = $wp_query->get( 'monthnum' );
-		$date_callback = ! empty( $requested_year ) && empty( $requested_month )
+		$date_callback   = ! empty( $requested_year ) && empty( $requested_month )
 			? 'get_year_link'
 			: 'get_month_link';
 		$this->canonical = $date_callback( $requested_year, $requested_month );
@@ -84,6 +82,8 @@ class Smartcrawl_Canonical_Value_Helper extends Smartcrawl_Type_Traverser {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
 		/**
+		 * Post type.
+		 *
 		 * @var $post_type WP_Post_Type
 		 */
 		$post_type = $this->get_queried_object();
@@ -97,9 +97,9 @@ class Smartcrawl_Canonical_Value_Helper extends Smartcrawl_Type_Traverser {
 	public function handle_tax_archive() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
-		$wp_query = $this->get_query_context();
-		$term = $wp_query->get_queried_object();
-		$canonical = smartcrawl_get_term_meta( $term, $term->taxonomy, 'wds_canonical' );
+		$wp_query        = $this->get_query_context();
+		$term            = $wp_query->get_queried_object();
+		$canonical       = smartcrawl_get_term_meta( $term, $term->taxonomy, 'wds_canonical' );
 		$this->canonical = $canonical ? $canonical : get_term_link( $term, $term->taxonomy );
 
 		$this->append_page_number();
@@ -108,7 +108,7 @@ class Smartcrawl_Canonical_Value_Helper extends Smartcrawl_Type_Traverser {
 	public function handle_author_archive() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
-		$user = $this->get_queried_object();
+		$user            = $this->get_queried_object();
 		$this->canonical = get_author_posts_url( $user->ID );
 
 		$this->append_page_number();
@@ -116,7 +116,6 @@ class Smartcrawl_Canonical_Value_Helper extends Smartcrawl_Type_Traverser {
 
 	public function handle_archive() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
 		// Not needed. More specific archives handled already.
 	}
 
@@ -137,8 +136,8 @@ class Smartcrawl_Canonical_Value_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function get_post_canonical( $id ) {
-		$link = get_permalink( $id );
-		$query = $this->get_query_context();
+		$link         = get_permalink( $id );
+		$query        = $this->get_query_context();
 		$comment_page = $query->get( 'cpage' );
 		if ( $comment_page ) {
 			$link = get_comments_pagenum_link( $comment_page );
@@ -149,12 +148,14 @@ class Smartcrawl_Canonical_Value_Helper extends Smartcrawl_Type_Traverser {
 
 	private function append_page_number() {
 		/**
+		 * WP Rewrite.
+		 *
 		 * @var $wp_rewrite WP_Rewrite
 		 */
 		global $wp_rewrite;
 
 		$wp_query = $this->get_query_context();
-		$paged = $wp_query->get( 'paged', 1 );
+		$paged    = $wp_query->get( 'paged', 1 );
 
 		if ( $paged > 1 ) {
 			if ( $wp_rewrite->using_permalinks() ) {

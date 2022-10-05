@@ -1,18 +1,18 @@
 <?php
 $option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
 
-$id = empty( $id ) ? '' : $id;
+$id    = empty( $id ) ? '' : $id; // phpcs:ignore
 $value = empty( $value ) ? '' : $value;
-$field = empty( $field ) ? 'id' : $field; // 'url' or 'id'
+$field = empty( $field ) ? 'id' : $field;
 
 $file_name = '';
-$url = '';
+$url       = '';
 if ( ! empty( $value ) ) {
-	if ( $field === 'url' ) {
+	if ( 'url' === $field ) {
 		$url = $value;
 	} else {
 		$media_item = wp_get_attachment_image_src( $value, 'full' );
-		$url = isset( $media_item[0] ) ? $media_item[0] : '';
+		$url        = isset( $media_item[0] ) ? $media_item[0] : '';
 	}
 
 	if ( $url ) {
@@ -22,19 +22,23 @@ if ( ! empty( $value ) ) {
 }
 ?>
 
-<div id="<?php echo esc_attr( $id ); ?>"
-     class="sui-upload <?php echo empty( $url ) ? '' : 'sui-has_file'; ?>"
-     data-field="<?php echo esc_attr( $field ); ?>">
-
-	<input type="hidden"
-	       name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $id ); ?>]"
-	       value="<?php echo esc_attr( $value ); ?>"
+<div
+	id="<?php echo esc_attr( $id ); ?>"
+	class="sui-upload <?php echo empty( $url ) ? '' : 'sui-has_file'; ?>"
+	data-field="<?php echo esc_attr( $field ); ?>"
+>
+	<input
+		type="hidden"
+		name="<?php echo esc_attr( $option_name ); ?>[<?php echo esc_attr( $id ); ?>]"
+		value="<?php echo esc_attr( $value ); ?>"
 	/>
 	<div class="sui-upload-image" aria-hidden="true">
 		<div class="sui-image-mask"></div>
-		<div role="button"
-		     class="sui-image-preview"
-		     style="background-image: url('<?php echo esc_attr( $url ); ?>');">
+		<div
+			role="button"
+			class="sui-image-preview"
+			style="background-image: url('<?php echo esc_attr( $url ); ?>');"
+		>
 		</div>
 	</div>
 

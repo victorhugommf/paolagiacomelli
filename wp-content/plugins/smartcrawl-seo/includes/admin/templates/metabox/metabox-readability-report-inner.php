@@ -1,9 +1,9 @@
 <?php
 $accordion_item_classes = empty( $accordion_item_classes ) ? '' : $accordion_item_classes;
-$readability_ignored = empty( $readability_ignored ) ? false : $readability_ignored;
-$icon_class = empty( $icon_class ) ? '' : $icon_class;
-$tag_class = empty( $tag_class ) ? '' : $tag_class;
-$readability_level = empty( $readability_level ) ? '' : $readability_level;
+$readability_ignored    = empty( $readability_ignored ) ? false : $readability_ignored;
+$icon_class             = empty( $icon_class ) ? '' : $icon_class;
+$tag_class              = empty( $tag_class ) ? '' : $tag_class;
+$readability_level      = empty( $readability_level ) ? '' : $readability_level;
 $readability_levels_map = empty( $readability_levels_map ) ? array() : $readability_levels_map;
 ?>
 
@@ -18,9 +18,11 @@ $readability_levels_map = empty( $readability_levels_map ) ? array() : $readabil
 
 				<?php if ( $readability_ignored ) : ?>
 					<div class="sui-accordion-col-4">
-						<button type="button"
-						        class="wds-unignore wds-disabled-during-request sui-button sui-button-ghost"
-						        data-check_id="readability">
+						<button
+							type="button"
+							class="wds-unignore wds-disabled-during-request sui-button sui-button-ghost"
+							data-check_id="readability"
+						>
 							<span class="sui-loading-text">
 								<span class="sui-icon-undo" aria-hidden="true"></span>
 
@@ -36,9 +38,11 @@ $readability_levels_map = empty( $readability_levels_map ) ? array() : $readabil
 							<?php echo esc_html( $readability_level ); ?>
 						</span>
 
-						<button class="sui-button-icon sui-accordion-open-indicator"
-						        type="button"
-						        aria-label="<?php esc_html_e( 'Open item', 'wds' ); ?>">
+						<button
+							class="sui-button-icon sui-accordion-open-indicator"
+							type="button"
+							aria-label="<?php esc_html_e( 'Open item', 'wds' ); ?>"
+						>
 							<span class="sui-icon-chevron-down" aria-hidden="true"></span>
 						</button>
 					</div>
@@ -82,9 +86,11 @@ $readability_levels_map = empty( $readability_levels_map ) ? array() : $readabil
 						</p>
 
 						<div class="wds-ignore-container">
-							<button type="button"
-							        class="wds-ignore wds-disabled-during-request sui-button sui-button-ghost"
-							        data-check_id="readability">
+							<button
+								type="button"
+								class="wds-ignore wds-disabled-during-request sui-button sui-button-ghost"
+								data-check_id="readability"
+							>
 								<span class="sui-loading-text">
 									<span class="sui-icon-eye-hide" aria-hidden="true"></span>
 

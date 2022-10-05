@@ -121,6 +121,12 @@ class HT_CTC_Admin_Greetings {
                         'description' => "<a href='https://holithemes.com/plugins/click-to-chat/greetings/' target='_blank'>Greetings</a> | <a href='https://holithemes.com/plugins/click-to-chat/greetings-1/' target='_blank'>Greetings-1</a> | <a href='https://holithemes.com/plugins/click-to-chat/greetings-2/' target='_blank'>Greetings-2</a> | <a href='https://holithemes.com/plugins/click-to-chat/greetings-form/' target='_blank'>Greetings - Form Filling</a> ",
                     ],
                     [
+                        'template' => 'collapsible_start',
+                        'collapsible' => 'no',
+                        'ul_class' => 'ctc_g_content',
+                        'title' => "Content: Header, Main, Bottom, Call to Action",
+                    ],
+                    [
                         'db' => 'empty',
                         'template' => 'empty',
                     ],
@@ -158,6 +164,9 @@ class HT_CTC_Admin_Greetings {
                         'label' => 'Call to Action',
                         'description' => __( 'Call to Action (Button/Link Text)', 'click-to-chat-for-whatsapp'),
                         'parent_class' => 'pr_call_to_action ctc_greetings_settings ctc_g_1 ctc_g_2',
+                    ],
+                    [
+                        'template' => 'collapsible_end',
                     ],
                 ]
             ],

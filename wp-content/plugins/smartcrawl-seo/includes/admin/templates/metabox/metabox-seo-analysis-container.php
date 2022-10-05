@@ -1,8 +1,8 @@
 <?php
-$post = empty( $post ) ? null : $post;
+$post                    = empty( $post ) ? null : $post; // phpcs:ignore
 $refresh_button_disabled = 'auto-draft' === get_post_status() ? 'disabled' : '';
 if ( $post ) {
-	$post_id = $post->ID;
+	$post_id = $post->ID; // phpcs:ignore
 } else {
 	return;
 }
@@ -14,8 +14,8 @@ if ( $post ) {
 			<strong><?php esc_html_e( 'SEO Analysis', 'wds' ); ?></strong>
 
 			<button <?php esc_attr( $refresh_button_disabled ); ?>
-					class="sui-button sui-button-ghost wds-refresh-analysis wds-analysis-seo wds-disabled-during-request"
-					type="button">
+				class="sui-button sui-button-ghost wds-refresh-analysis wds-analysis-seo wds-disabled-during-request"
+				type="button">
 			<span class="sui-loading-text">
 				<span class="sui-icon-update" aria-hidden="true"></span>
 
@@ -28,36 +28,43 @@ if ( $post ) {
 
 		<div class="sui-box-body">
 			<?php
-			$this->_render( 'mascot-message', array(
-				'key'     => 'metabox-seo-analysis',
-				'message' => esc_html__( 'This tool helps you optimize your content to give it the best chance of being found in search engines when people are looking for it. Start by choosing a few focus keywords that best describe your article, then SmartCrawl will give you recommendations to make sure your content is highly optimized.', 'wds' ),
-			) );
+			$this->render_view(
+				'mascot-message',
+				array(
+					'key'     => 'metabox-seo-analysis',
+					'message' => esc_html__( 'This tool helps you optimize your content to give it the best chance of being found in search engines when people are looking for it. Start by choosing a few focus keywords that best describe your article, then SmartCrawl will give you recommendations to make sure your content is highly optimized.', 'wds' ),
+				)
+			);
 			?>
 		</div>
 
-		<?php if ( apply_filters( 'wds-metabox-visible_parts-focus_area', true ) ) : ?>
+		<?php if ( apply_filters( 'wds-metabox-visible_parts-focus_area', true ) ) : // phpcs:ignore ?>
 			<div class="wds-focus-keyword sui-border-frame sui-form-field">
 				<label class="sui-label" for='wds_focus'>
 					<?php esc_html_e( 'Focus keyword', 'wds' ); ?>
 					<span>
 						<?php esc_html_e( '- Choose a single word, phrase or part of a sentence that people will likely search for. You can also use multiple keywords separated by commas.', 'wds' ); ?>
-						<span class="sui-tooltip sui-tooltip-constrained"
-						      style="--tooltip-width: 250px;"
-						      data-tooltip="<?php esc_html_e( 'As a general rule, using only one keyword per page/post is recommended.', 'wds' ); ?>">
+						<span
+							class="sui-tooltip sui-tooltip-constrained"
+							style="--tooltip-width: 250px;"
+							data-tooltip="<?php esc_html_e( 'As a general rule, using only one keyword per page/post is recommended.', 'wds' ); ?>"
+						>
 							<span class="sui-icon-info">
 							</span>
 						</span>
 					</span>
 				</label>
-				<input type='text'
-				       id='wds_focus'
-				       name='wds_focus'
-				       value='<?php echo esc_html( smartcrawl_get_value( 'focus-keywords', $post_id ) ); ?>'
-				       class='wds-disabled-during-request sui-form-control'
-				       placeholder="<?php esc_html_e( 'E.g. broken iphone screen', 'wds' ); ?>"/>
+				<input
+					type='text'
+					id='wds_focus'
+					name='wds_focus'
+					value='<?php echo esc_html( smartcrawl_get_value( 'focus-keywords', $post_id ) ); ?>'
+					class='wds-disabled-during-request sui-form-control'
+					placeholder="<?php esc_html_e( 'E.g. broken iphone screen', 'wds' ); ?>"
+				/>
 			</div>
 		<?php endif; ?>
 
-		<?php do_action( 'wds-editor-metabox-seo-analysis', $post ); ?>
+		<?php do_action( 'wds-editor-metabox-seo-analysis', $post ); // phpcs:ignore ?>
 	</div>
 </div>

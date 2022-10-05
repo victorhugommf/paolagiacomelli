@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // georgian
-
-static $data = [
+static $data = array(
     'ა.შ.',
     'აგერ',
     'აგრეთვე',
@@ -376,7 +375,7 @@ static $data = [
     'როგორც უკვე ითქვა',
     'როდის და რატომ',
     'უფრო და უფრო',
-];
+);
 
 $result =& $data;
 unset($data);

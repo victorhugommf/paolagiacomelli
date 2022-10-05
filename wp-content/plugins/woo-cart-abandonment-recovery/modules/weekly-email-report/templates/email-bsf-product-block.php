@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 											<h1 style="margin: 0; color: #1f2937; direction: ltr; font-family: Arial, Helvetica Neue, Helvetica, sans-serif; font-size: 28px; font-weight: 400; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0;">
 												<?php
 												echo esc_html__(
-													'Would you like to try our other products that make help you more sale and money?',
+													'Would you like to try our other products that help WooCommerce stores sell more?',
 													'cartflows'
 												)
 												?>

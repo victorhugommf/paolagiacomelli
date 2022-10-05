@@ -1,25 +1,15 @@
 <?php
 
 class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
-	/**
-	 * @var Smartcrawl_Controller_Woocommerce
-	 */
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
 
 	private $data;
 
-	public function __construct() {
+	protected function __construct() {
 		parent::__construct();
 
 		$this->data = new Smartcrawl_Woocommerce_Data();
-	}
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	private function get_options() {
@@ -27,19 +17,14 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 	}
 
 	public function should_run() {
-		return smartcrawl_woocommerce_active() &&
-		       $this->woo_module_enabled();
+		return smartcrawl_woocommerce_active() && $this->woo_module_enabled();
 	}
 
 	protected function always() {
 		add_action( 'wp_ajax_wds_change_woo_status', array( $this, 'change_woo_status' ) );
 		add_filter( 'woocommerce_structured_data_product', array( $this, 'remove_woocommerce_product_schema' ), 10, 2 );
 		add_action( 'wds_admin_notices', array( $this, 'display_notice' ) );
-		add_action(
-			'update_option_' . Smartcrawl_Woocommerce_Data::OPTION_ID,
-			array( $this, 'maybe_invalidate_sitemap_cache' ),
-			10, 2
-		);
+		add_action( 'update_option_' . Smartcrawl_Woocommerce_Data::OPTION_ID, array( $this, 'maybe_invalidate_sitemap_cache' ), 10, 2 );
 	}
 
 	protected function init() {
@@ -55,38 +40,46 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 
 	public function display_notice() {
 		if (
-			! smartcrawl_woocommerce_active()   // Woo not available
-			|| $this->woo_module_enabled()      // Woo SEO already enabled
+			! smartcrawl_woocommerce_active()   // Woo not available.
+			|| $this->woo_module_enabled()      // Woo SEO already enabled.
 			|| ! current_user_can( 'manage_options' )
 		) {
 			return;
 		}
 
-		$key = 'try-woocommerce';
-		$dismissed_messages = get_user_meta( get_current_user_id(), 'wds_dismissed_messages', true );
+		$key                  = 'try-woocommerce';
+		$dismissed_messages   = get_user_meta( get_current_user_id(), 'wds_dismissed_messages', true );
 		$is_message_dismissed = smartcrawl_get_array_value( $dismissed_messages, $key ) === true;
 		if ( $is_message_dismissed ) {
 			return;
 		}
 
 		?>
-		<div class="notice-info notice is-dismissible wds-native-dismissible-notice"
-		     data-message-key="<?php echo esc_attr( $key ); ?>">
+		<div
+			class="notice-info notice is-dismissible wds-native-dismissible-notice"
+			data-message-key="<?php echo esc_attr( $key ); ?>"
+		>
 			<p><strong><?php esc_html_e( 'Improve your WooCommerce SEO', 'wds' ); ?></strong></p>
 
 			<p style="margin-bottom:15px;">
-				<?php printf(
-					esc_html__( "Hey, %s! It looks like you’re using WooCommerce. Did you know that you can improve your site’s SEO ranking with our WooCommerce SEO settings?", 'wds' ),
-					Smartcrawl_Model_User::current()->get_first_name()
-				); ?>
+				<?php
+				printf(
+					esc_html__( 'Hey, %s! It looks like you’re using WooCommerce. Did you know that you can improve your site’s SEO ranking with our WooCommerce SEO settings?', 'wds' ),
+					esc_html( Smartcrawl_Model_User::current()->get_first_name() )
+				);
+				?>
 			</p>
-			<a href="<?php echo esc_attr( Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings_Admin::TAB_AUTOLINKS ) . '&tab=tab_woo' ); ?>"
-			   class="button button-primary">
+			<a
+				href="<?php echo esc_attr( Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings_Admin::TAB_AUTOLINKS ) . '&tab=tab_woo' ); ?>"
+				class="button button-primary"
+			>
 				<?php esc_html_e( 'Activate WooCommerce SEO', 'wds' ); ?>
 			</a>
-			<a href="#"
-			   class="wds-native-dismiss"
-			   style="font-weight: 400;color: #2271b1;">
+			<a
+				href="#"
+				class="wds-native-dismiss"
+				style="font-weight: 400;color: #2271b1;"
+			>
 				<?php esc_html_e( 'Not now', 'wds' ); ?>
 			</a>
 			<p></p>
@@ -104,28 +97,30 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 
 	public function ignore_hidden_products( $ignored_ids ) {
 		$product_visibility_terms = wc_get_product_visibility_term_ids();
-		$product_ids = get_posts( array(
-			'post_type'   => 'product',
-			'fields'      => 'ids',
-			'numberposts' => - 1,
-			'tax_query'   => array(
-				'relation' => 'AND',
-				array(
-					'taxonomy' => 'product_visibility',
-					'field'    => 'term_taxonomy_id',
-					'terms'    => array( $product_visibility_terms['exclude-from-catalog'] ),
+		$product_ids              = get_posts(
+			array(
+				'post_type'   => 'product',
+				'fields'      => 'ids',
+				'numberposts' => - 1,
+				'tax_query'   => array( // phpcs:ignore
+					'relation' => 'AND',
+					array(
+						'taxonomy' => 'product_visibility',
+						'field'    => 'term_taxonomy_id',
+						'terms'    => array( $product_visibility_terms['exclude-from-catalog'] ),
+					),
+					array(
+						'taxonomy' => 'product_visibility',
+						'field'    => 'term_taxonomy_id',
+						'terms'    => array( $product_visibility_terms['exclude-from-search'] ),
+					),
 				),
-				array(
-					'taxonomy' => 'product_visibility',
-					'field'    => 'term_taxonomy_id',
-					'terms'    => array( $product_visibility_terms['exclude-from-search'] ),
-				),
-			),
-		) );
-		$product_ids = ! empty( $product_ids ) && is_array( $product_ids )
+			)
+		);
+		$product_ids              = ! empty( $product_ids ) && is_array( $product_ids )
 			? $product_ids
 			: array();
-		$ignored_ids = ! empty( $ignored_ids ) && is_array( $ignored_ids )
+		$ignored_ids              = ! empty( $ignored_ids ) && is_array( $ignored_ids )
 			? $ignored_ids
 			: array();
 
@@ -146,10 +141,11 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 		$data = $this->get_request_data();
 		if ( ! isset( $data['enable'] ) ) {
 			wp_send_json_error();
+
 			return;
 		}
 
-		$options = get_option( Smartcrawl_Woocommerce_Data::OPTION_ID );
+		$options                        = get_option( Smartcrawl_Woocommerce_Data::OPTION_ID );
 		$options['woocommerce_enabled'] = ! empty( $data['enable'] );
 		update_option( Smartcrawl_Woocommerce_Data::OPTION_ID, $options );
 
@@ -157,14 +153,12 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 	}
 
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-woo-nonce' )
-			? stripslashes_deep( $_POST )
-			: array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-woo-nonce' ) ? stripslashes_deep( $_POST ) : array(); // phpcs:ignore
 	}
 
 	/**
-	 * @param $markup array Schema
-	 * @param $product WC_Product
+	 * @param array      $markup  Schema.
+	 * @param WC_Product $product Product.
 	 *
 	 * @return array
 	 */
@@ -177,7 +171,7 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 		$product_post = get_post( $product->get_id() );
 		$schema_types = $schema_utils->get_custom_schema_types( $product_post );
 		foreach ( $schema_types as $type => $schema ) {
-			if ( $type === 'Product' ) {
+			if ( 'Product' === $type ) {
 				return array();
 			}
 		}
@@ -186,15 +180,15 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 	}
 
 	/**
-	 * @param $schema
-	 * @param $product WC_PRODUCT
+	 * @param array      $schema  Schema.
+	 * @param WC_Product $product Product.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	public function add_brand_to_woocommerce_schema( $schema, $product ) {
 		$brand = $this->get_brand( $product );
 		if ( empty( $schema ) || empty( $brand ) ) {
-			// We may have already removed the schema or there's no brand available
+			// We may have already removed the schema or there's no brand available.
 			return $schema;
 		}
 
@@ -209,14 +203,14 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 
 	private function is_schema_disabled() {
 		$social = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
-		return ! empty( $social['disable-schema'] )
-		       || ! Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SCHEMA );
+
+		return ! empty( $social['disable-schema'] ) || ! Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SCHEMA );
 	}
 
 	/**
-	 * The following function belongs inside a Smartcrawl_Product class
+	 * The following function belongs inside a Smartcrawl_Product class.
 	 *
-	 * @param $product WC_Product
+	 * @param WC_Product $product Product.
 	 *
 	 * @return WP_Term|bool
 	 */
@@ -227,6 +221,7 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 		}
 
 		$brands = get_the_terms( $product->get_id(), $brand );
+
 		return is_wp_error( $brands ) || empty( $brands[0] )
 			? false
 			: $brands[0];
@@ -246,15 +241,15 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 		}
 
 		$parts = array(
-			"Disallow: /*add-to-cart=*",
+			'Disallow: /*add-to-cart=*',
 		);
 
 		foreach ( array( 'cart', 'checkout', 'myaccount' ) as $page ) {
 			$page_id = wc_get_page_id( $page );
 			if ( $page_id > 0 ) {
-				$page_permalink = wc_get_page_permalink( $page );
+				$page_permalink      = wc_get_page_permalink( $page );
 				$page_permalink_part = str_replace( home_url( '/' ), '/', $page_permalink );
-				$parts[] = "Disallow: $page_permalink_part";
+				$parts[]             = "Disallow: $page_permalink_part";
 			}
 		}
 
@@ -266,15 +261,15 @@ class Smartcrawl_Controller_Woocommerce extends Smartcrawl_Base_Controller {
 	}
 
 	public function maybe_invalidate_sitemap_cache( $old_option, $new_option ) {
-		$old_woo_status = smartcrawl_get_array_value( $old_option, 'woocommerce_enabled' );
-		$old_noindex_value = smartcrawl_get_array_value( $old_option, 'noindex_hidden_products' );
+		$old_woo_status     = smartcrawl_get_array_value( $old_option, 'woocommerce_enabled' );
+		$old_noindex_value  = smartcrawl_get_array_value( $old_option, 'noindex_hidden_products' );
 		$old_noindex_status = $old_woo_status && $old_noindex_value;
 
-		$new_woo_status = smartcrawl_get_array_value( $new_option, 'woocommerce_enabled' );
-		$new_noindex_value = smartcrawl_get_array_value( $new_option, 'noindex_hidden_products' );
+		$new_woo_status     = smartcrawl_get_array_value( $new_option, 'woocommerce_enabled' );
+		$new_noindex_value  = smartcrawl_get_array_value( $new_option, 'noindex_hidden_products' );
 		$new_noindex_status = $new_woo_status && $new_noindex_value;
 
-		if ( $old_noindex_status != $new_noindex_status ) {
+		if ( $old_noindex_status != $new_noindex_status ) { // phpcs:ignore
 			Smartcrawl_Sitemap_Cache::get()->invalidate();
 		}
 	}

@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // german
-
-static $data = [
+static $data = array(
     'ab',
     'bei',
     'da',
@@ -1026,7 +1025,7 @@ static $data = [
     'übermorgen',
     'übrig',
     'übrigens',
-];
+);
 
 $result =& $data;
 unset($data);

@@ -4,12 +4,12 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 
 	const IGNORES_SEO_STORAGE = 'wds-ignores';
 
-	private $_ignores = array();
+	private $ignores = array();
 
-	private $_ignores_storage;
+	private $ignores_storage;
 
 	public function __construct() {
-		$this->_ignores_storage = self::IGNORES_SEO_STORAGE;
+		$this->ignores_storage = self::IGNORES_SEO_STORAGE;
 
 		$this->load();
 	}
@@ -20,12 +20,12 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 	 * @return bool Status
 	 */
 	public function load() {
-		$this->_ignores = array();
+		$this->ignores = array();
 
 		$ignores = get_option( $this->get_ignores_storage() );
 
 		if ( ! empty( $ignores ) && is_array( $ignores ) ) {
-			$this->_ignores = array_filter( array_unique( $ignores ) );
+			$this->ignores = array_filter( array_unique( $ignores ) );
 
 			return true;
 		}
@@ -49,7 +49,7 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 	/**
 	 * Adds ignored item to ignores list
 	 *
-	 * @param string $key Item key to ignore
+	 * @param string $key Item key to ignore.
 	 *
 	 * @return bool Status
 	 */
@@ -61,21 +61,21 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 			return false;
 		}
 
-		$this->_ignores[] = $key;
+		$this->ignores[] = $key;
 
-		return $this->set_ignores( $this->_ignores );
+		return $this->set_ignores( $this->ignores );
 	}
 
 	public function set_ignores( $keys ) {
-		$this->_ignores = array_filter( array_unique( $keys ) );
+		$this->ignores = array_filter( array_unique( $keys ) );
 
-		return update_option( $this->get_ignores_storage(), $this->_ignores );
+		return update_option( $this->get_ignores_storage(), $this->ignores );
 	}
 
 	/**
 	 * Check if a string is valid ignored issue identifier
 	 *
-	 * @param string $key String to check
+	 * @param string $key String to check.
 	 *
 	 * @return bool Valid state
 	 */
@@ -90,7 +90,7 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 	/**
 	 * Removes ignored item from ignores list
 	 *
-	 * @param string $key Item key to remove from ignores
+	 * @param string $key Item key to remove from ignores.
 	 *
 	 * @return bool Status
 	 */
@@ -102,18 +102,20 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 			return false;
 		}
 
-		$index = array_search( $key, $this->_ignores, true );
+		$index = array_search( $key, $this->ignores, true );
 		if ( false !== $index ) {
-			unset( $this->_ignores[ $index ] );
+			unset( $this->ignores[ $index ] );
 		}
 
-		$this->_ignores = array_filter( array_unique( $this->_ignores ) );
+		$this->ignores = array_filter( array_unique( $this->ignores ) );
 
-		return update_option( $this->get_ignores_storage(), $this->_ignores );
+		return update_option( $this->get_ignores_storage(), $this->ignores );
 	}
 
 	/**
-	 * Checks if an issue is to be ignored
+	 * Checks if an issue is to be ignored.
+	 *
+	 * @param string $key Key.
 	 *
 	 * @return bool
 	 */
@@ -131,10 +133,10 @@ class Smartcrawl_Model_Ignores extends Smartcrawl_Model {
 	 * @return array List of ignored items unique IDs
 	 */
 	public function get_all() {
-		return array_unique( $this->_ignores );
+		return array_unique( $this->ignores );
 	}
 
 	private function get_ignores_storage() {
-		return $this->_ignores_storage;
+		return $this->ignores_storage;
 	}
 }

@@ -4,10 +4,12 @@
  * TODO: rename this and the schema fragment to be more clear
  */
 class Smartcrawl_Static_Home extends Smartcrawl_Post {
+
 	/**
 	 * @var array
 	 */
 	private $posts;
+
 	/**
 	 * @var int
 	 */
@@ -16,7 +18,7 @@ class Smartcrawl_Static_Home extends Smartcrawl_Post {
 	public function __construct( $posts = array(), $page_number = 0 ) {
 		parent::__construct( get_option( 'page_for_posts' ) );
 
-		$this->posts = $posts;
+		$this->posts       = $posts;
 		$this->page_number = $page_number;
 	}
 

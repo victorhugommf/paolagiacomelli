@@ -11,9 +11,11 @@
 class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 
 	const DATA_ANALYSIS = 'analysis';
+
 	const DATA_READABILITY = 'readability';
 
 	const META_KEY_ANALYSIS = '_wds_analysis';
+
 	const META_KEY_READABILITY = '_wds_readability';
 
 	/**
@@ -21,7 +23,7 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 *
 	 * @var int
 	 */
-	private $_post_id = false;
+	private $post_id = false;
 
 	/**
 	 * Constructor
@@ -40,9 +42,9 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 * @return bool
 	 */
 	public function set_post_id( $post_id ) {
-		$this->_post_id = (int) $post_id;
+		$this->post_id = (int) $post_id;
 
-		return ! ! $this->_post_id;
+		return ! ! $this->post_id;
 	}
 
 	/**
@@ -82,8 +84,8 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	/**
 	 * General data setter
 	 *
-	 * @param string $data_type Data type to check.
-	 * @param array $data Data to set.
+	 * @param string     $data_type Data type to check.
+	 * @param array|bool $data      Data to set.
 	 *
 	 * @return bool
 	 */
@@ -92,7 +94,7 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 			return false;
 		}
 
-		return update_post_meta( $this->_post_id, "_wds_{$data_type}", $data );
+		return update_post_meta( $this->post_id, "_wds_{$data_type}", $data );
 	}
 
 	/**
@@ -151,9 +153,7 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 			return false;
 		}
 
-		$data = smartcrawl_get_value( $data_type, $this->_post_id );
-
-		return $data;
+		return smartcrawl_get_value( $data_type, $this->post_id );
 	}
 
 	/**
@@ -168,23 +168,23 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 
 		$this->set_default_remote_handler();
 		$request = new Smartcrawl_Core_Request();
-		$content = $this->_endpoint_remote_handler->get_rendered_post( $this->_post_id );
-		$str = is_wp_error( $content )
+		$content = $this->endpoint_remote_handler->get_rendered_post( $this->post_id );
+		$str     = is_wp_error( $content )
 			? ''
 			: Smartcrawl_Html::plaintext( $content );
 
 		if ( empty( $str ) ) {
 			$raw_result = false;
-			$error = __( 'No content to check', 'wds' );
+			$error      = __( 'No content to check', 'wds' );
 		} else {
 			$readability_string = new Smartcrawl_String( $str, $this->get_readability_lang() );
-			$flesch = new Smartcrawl_Readability_Formula_Flesch( $readability_string, $this->get_readability_lang() );
+			$flesch             = new Smartcrawl_Readability_Formula_Flesch( $readability_string, $this->get_readability_lang() );
 			if ( $flesch->is_language_supported() ) {
 				$raw_result = $flesch->get_score();
-				$error = false;
+				$error      = false;
 			} else {
 				$raw_result = false;
-				$error = __( 'Your language is currently not supported', 'wds' );
+				$error      = __( 'Your language is currently not supported', 'wds' );
 			}
 		}
 		$result = 0;
@@ -197,12 +197,15 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 
 		$is_readable = $result > $this->get_readability_threshold();
 
-		$this->set_post_data( self::DATA_READABILITY, array(
-			'score'       => $result,
-			'raw_score'   => $raw_result,
-			'is_readable' => $is_readable,
-			'error'       => $error,
-		) );
+		$this->set_post_data(
+			self::DATA_READABILITY,
+			array(
+				'score'       => $result,
+				'raw_score'   => $raw_result,
+				'is_readable' => $is_readable,
+				'error'       => $error,
+			)
+		);
 
 		return ! empty( $result ) && $is_readable;
 	}
@@ -213,11 +216,11 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 * @return bool
 	 */
 	public function set_default_remote_handler() {
-		if ( ! empty( $this->_endpoint_remote_handler ) ) {
+		if ( ! empty( $this->endpoint_remote_handler ) ) {
 			return true;
 		}
 
-		$this->_endpoint_remote_handler = new Smartcrawl_Core_Request();
+		$this->endpoint_remote_handler = new Smartcrawl_Core_Request();
 
 		return true;
 	}
@@ -265,17 +268,17 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 * @return array
 	 */
 	public function get_readability_levels_map() {
-		$very_easy = __( 'Very easy to read', 'wds' );
-		$easy = __( 'Easy to read', 'wds' );
-		$fairly_easy = __( 'Fairly easy to read', 'wds' );
-		$plain = __( 'Standard', 'wds' );
+		$very_easy        = __( 'Very easy to read', 'wds' );
+		$easy             = __( 'Easy to read', 'wds' );
+		$fairly_easy      = __( 'Fairly easy to read', 'wds' );
+		$plain            = __( 'Standard', 'wds' );
 		$fairly_difficult = __( 'Fairly difficult to read', 'wds' );
-		$difficult = __( 'Difficult to read', 'wds' );
-		$confusing = __( 'Very difficult to read', 'wds' );
+		$difficult        = __( 'Difficult to read', 'wds' );
+		$confusing        = __( 'Very difficult to read', 'wds' );
 
-		$easy_tag = esc_html__( 'Easy', 'wds' );
-		$plain_tag = esc_html__( 'Standard', 'wds' );
-		$difficult_tag = esc_html__( 'Difficult', 'wds' );
+		$easy_tag             = esc_html__( 'Easy', 'wds' );
+		$plain_tag            = esc_html__( 'Standard', 'wds' );
+		$difficult_tag        = esc_html__( 'Difficult', 'wds' );
 		$fairly_difficult_tag = esc_html__( 'Fairly difficult', 'wds' );
 
 		return array(
@@ -337,7 +340,7 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 * @return bool Readability status
 	 */
 	public function is_readable() {
-		if ( Smartcrawl_Checks::is_readability_ignored( $this->_post_id ) ) {
+		if ( Smartcrawl_Checks::is_readability_ignored( $this->post_id ) ) {
 			return true;
 		}
 
@@ -364,15 +367,20 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 		$this->set_default_remote_handler();
 
 		/**
+		 * Checks.
+		 *
 		 * @var $checks Smartcrawl_Checks
 		 */
-		$checks = Smartcrawl_Checks::apply( $this->_post_id, $this->_endpoint_remote_handler );
+		$checks = Smartcrawl_Checks::apply( $this->post_id, $this->endpoint_remote_handler );
 
-		$this->set_post_data( self::DATA_ANALYSIS, array(
-			'errors'     => $checks->get_errors(),
-			'percentage' => $checks->get_percentage(),
-			'checks'     => $checks->get_applied_checks(),
-		) );
+		$this->set_post_data(
+			self::DATA_ANALYSIS,
+			array(
+				'errors'     => $checks->get_errors(),
+				'percentage' => $checks->get_percentage(),
+				'checks'     => $checks->get_applied_checks(),
+			)
+		);
 
 		return $checks->get_status();
 	}
@@ -386,7 +394,7 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 * @param object $request A Smartcrawl_Core_Request instance.
 	 */
 	public function set_remote_handler( $request ) {
-		$this->_endpoint_remote_handler = $request;
+		$this->endpoint_remote_handler = $request;
 	}
 
 	/**
@@ -397,13 +405,13 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 * @return string Human readable description.
 	 */
 	public function get_readability_level_description( $level ) {
-		$very_easy = __( 'Very easy to read', 'wds' );
-		$easy = __( 'Easy to read', 'wds' );
-		$fairly_easy = __( 'Fairly easy to read', 'wds' );
-		$plain = __( 'Standard', 'wds' );
+		$very_easy        = __( 'Very easy to read', 'wds' );
+		$easy             = __( 'Easy to read', 'wds' );
+		$fairly_easy      = __( 'Fairly easy to read', 'wds' );
+		$plain            = __( 'Standard', 'wds' );
 		$fairly_difficult = __( 'Fairly difficult to read', 'wds' );
-		$difficult = __( 'Difficult to read', 'wds' );
-		$confusing = __( 'Very difficult to read', 'wds' );
+		$difficult        = __( 'Difficult to read', 'wds' );
+		$confusing        = __( 'Very difficult to read', 'wds' );
 
 		$content = sprintf(
 			esc_html__( 'Your content is %s.', 'wds' ),
@@ -430,16 +438,16 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 */
 	public function get_overall_seo_analysis() {
 		$overall_analysis = array();
-		$cutoff = 100;
-		$checked = 0;
-		$passed = 0;
-		$post_types = $this->_get_post_types_for_overview();
+		$cutoff           = 100;
+		$checked          = 0;
+		$passed           = 0;
+		$post_types       = $this->get_post_types_for_overview();
 
 		foreach ( $post_types as $type ) {
 
 			$checked_in_type = 0;
-			$passed_in_type = 0;
-			$posts = $this->_get_posts_for_overview( $type, self::META_KEY_ANALYSIS );
+			$passed_in_type  = 0;
+			$posts           = $this->get_posts_for_overview( $type, self::META_KEY_ANALYSIS );
 
 			foreach ( $posts as $post ) {
 				$this->set_post_id( $post->ID );
@@ -449,7 +457,7 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 					$checked ++;
 					$checked_in_type ++;
 
-					$seo_data = $this->get_post_data( self::DATA_ANALYSIS );
+					$seo_data   = $this->get_post_data( self::DATA_ANALYSIS );
 					$percentage = intval( smartcrawl_get_array_value( $seo_data, 'percentage' ) );
 
 					if ( $percentage >= $cutoff ) {
@@ -465,7 +473,7 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 			);
 		}
 
-		$overall_analysis['total'] = $checked;
+		$overall_analysis['total']  = $checked;
 		$overall_analysis['passed'] = $passed;
 
 		return $overall_analysis;
@@ -476,27 +484,27 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 *
 	 * @return array
 	 */
-	private function _get_post_types_for_overview() {
+	private function get_post_types_for_overview() {
 		return get_post_types( array( 'public' => true ) );
 	}
 
 	/**
 	 * Gets posts sample for the overview calculations
 	 *
-	 * @param string $type Post type to query.
+	 * @param string $type     Post type to query.
 	 * @param string $meta_key Meta key to be used in the query (overview analysis part).
 	 *
 	 * @return array
 	 */
-	private function _get_posts_for_overview( $type, $meta_key ) {
-		$posts = get_posts( array(
-			'posts_per_page' => 100,
-			'post_type'      => $type,
-			'post_status'    => array( 'publish', 'draft', 'pending', 'future' ),
-			'meta_key'       => $meta_key,
-		) );
-
-		return $posts;
+	private function get_posts_for_overview( $type, $meta_key ) {
+		return get_posts(
+			array(
+				'posts_per_page' => 100,
+				'post_type'      => $type,
+				'post_status'    => array( 'publish', 'draft', 'pending', 'future' ),
+				'meta_key'       => $meta_key, // phpcs:ignore
+			)
+		);
 	}
 
 	/**
@@ -519,21 +527,21 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	 */
 	public function get_overall_readability_analysis() {
 		$overall_analysis = array();
-		$checked = 0;
-		$passed = 0;
-		$post_types = $this->_get_post_types_for_overview();
+		$checked          = 0;
+		$passed           = 0;
+		$post_types       = $this->get_post_types_for_overview();
 
 		foreach ( $post_types as $type ) {
 
 			$type_overview = array();
-			$posts = $this->_get_posts_for_overview( $type, self::META_KEY_READABILITY );
+			$posts         = $this->get_posts_for_overview( $type, self::META_KEY_READABILITY );
 
 			foreach ( $posts as $post ) {
 				$this->set_post_id( $post->ID );
 				$data_available = $this->has_post_data( self::DATA_READABILITY );
 				if ( $data_available ) {
 
-					$data = $this->get_post_data( self::DATA_READABILITY );
+					$data       = $this->get_post_data( self::DATA_READABILITY );
 					$post_score = intval( smartcrawl_get_array_value( $data, 'score' ) );
 
 					$readability_state = $this->get_kincaid_readability_state( $post_score, false );
@@ -553,7 +561,7 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 			$overall_analysis['post-types'][ $type ] = $type_overview;
 		}
 
-		$overall_analysis['total'] = $checked;
+		$overall_analysis['total']  = $checked;
 		$overall_analysis['passed'] = $passed;
 
 		return $overall_analysis;
@@ -562,8 +570,8 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 	/**
 	 * Takes readability score and returns a string representing readability status.
 	 *
-	 * @param float $readability_score Score for which range needs to be found.
-	 * @param bool $readability_ignored Whether readability is marked as ignored by the user.
+	 * @param float $readability_score   Score for which range needs to be found.
+	 * @param bool  $readability_ignored Whether readability is marked as ignored by the user.
 	 *
 	 * @return string A string representing readability status.
 	 */
@@ -584,7 +592,8 @@ class Smartcrawl_Model_Analysis extends Smartcrawl_Model {
 
 	private function get_readability_lang() {
 		$locale = str_replace( array( '-', '_' ), '-', get_locale() );
-		$parts = explode( '-', $locale );
-		return apply_filters( 'wds_post_readability_language', $parts[0], $this->_post_id );
+		$parts  = explode( '-', $locale );
+
+		return apply_filters( 'wds_post_readability_language', $parts[0], $this->post_id );
 	}
 }

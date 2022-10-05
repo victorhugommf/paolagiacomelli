@@ -1,5 +1,4 @@
-<?php
-// phpcs:ignoreFile -- Contains a simple array of mappings
+<?php // phpcs:ignoreFile -- Contains a simple array of mappings
 
 return array(
 	/**

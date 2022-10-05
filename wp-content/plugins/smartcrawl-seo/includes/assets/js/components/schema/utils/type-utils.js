@@ -19,6 +19,7 @@ import {addCondition, addConditionGroup, cloneConditions, deleteCondition, updat
 import produce from "immer";
 import SchemaTypeTransformer from "./schema-type-transformer";
 import SchemaTypeBlueprints, {CUSTOM_TYPE} from "../resources/schema-type-blueprints";
+import {parseInt} from "lodash-es";
 
 function generateTypeId(typeString, index) {
 	return typeString + '-' + index;
@@ -27,7 +28,7 @@ function generateTypeId(typeString, index) {
 function generateNextTypeId(schemaTypes, typeString) {
 	let newIndex = 0;
 	Object.keys(schemaTypes).forEach(typeId => {
-		const index = (typeId.split('-'))[1];
+		const index = parseInt((typeId.split('-'))[1]);
 		if (newIndex < index) {
 			newIndex = index;
 		}

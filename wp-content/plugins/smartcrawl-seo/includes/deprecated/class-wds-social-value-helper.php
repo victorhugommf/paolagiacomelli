@@ -1,18 +1,25 @@
 <?php
 
 class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
+
 	private $title = '';
+
 	private $description = '';
+
 	private $images = array();
+
 	private $enabled = false;
+
 	private $key;
+
 	private $post_meta_key;
+
 	private $term_meta_key;
 
 	public function __construct( $key, $post_meta_key, $term_meta_key ) {
 		_deprecated_constructor( __CLASS__, '2.18.0', 'Smartcrawl_Type_Traverser' );
 
-		$this->key = $key;
+		$this->key           = $key;
 		$this->post_meta_key = $post_meta_key;
 		$this->term_meta_key = $term_meta_key;
 
@@ -20,10 +27,10 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	protected function clear() {
-		$this->title = '';
+		$this->title       = '';
 		$this->description = '';
-		$this->images = array();
-		$this->enabled = false;
+		$this->images      = array();
+		$this->enabled     = false;
 	}
 
 	private function include_key( $format ) {
@@ -61,26 +68,26 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 	private function from_options( $location ) {
 		$options = $this->get_options();
 
-		$title = smartcrawl_get_array_value( $options, $this->include_key( '%s-title-' . $location ) );
+		$title       = smartcrawl_get_array_value( $options, $this->include_key( '%s-title-' . $location ) );
 		$description = smartcrawl_get_array_value( $options, $this->include_key( '%s-description-' . $location ) );
-		$images = smartcrawl_get_array_value( $options, $this->include_key( '%s-images-' . $location ) );
-		$enabled = smartcrawl_get_array_value( $options, $this->include_key( '%s-active-' . $location ) );
+		$images      = smartcrawl_get_array_value( $options, $this->include_key( '%s-images-' . $location ) );
+		$enabled     = smartcrawl_get_array_value( $options, $this->include_key( '%s-active-' . $location ) );
 
-		$title = $this->prepare_value( $title );
+		$title       = $this->prepare_value( $title );
 		$description = $this->prepare_value( $description );
 
-		$this->title = empty( $title ) ? Smartcrawl_Meta_Value_Helper::get()->get_title() : $title;
+		$this->title       = empty( $title ) ? Smartcrawl_Meta_Value_Helper::get()->get_title() : $title;
 		$this->description = empty( $description ) ? Smartcrawl_Meta_Value_Helper::get()->get_description() : $description;
-		$this->images = $this->prepare_option_images( $images );
-		$this->enabled = (bool) $enabled;
+		$this->images      = $this->prepare_option_images( $images );
+		$this->enabled     = (bool) $enabled;
 	}
 
 	private function from_post_meta( $post ) {
-		$post_meta = smartcrawl_get_value( $this->post_meta_key, $post->ID );
-		$title = smartcrawl_get_array_value( $post_meta, 'title' );
+		$post_meta   = smartcrawl_get_value( $this->post_meta_key, $post->ID );
+		$title       = smartcrawl_get_array_value( $post_meta, 'title' );
 		$description = smartcrawl_get_array_value( $post_meta, 'description' );
-		$images = smartcrawl_get_array_value( $post_meta, 'images' );
-		$disabled = smartcrawl_get_array_value( $post_meta, 'disabled' );
+		$images      = smartcrawl_get_array_value( $post_meta, 'images' );
+		$disabled    = smartcrawl_get_array_value( $post_meta, 'disabled' );
 
 		if ( ! empty( $title ) ) {
 			$this->title = $this->prepare_value( $title );
@@ -92,7 +99,7 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 			$this->images = $this->prepare_meta_images( $images );
 		}
 
-		// Add featured image as the last resort
+		// Add featured image as the last resort.
 		if ( has_post_thumbnail( $post ) ) {
 			$this->images = $this->prepare_image(
 				$this->images,
@@ -104,12 +111,12 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	/**
-	 * @param $post WP_Post
+	 * @param WP_Post $post Post.
 	 */
 	private function from_post_content( $post ) {
 		if (
-			! empty( $this->images ) // Already have some images
-			|| empty( $post->post_content ) // We don't even have post content
+			! empty( $this->images ) // Already have some images.
+			|| empty( $post->post_content ) // We don't even have post content.
 		) {
 			return;
 		}
@@ -130,11 +137,11 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function from_term_meta( $term ) {
-		$term_meta = smartcrawl_get_term_meta( $term, $term->taxonomy, $this->term_meta_key );
-		$title = smartcrawl_get_array_value( $term_meta, 'title' );
+		$term_meta   = smartcrawl_get_term_meta( $term, $term->taxonomy, $this->term_meta_key );
+		$title       = smartcrawl_get_array_value( $term_meta, 'title' );
 		$description = smartcrawl_get_array_value( $term_meta, 'description' );
-		$images = smartcrawl_get_array_value( $term_meta, 'images' );
-		$disabled = smartcrawl_get_array_value( $term_meta, 'disabled' );
+		$images      = smartcrawl_get_array_value( $term_meta, 'images' );
+		$disabled    = smartcrawl_get_array_value( $term_meta, 'disabled' );
 
 		if ( ! empty( $title ) ) {
 			$this->title = $this->prepare_value( $title );
@@ -186,8 +193,7 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 
 	public function handle_404() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
-		// No OG for 404 page
+		// No OG for 404 page.
 	}
 
 	public function handle_date_archive() {
@@ -214,7 +220,7 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 			$this->from_options( $term->taxonomy );
 
 			if ( $this->enabled ) {
-				// Now apply any overrides from the term taxonomy
+				// Now apply any overrides from the term taxonomy.
 				$this->from_term_meta( $term );
 			}
 		}
@@ -228,7 +234,6 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 
 	public function handle_archive() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
 		// TODO: Implement handle_archive() method.
 	}
 
@@ -240,7 +245,7 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 			$this->from_options( $post->post_type );
 
 			if ( $this->enabled ) {
-				// Now apply any overrides from the individual post's meta
+				// Now apply any overrides from the individual post's meta.
 				$this->from_post_meta( $post );
 				$this->from_post_content( $post );
 			}
@@ -280,7 +285,7 @@ class Smartcrawl_Social_Value_Helper extends Smartcrawl_Type_Traverser {
 		}
 
 		if ( is_numeric( $image_id ) ) {
-			$attachment = call_user_func( $attachment_function, $image_id, 'full' );
+			$attachment     = call_user_func( $attachment_function, $image_id, 'full' );
 			$attachment_url = smartcrawl_get_array_value( $attachment, 0 );
 			if ( $attachment_url ) {
 				$images[ $attachment_url ] = $attachment;

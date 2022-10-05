@@ -5,9 +5,10 @@
 </div>
 
 <div class="wds-onboard-footer-skip">
-	<a class="onboard-skip"
-	   href="#"
-	   aria-label="<?php esc_html_e( 'Close this dialog window and skip onboarding', 'wds' ); ?>">
+	<a
+		class="onboard-skip"
+		href="#"
+		aria-label="<?php esc_html_e( 'Close this dialog window and skip onboarding', 'wds' ); ?>">
 		<?php esc_html_e( 'Skip', 'wds' ); ?>
 	</a>
 </div>

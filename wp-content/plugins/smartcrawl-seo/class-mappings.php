@@ -1,7 +1,13 @@
 <?php
+/**
+ * The autoloader class mappings.
+ *
+ * @package    Smartcrawl
+ * @subpackage Class mappings.
+ */
 
 return array(
-	// Classes in includes/core/
+	// Classes in includes/core/.
 	'Smartcrawl_Base_Controller'                          => '/core/class-wds-base-controller.php',
 	'Smartcrawl_Checks'                                   => '/core/class-wds-checks.php',
 	'Smartcrawl_Compatibility'                            => '/core/class-wds-compatibility.php',
@@ -42,23 +48,23 @@ return array(
 	'Smartcrawl_Report_Permalinks_Controller'             => '/core/class-wds-report-permalinks.php',
 	'Smartcrawl_Recommended_Plugins'                      => '/core/class-wds-recommended-plugins.php',
 	'Smartcrawl_Dashboard_Notices'                        => '/core/class-wds-dashboard-notices.php',
-	// Classes in includes/core/service/
+	// Classes in includes/core/service/.
 	'Smartcrawl_Lighthouse_Service'                       => '/core/service/class-wds-lighthouse-service.php',
 	'Smartcrawl_Seo_Service'                              => '/core/service/class-wds-seo-service.php',
 	'Smartcrawl_Site_Service'                             => '/core/service/class-wds-site-service.php',
 	'Smartcrawl_Uptime_Service'                           => '/core/service/class-wds-uptime-service.php',
-	// Classes in includes/core/admin-page/
+	// Classes in includes/core/admin-page/.
 	'Smartcrawl_Admin_Page'                               => '/core/admin-page/class-wds-admin-page.php',
 	'Smartcrawl_Controller_Upgrade_Page'                  => '/core/admin-page/class-wds-controller-upgrade-page.php',
 	'Smartcrawl_Network_Settings_Page_Controller'         => '/core/admin-page/class-wds-network-settings-page-controller.php',
-	// Classes in includes/core/buddypress/
+	// Classes in includes/core/buddypress/.
 	'Smartcrawl_Buddypress_Api'                           => '/core/buddypress/class-wds-buddypress-api.php',
-	// Classes in includes/core/cache/
+	// Classes in includes/core/cache/.
 	'Smartcrawl_Cache_Manager'                            => '/core/cache/class-wds-cache-manager.php',
 	'Smartcrawl_Post_Cache'                               => '/core/cache/class-wds-post-cache.php',
 	'Smartcrawl_Term_Cache'                               => '/core/cache/class-wds-term-cache.php',
 	'Smartcrawl_String_Cache'                             => '/core/cache/class-wds-string-cache.php',
-	// Classes in includes/core/checks/
+	// Classes in includes/core/checks/.
 	'Smartcrawl_Check_Post_Abstract'                      => '/core/checks/class-wds-check-post-abstract.php',
 	'Smartcrawl_Check_Abstract'                           => '/core/checks/class-wds-check-abstract.php',
 	'Smartcrawl_Check_Content_Length'                     => '/core/checks/class-wds-check-content-length.php',
@@ -75,7 +81,7 @@ return array(
 	'Smartcrawl_Check_Subheadings_Keywords'               => '/core/checks/class-wds-check-subheadings-keywords.php',
 	'Smartcrawl_Check_Title_Keywords'                     => '/core/checks/class-wds-check-title-keywords.php',
 	'Smartcrawl_Check_Title_Length'                       => '/core/checks/class-wds-check-title-length.php',
-	// Classes in includes/core/configs
+	// Classes in includes/core/configs.
 	'Smartcrawl_Config_Collection'                        => '/core/configs/class-wds-config-collection.php',
 	'Smartcrawl_Configs_Service'                          => '/core/configs/class-wds-configs-service.php',
 	'Smartcrawl_Controller_Configs'                       => '/core/configs/class-wds-controller-configs.php',
@@ -83,16 +89,16 @@ return array(
 	'Smartcrawl_Export'                                   => '/core/configs/class-wds-export.php',
 	'Smartcrawl_Import'                                   => '/core/configs/class-wds-import.php',
 	'Smartcrawl_Model_IO'                                 => '/core/configs/class-wds-model-io.php',
-	// Classes in includes/core/crawler
+	// Classes in includes/core/crawler.
 	'Smartcrawl_Controller_Crawler'                       => '/core/crawler/class-wds-controller-crawler.php',
-	// Classes in includes/core/lighthouse/
+	// Classes in includes/core/lighthouse/.
 	'Smartcrawl_Controller_Lighthouse'                    => '/core/lighthouse/class-wds-controller-lighthouse.php',
 	'Smartcrawl_Lighthouse_Dashboard_Renderer'            => '/core/lighthouse/class-wds-lighthouse-dashboard-renderer.php',
 	'Smartcrawl_Lighthouse_Group'                         => '/core/lighthouse/class-wds-lighthouse-group.php',
 	'Smartcrawl_Lighthouse_Options'                       => '/core/lighthouse/class-wds-lighthouse-options.php',
 	'Smartcrawl_Lighthouse_Renderer'                      => '/core/lighthouse/class-wds-lighthouse-renderer.php',
 	'Smartcrawl_Lighthouse_Report'                        => '/core/lighthouse/class-wds-lighthouse-report.php',
-	// Classes in includes/core/entities/
+	// Classes in includes/core/entities/.
 	'Smartcrawl_404_Page'                                 => '/core/entities/class-wds-404-page.php',
 	'Smartcrawl_Blog_Home'                                => '/core/entities/class-wds-blog-home.php',
 	'Smartcrawl_Buddypress_Group'                         => '/core/entities/class-wds-buddypress-group.php',
@@ -108,23 +114,23 @@ return array(
 	'Smartcrawl_Static_Home'                              => '/core/entities/class-wds-static-home.php',
 	'Smartcrawl_Taxonomy_Term'                            => '/core/entities/class-wds-taxonomy-term.php',
 	'Smartcrawl_Woo_Shop_Page'                            => '/core/entities/class-wds-woo-shop-page.php',
-	// Classes in includes/core/multisite
+	// Classes in includes/core/multisite.
 	'Smartcrawl_Subsite_Process_Runner'                   => '/core/multisite/class-wds-subsite-process-runner.php',
 	'Smartcrawl_Network_Configs_Controller'               => '/core/multisite/class-wds-network-configs-controller.php',
 	'Smartcrawl_Sitewide_Deprecation_Controller'          => '/core/multisite/class-wds-sitewide-deprecation-controller.php',
-	// Classes in includes/core/readability-analysis/formulas/
+	// Classes in includes/core/readability-analysis/formulas/.
 	'Smartcrawl_Readability_Formula'                      => '/core/readability-analysis/formulas/class-wds-readability-formula.php',
 	'Smartcrawl_Readability_Formula_Flesch'               => '/core/readability-analysis/formulas/class-wds-readability-formula-flesch.php',
-	// Classes in includes/core/readability-analysis/
+	// Classes in includes/core/readability-analysis/.
 	'Smartcrawl_Controller_Readability'                   => '/core/readability-analysis/class-wds-controller-readability.php',
-	// Classes in includes/core/redirects
+	// Classes in includes/core/redirects.
 	'Smartcrawl_217_Redirect_Upgrade'                     => '/core/redirects/class-wds-217-redirect-upgrade.php',
 	'Smartcrawl_Controller_Redirection'                   => '/core/redirects/class-wds-controller-redirection.php',
 	'Smartcrawl_Model_Redirection'                        => '/core/redirects/class-wds-model-redirection.php',
 	'Smartcrawl_Redirect_Item'                            => '/core/redirects/class-wds-redirect-item.php',
 	'Smartcrawl_Redirect_Utils'                           => '/core/redirects/class-wds-redirect-utils.php',
 	'Smartcrawl_Redirects_Database_Table'                 => '/core/redirects/class-wds-redirects-database-table.php',
-	// Classes in includes/core/lighthouse/checks/
+	// Classes in includes/core/lighthouse/checks/.
 	'Smartcrawl_Lighthouse_Canonical_Check'               => '/core/lighthouse/checks/class-wds-lighthouse-canonical-check.php',
 	'Smartcrawl_Lighthouse_Check'                         => '/core/lighthouse/checks/class-wds-lighthouse-check.php',
 	'Smartcrawl_Lighthouse_Crawlable_Anchors_Check'       => '/core/lighthouse/checks/class-wds-lighthouse-crawlable-anchors-check.php',
@@ -141,10 +147,10 @@ return array(
 	'Smartcrawl_Lighthouse_Structured_Data_Check'         => '/core/lighthouse/checks/class-wds-lighthouse-structured-data-check.php',
 	'Smartcrawl_Lighthouse_Tap_Targets_Check'             => '/core/lighthouse/checks/class-wds-lighthouse-tap-targets-check.php',
 	'Smartcrawl_Lighthouse_Viewport_Check'                => '/core/lighthouse/checks/class-wds-lighthouse-viewport-check.php',
-	// Classes in includes/core/lighthouse/tables/
+	// Classes in includes/core/lighthouse/tables/.
 	'Smartcrawl_Lighthouse_Table'                         => '/core/lighthouse/tables/class-wds-lighthouse-table.php',
 	'Smartcrawl_Lighthouse_Tap_Targets_Table'             => '/core/lighthouse/tables/class-wds-lighthouse-tap-targets-table.php',
-	// Classes in includes/core/schema/fragments/
+	// Classes in includes/core/schema/fragments/.
 	'Smartcrawl_Schema_Fragment'                          => '/core/schema/fragments/class-wds-schema-fragment.php',
 	'Smartcrawl_Schema_Fragment_Archive'                  => '/core/schema/fragments/class-wds-schema-fragment-archive.php',
 	'Smartcrawl_Schema_Fragment_Article'                  => '/core/schema/fragments/class-wds-schema-fragment-article.php',
@@ -170,11 +176,11 @@ return array(
 	'Smartcrawl_Schema_Fragment_Webpage'                  => '/core/schema/fragments/class-wds-schema-fragment-webpage.php',
 	'Smartcrawl_Schema_Fragment_Website'                  => '/core/schema/fragments/class-wds-schema-fragment-website.php',
 	'Smartcrawl_Schema_Fragment_Woo_Shop'                 => '/core/schema/fragments/class-wds-schema-fragment-woo-shop.php',
-	// Classes in includes/core/schema/loops/
+	// Classes in includes/core/schema/loops/.
 	'Smartcrawl_Schema_Loop'                              => '/core/schema/loops/class-wds-schema-loop.php',
 	'Smartcrawl_Schema_Loop_Comments'                     => '/core/schema/loops/class-wds-schema-loop-comments.php',
 	'Smartcrawl_Schema_Loop_Woocommerce_Reviews'          => '/core/schema/loops/class-wds-schema-loop-woocommerce-reviews.php',
-	// Classes in includes/core/schema/sources/
+	// Classes in includes/core/schema/sources/.
 	'Smartcrawl_Schema_Property_Source'                   => '/core/schema/sources/class-wds-schema-property-source.php',
 	'Smartcrawl_Schema_Source_Author'                     => '/core/schema/sources/class-wds-schema-source-author.php',
 	'Smartcrawl_Schema_Source_Comment'                    => '/core/schema/sources/class-wds-schema-source-comment.php',
@@ -191,10 +197,10 @@ return array(
 	'Smartcrawl_Schema_Source_Woocommerce'                => '/core/schema/sources/class-wds-schema-source-woocommerce.php',
 	'Smartcrawl_Schema_Source_Woocommerce_Review'         => '/core/schema/sources/class-wds-schema-source-woocommerce-review.php',
 	'Smartcrawl_Schema_Source_Woocommerce_Review_Factory' => '/core/schema/sources/class-wds-schema-source-woocommerce-review-factory.php',
-	// Classes in includes/core/schema/types
+	// Classes in includes/core/schema/types.
 	'Smartcrawl_Schema_Type'                              => '/core/schema/types/class-wds-schema-type.php',
 	'Smartcrawl_Schema_Type_Woo_Product'                  => '/core/schema/types/class-wds-schema-type-woo-product.php',
-	// Classes in includes/core/schema/
+	// Classes in includes/core/schema/.
 	'Smartcrawl_Controller_Media_Schema_Data'             => '/core/schema/class-wds-controller-media-schema-data.php',
 	'Smartcrawl_Controller_Schema_Types'                  => '/core/schema/class-wds-controller-schema-types.php',
 	'Smartcrawl_Schema_Printer'                           => '/core/schema/class-wds-schema-printer.php',
@@ -202,21 +208,21 @@ return array(
 	'Smartcrawl_Schema_Type_Conditions'                   => '/core/schema/class-wds-schema-type-conditions.php',
 	'Smartcrawl_Schema_Type_Constants'                    => '/core/schema/class-wds-schema-type-constants.php',
 	'Smartcrawl_Schema_Utils'                             => '/core/schema/class-wds-schema-utils.php',
-	// Classes in includes/core/sitemaps/general/query/
+	// Classes in includes/core/sitemaps/general/query/.
 	'Smartcrawl_Sitemap_BP_Groups_Query'                  => '/core/sitemaps/general/query/class-wds-sitemap-bp-groups-query.php',
 	'Smartcrawl_Sitemap_BP_Profile_Query'                 => '/core/sitemaps/general/query/class-wds-sitemap-bp-profile-query.php',
 	'Smartcrawl_Sitemap_Extras_Query'                     => '/core/sitemaps/general/query/class-wds-sitemap-extras-query.php',
 	'Smartcrawl_Sitemap_Posts_Query'                      => '/core/sitemaps/general/query/class-wds-sitemap-posts-query.php',
 	'Smartcrawl_Sitemap_Terms_Query'                      => '/core/sitemaps/general/query/class-wds-sitemap-terms-query.php',
-	// Classes in includes/core/sitemaps/general/
+	// Classes in includes/core/sitemaps/general/.
 	'Smartcrawl_General_Sitemap'                          => '/core/sitemaps/general/class-wds-general-sitemap.php',
 	'Smartcrawl_Sitemap_Item'                             => '/core/sitemaps/general/class-wds-sitemap-item.php',
-	// Classes in includes/core/sitemaps/news/
+	// Classes in includes/core/sitemaps/news/.
 	'Smartcrawl_News_Sitemap'                             => '/core/sitemaps/news/class-wds-news-sitemap.php',
 	'Smartcrawl_News_Sitemap_Data'                        => '/core/sitemaps/news/class-wds-news-sitemap-data.php',
 	'Smartcrawl_Sitemap_News_Item'                        => '/core/sitemaps/news/class-wds-sitemap-news-item.php',
 	'Smartcrawl_Sitemap_News_Query'                       => '/core/sitemaps/news/class-wds-sitemap-news-query.php',
-	// Classes in includes/core/sitemaps/
+	// Classes in includes/core/sitemaps/.
 	'Smartcrawl_Controller_Sitemap'                       => '/core/sitemaps/class-wds-controller-sitemap.php',
 	'Smartcrawl_Controller_Sitemap_Front'                 => '/core/sitemaps/class-wds-controller-sitemap-front.php',
 	'Smartcrawl_Controller_Sitemap_Native'                => '/core/sitemaps/class-wds-controller-sitemap-native.php',
@@ -228,20 +234,20 @@ return array(
 	'Smartcrawl_Sitemap_Query'                            => '/core/sitemaps/class-wds-sitemap-query.php',
 	'Smartcrawl_Sitemap_Utils'                            => '/core/sitemaps/class-wds-sitemap-utils.php',
 	'Smartcrawl_Sitemaps_Provider'                        => '/core/sitemaps/class-wds-sitemaps-provider.php',
-	// Classes in includes/core/third-party-import/
+	// Classes in includes/core/third-party-import/.
 	'Smartcrawl_Controller_Third_Party_Import'            => '/core/third-party-import/class-wds-controller-third-party-import.php',
 	'Smartcrawl_Importer'                                 => '/core/third-party-import/class-wds-importer.php',
 	'Smartcrawl_AIOSEOP_Importer'                         => '/core/third-party-import/class-wds-aioseop-importer.php',
 	'Smartcrawl_Yoast_Importer'                           => '/core/third-party-import/class-wds-yoast-importer.php',
-	// Classes in includes/core/woocommerce/
+	// Classes in includes/core/woocommerce/.
 	'Smartcrawl_Controller_Woo_Global_Id'                 => '/core/woocommerce/class-wds-controller-woo-global-id.php',
 	'Smartcrawl_Controller_Woocommerce'                   => '/core/woocommerce/class-wds-controller-woocommerce.php',
 	'Smartcrawl_Woocommerce_Data'                         => '/core/woocommerce/class-wds-woocommerce-data.php',
 	'Smartcrawl_Woocommerce_Api'                          => '/core/woocommerce/class-wds-woocommerce-api.php',
-	// Classes in includes/core/wpml/
+	// Classes in includes/core/wpml/.
 	'Smartcrawl_Controller_Wpml'                          => '/core/wpml/class-wds-controller-wpml.php',
 	'Smartcrawl_Wpml_Api'                                 => '/core/wpml/class-wds-wpml-api.php',
-	// Classes in includes/admin/
+	// Classes in includes/admin/.
 	'Smartcrawl_Admin'                                    => '/admin/admin.php',
 	'Smartcrawl_Metabox'                                  => '/admin/metabox.php',
 	'Smartcrawl_Settings_Admin'                           => '/admin/settings.php',
@@ -251,8 +257,7 @@ return array(
 	'Smartcrawl_SEO_Analysis_UI'                          => '/admin/class-wds-seo-analysis-ui.php',
 	'Smartcrawl_Readability_Analysis_UI'                  => '/admin/class-wds-readability-analysis-ui.php',
 	'Smartcrawl_Social_UI'                                => '/admin/class-wds-social-ui.php',
-	'Smartcrawl_Sitemap_UI'                               => '/admin/class-wds-sitemap-ui.php',
-	// Classes in includes/admin/settings/
+	// Classes in includes/admin/settings/.
 	'Smartcrawl_Autolinks_Settings'                       => '/admin/settings/autolinks.php',
 	'Smartcrawl_Settings_Dashboard'                       => '/admin/settings/dashboard.php',
 	'Smartcrawl_Health_Settings'                          => '/admin/settings/health.php',
@@ -261,7 +266,7 @@ return array(
 	'Smartcrawl_Settings_Settings'                        => '/admin/settings/settings.php',
 	'Smartcrawl_Sitemap_Settings'                         => '/admin/settings/sitemap.php',
 	'Smartcrawl_Social_Settings'                          => '/admin/settings/social.php',
-	// Classes in includes/tools/
+	// Classes in includes/tools/.
 	'Smartcrawl_Autolinks'                                => '/tools/autolinks.php',
 	'Smartcrawl_OpenGraph_Printer'                        => '/tools/class-wds-opengraph-printer.php',
 	'Smartcrawl_Pinterest_Printer'                        => '/tools/class-wds-pinterest-printer.php',
@@ -270,15 +275,15 @@ return array(
 	'Smartcrawl_OnPage'                                   => '/tools/onpage.php',
 	'Smartcrawl_Sitemaps_Dashboard_Widget'                => '/tools/sitemaps-dashboard-widget.php',
 	'Smartcrawl_Xml_VideoSitemap'                         => '/tools/video-sitemaps.php',
-	// Classes in includes/tools/seomoz/
+	// Classes in includes/tools/seomoz/.
 	'Smartcrawl_Controller_Moz_Cron'                      => '/tools/seomoz/class-wds-controller-moz-cron.php',
 	'Smartcrawl_Moz_API'                                  => '/tools/seomoz/class-wds-moz-api.php',
 	'Smartcrawl_Moz_Dashboard_Widget'                     => '/tools/seomoz/class-wds-moz-dashboard-widget.php',
 	'Smartcrawl_Moz_Results_Renderer'                     => '/tools/seomoz/class-wds-moz-results-renderer.php',
 	'Smartcrawl_Moz_Metabox'                              => '/tools/seomoz/class-wds-moz-metabox.php',
-	// Classes in includes/
+	// Classes in includes/.
 	'Smartcrawl_Front'                                    => '/front.php',
-	// Deprecated classes
+	// Deprecated classes.
 	'Smartcrawl_Canonical_Value_Helper'                   => '/deprecated/class-wds-canonical-value-helper.php',
 	'Smartcrawl_Meta_Value_Helper'                        => '/deprecated/class-wds-meta-value-helper.php',
 	'Smartcrawl_OpenGraph_Value_Helper'                   => '/deprecated/class-wds-opengraph-value-helper.php',

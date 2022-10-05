@@ -4,7 +4,7 @@ Tested up to: 6.0
 Contributors: WPBrigade, hiddenpearls, AbdulWahab610
 Author URI: https://wpbrigade.com/?utm_source=loginpress-lite&utm_medium=author-url-link
 Tags: wp-login, login, login customizer, custom login, wordpress login,
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -220,6 +220,10 @@ Please visit <a target="_blank" rel="friend" href="https://loginpress.pro?utm_so
 23. Custom Login page (Company theme) Example #23 with Captcha [Pro feature](https://loginpress.pro?utm_source=loginpress-lite&utm_medium=screenshots&utm_campaign=pro-upgrade)
 
 == Changelog ==
+
+= 1.6.2 – 2022-07-18 =
+* BugFix: Apply escaping at multiples places in code for security protection.
+* Compatibility: Compatible with WordPress 6.0.1
 
 = 1.6.1 – 2022-06-24 =
 * BugFix: Import/Export issue with PHP 8.1
@@ -587,9 +591,9 @@ Please visit <a target="_blank" rel="friend" href="https://loginpress.pro?utm_so
 * Enhancement: Add "username exists" and "email exists" error message option in customizer.
 * Enhancement: Code improvement.
 * Introducing Pro features:
-    * Bugfix: reCaptcha confliction with WooCommerce login form.
-    * Enhancement: Add "Password hint" message option in customizer.
-    * Enhancement: Code improvement.
+* Bugfix: reCaptcha confliction with WooCommerce login form.
+* Enhancement: Add "Password hint" message option in customizer.
+* Enhancement: Code improvement.
 
 = 1.0.15 - 2017-05-31 =
 * Enhancement: Opt-in for plugin users.
@@ -656,5 +660,5 @@ Please visit <a target="_blank" rel="friend" href="https://loginpress.pro?utm_so
 
 == Upgrade Notice ==
 
-= 1.6.1 =
+= 1.6.2 =
 * Important Release, upgrade immediately. Compatible with 6.0

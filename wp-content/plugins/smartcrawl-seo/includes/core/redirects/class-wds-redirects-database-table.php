@@ -1,23 +1,16 @@
 <?php
 
 class Smartcrawl_Redirects_Database_Table {
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
 
 	private $version = '1.0.0';
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	public function create_table() {
 		global $wpdb;
 
 		$table_name = $this->get_table_name();
-		$collate = '';
+		$collate    = '';
 		if ( $wpdb->has_cap( 'collation' ) ) {
 			$collate = $wpdb->get_charset_collate();
 		}
@@ -26,7 +19,8 @@ class Smartcrawl_Redirects_Database_Table {
 			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		}
 
-		dbDelta( "CREATE TABLE {$table_name} (
+		dbDelta(
+			"CREATE TABLE {$table_name} (
 			id bigint UNSIGNED NOT NULL auto_increment,
 			title varchar(200) NOT NULL DEFAULT '',
     		source varchar(200) NOT NULL DEFAULT '',
@@ -35,7 +29,8 @@ class Smartcrawl_Redirects_Database_Table {
     		type smallint NOT NULL DEFAULT 0,
 			options varchar(500) NOT NULL DEFAULT '',
 		  	PRIMARY KEY  (id)
-		) $collate;" );
+		) $collate;"
+		);
 
 		update_option( "{$table_name}_version", $this->version );
 	}
@@ -43,19 +38,22 @@ class Smartcrawl_Redirects_Database_Table {
 	public function table_exists() {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		return $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}';" );
+
+		return $wpdb->get_var( "SHOW TABLES LIKE '{$table_name}';" ); // phpcs:ignore -- direct db call needed.
 	}
 
 	public function delete_all() {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		return $wpdb->query( "DELETE FROM {$table_name} WHERE 1" );
+
+		return $wpdb->query( "DELETE FROM {$table_name} WHERE 1" ); // phpcs:ignore -- direct db call needed.
 	}
 
 	public function drop_table() {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		return $wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
+
+		return $wpdb->query( "DROP TABLE IF EXISTS {$table_name}" ); // phpcs:ignore -- direct db call needed.
 	}
 
 	public function get_table_name() {
@@ -65,7 +63,7 @@ class Smartcrawl_Redirects_Database_Table {
 	}
 
 	/**
-	 * @param $id
+	 * @param int $id ID.
 	 *
 	 * @return Smartcrawl_Redirect_Item|null
 	 */
@@ -73,12 +71,13 @@ class Smartcrawl_Redirects_Database_Table {
 		global $wpdb;
 
 		$table_name = $this->get_table_name();
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $id ) );
+		$row        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $id ) ); // phpcs:ignore -- direct db call needed.
+
 		return $this->map_row_to_model( $row );
 	}
 
 	/**
-	 * @param $source
+	 * @param string $source Source.
 	 *
 	 * @return Smartcrawl_Redirect_Item|null
 	 */
@@ -86,33 +85,36 @@ class Smartcrawl_Redirects_Database_Table {
 		global $wpdb;
 
 		$table_name = $this->get_table_name();
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE source = %s", $source ) );
+		$row        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE source = %s", $source ) ); // phpcs:ignore -- direct db call needed.
+
 		return $this->map_row_to_model( $row );
 	}
 
 	/**
-	 * @param $source
+	 * @param string $source Source.
 	 *
 	 * @return Smartcrawl_Redirect_Item[]|false
 	 */
 	public function get_redirects_by_source_regex( $source ) {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		$redirects = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE path = 'regex' AND %s RLIKE source", $source ) );
+		$redirects  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE path = 'regex' AND %s RLIKE source", $source ) ); // phpcs:ignore -- direct db call needed.
+
 		return $redirects
 			? array_map( array( $this, 'map_row_to_model' ), $redirects )
 			: false;
 	}
 
 	/**
-	 * @param $path
+	 * @param string $path Path.
 	 *
 	 * @return Smartcrawl_Redirect_Item[]|false
 	 */
 	public function get_redirects_by_path( $path ) {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		$redirects = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE path = %s", $path ) );
+		$redirects  = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE path = %s", $path ) ); // phpcs:ignore -- direct db call needed.
+
 		return $redirects
 			? array_map( array( $this, 'map_row_to_model' ), $redirects )
 			: false;
@@ -121,19 +123,20 @@ class Smartcrawl_Redirects_Database_Table {
 	private function get_raw_redirects( $ids ) {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		$ids = implode( ',', array_filter( array_map( 'intval', $ids ) ) );
-		$where = '';
+		$ids        = implode( ',', array_filter( array_map( 'intval', $ids ) ) );
+		$where      = '';
 		if ( $ids ) {
 			$where = " WHERE id IN ({$ids})";
 		}
 
-		$redirects = $wpdb->get_results( "SELECT * FROM {$table_name}{$where}", OBJECT_K );
+		$redirects = $wpdb->get_results( "SELECT * FROM {$table_name}{$where}", OBJECT_K ); // phpcs:ignore -- direct db call needed.
 
-		return $redirects ?: false;
+		return $redirects ? $redirects : false;
 	}
 
 	public function get_deflated_redirects( $ids = array() ) {
 		$redirects = $this->get_raw_redirects( $ids );
+
 		return $redirects
 			? array_map( array( $this, 'map_row_to_deflated' ), $redirects )
 			: false;
@@ -144,6 +147,7 @@ class Smartcrawl_Redirects_Database_Table {
 	 */
 	public function get_redirects( $ids = array() ) {
 		$redirects = $this->get_raw_redirects( $ids );
+
 		return $redirects
 			? array_map( array( $this, 'map_row_to_model' ), $redirects )
 			: false;
@@ -152,21 +156,23 @@ class Smartcrawl_Redirects_Database_Table {
 	public function delete_redirect( $id ) {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		return $wpdb->delete( $table_name, array( 'id' => $id ), array( '%d' ) );
+
+		return $wpdb->delete( $table_name, array( 'id' => $id ), array( '%d' ) ); // phpcs:ignore -- direct db call needed.
 	}
 
 	public function delete_redirects( $ids ) {
 		global $wpdb;
 		$table_name = $this->get_table_name();
-		$ids = implode( ',', array_filter( array_map( 'intval', $ids ) ) );
+		$ids        = implode( ',', array_filter( array_map( 'intval', $ids ) ) );
 		if ( ! $ids ) {
 			return false;
 		}
-		return $wpdb->query( "DELETE FROM {$table_name} WHERE id IN ({$ids})" );
+
+		return $wpdb->query( "DELETE FROM {$table_name} WHERE id IN ({$ids})" ); // phpcs:ignore -- direct db call needed.
 	}
 
 	/**
-	 * @param $redirect Smartcrawl_Redirect_Item
+	 * @param Smartcrawl_Redirect_Item $redirect Redirect item.
 	 *
 	 * @return int
 	 */
@@ -174,7 +180,7 @@ class Smartcrawl_Redirects_Database_Table {
 		global $wpdb;
 		$table_name = $this->get_table_name();
 		if ( $redirect->get_id() ) {
-			$wpdb->update(
+			$wpdb->update( // phpcs:ignore -- direct db call needed.
 				$table_name,
 				$this->map_model_to_row( $redirect ),
 				array( 'id' => $redirect->get_id() ),
@@ -183,11 +189,12 @@ class Smartcrawl_Redirects_Database_Table {
 
 			return $redirect->get_id();
 		} else {
-			$inserted = $wpdb->insert(
+			$inserted = $wpdb->insert( // phpcs:ignore -- direct db call needed.
 				$table_name,
 				$this->map_model_to_row( $redirect ),
 				$this->formats()
 			);
+
 			return $inserted
 				? $wpdb->insert_id
 				: false;
@@ -201,7 +208,7 @@ class Smartcrawl_Redirects_Database_Table {
 		$values_array = array();
 		foreach ( $redirects as $redirect ) {
 			$values_array[] = $wpdb->prepare(
-				"(%s, %s, %s, %s, %d, %s)",
+				'(%s, %s, %s, %s, %d, %s)',
 				$redirect->get_title(),
 				$redirect->get_source(),
 				$redirect->get_path(),
@@ -219,11 +226,11 @@ class Smartcrawl_Redirects_Database_Table {
 
 		$query = "INSERT INTO {$table_name} (title, source, path, destination, type, options) VALUES {$values};";
 
-		return $wpdb->query( $query );
+		return $wpdb->query( $query ); // phpcs:ignore -- direct db call needed.
 	}
 
 	/**
-	 * @param $redirects Smartcrawl_Redirect_Item[]|false|int
+	 * @param Smartcrawl_Redirect_Item[]|false|int $redirects Redirect items.
 	 */
 	public function update_redirects( $redirects ) {
 		global $wpdb;
@@ -236,7 +243,7 @@ class Smartcrawl_Redirects_Database_Table {
 			}
 
 			$values_array[] = $wpdb->prepare(
-				"(%d, %s, %s, %s, %s, %d, %s)",
+				'(%d, %s, %s, %s, %s, %d, %s)',
 				$redirect->get_id(),
 				$redirect->get_title(),
 				$redirect->get_source(),
@@ -255,18 +262,19 @@ class Smartcrawl_Redirects_Database_Table {
 
 		$query = "INSERT INTO {$table_name} (id, title, source, path, destination, type, options) VALUES {$values} ON DUPLICATE KEY UPDATE title = VALUES(title), source = VALUES(source), path = VALUES(path), destination = VALUES(destination), type = VALUES(type), options = VALUES(options);";
 
-		return $wpdb->query( $query );
+		return $wpdb->query( $query ); // phpcs:ignore -- direct db call needed.
 	}
 
 	public function get_count() {
 		global $wpdb;
 		$table_name = self::get_table_name();
 
-		return $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
+		return $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" ); // phpcs:ignore -- direct db call needed.
 	}
 
 	private function map_row_to_deflated( $row ) {
 		$model = $this->map_row_to_model( $row );
+
 		return $model->deflate();
 	}
 
@@ -275,17 +283,18 @@ class Smartcrawl_Redirects_Database_Table {
 			return null;
 		}
 
-		return ( new Smartcrawl_Redirect_Item() )->set_id( $row->id )
-		                                         ->set_title( $row->title )
-		                                         ->set_source( $row->source )
-		                                         ->set_path( $row->path )
-		                                         ->set_destination( $row->destination )
-		                                         ->set_type( $row->type )
-		                                         ->set_options( $this->options_to_array( $row->options ) );
+		return ( new Smartcrawl_Redirect_Item() )
+			->set_id( $row->id )
+			->set_title( $row->title )
+			->set_source( $row->source )
+			->set_path( $row->path )
+			->set_destination( $row->destination )
+			->set_type( $row->type )
+			->set_options( $this->options_to_array( $row->options ) );
 	}
 
 	/**
-	 * @param Smartcrawl_Redirect_Item $redirect
+	 * @param Smartcrawl_Redirect_Item $redirect Redirect item.
 	 *
 	 * @return array
 	 */

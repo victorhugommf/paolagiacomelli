@@ -1,9 +1,11 @@
-<section id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_REPORTS ); ?>"
-         data-dependent="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_REPORTS ); ?>"
-         class="sui-box wds-dashboard-widget">
+<section
+	id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_REPORTS ); ?>"
+	data-dependent="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_REPORTS ); ?>"
+	class="sui-box wds-dashboard-widget">
 
 	<div class="sui-box-header">
-		<h2 class="sui-box-title">
+		<h2
+			class="sui-box-title">
 			<span class="sui-icon-graph-bar" aria-hidden="true"></span><?php esc_html_e( 'Emails & Report', 'wds' ); ?>
 		</h2>
 
@@ -12,9 +14,10 @@
 		</div>
 
 		<div class="sui-actions-right">
-			<a class="sui-button sui-button-purple"
-			   target="_blank"
-			   href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_reports_upsell_notice">
+			<a
+				class="sui-button sui-button-purple"
+				target="_blank"
+				href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_reports_upsell_notice">
 				<?php esc_html_e( 'Upgrade to Pro', 'wds' ); ?>
 			</a>
 		</div>
@@ -42,16 +45,21 @@
 		</div>
 
 		<div class="wds-separator-top wds-draw-left-padded">
-			<?php $this->_render( 'mascot-message', array(
-				'key'         => 'seo-checkup-upsell',
-				'dismissible' => false,
-				'image_name'  => 'graphic-dashboard-reports',
-				'message'     => sprintf(
-					'%s <a target="_blank" class="sui-button sui-button-purple" href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_reports_upsell_notice">%s</a>',
-					esc_html__( 'Schedule automatic reports and get them emailed direct to your inbox to stay on top of potential SEO issues. Get Reports as part of a WPMU DEV membership.', 'wds' ),
-					esc_html__( 'Try Pro Free Today', 'wds' )
-				),
-			) ); ?>
+			<?php
+			$this->render_view(
+				'mascot-message',
+				array(
+					'key'         => 'seo-checkup-upsell',
+					'dismissible' => false,
+					'image_name'  => 'graphic-dashboard-reports',
+					'message'     => sprintf(
+						'%s <a target="_blank" class="sui-button sui-button-purple" href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_reports_upsell_notice">%s</a>',
+						esc_html__( 'Schedule automatic reports and get them emailed direct to your inbox to stay on top of potential SEO issues. Get Reports as part of a WPMU DEV membership.', 'wds' ),
+						esc_html__( 'Try Pro Free Today', 'wds' )
+					),
+				)
+			);
+			?>
 		</div>
 	</div>
 </section>

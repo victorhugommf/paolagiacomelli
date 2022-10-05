@@ -1,20 +1,14 @@
 <?php
 
 class Smartcrawl_Redirect_Utils {
+
+	use Smartcrawl_Singleton;
+
 	const DEFAULT_TYPE = 302;
-
-	private static $_instance;
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	public function get_default_type() {
 		$default_type = Smartcrawl_Settings::get_setting( 'redirections-code' );
+
 		return empty( $default_type )
 			? self::DEFAULT_TYPE
 			: $default_type;
@@ -33,7 +27,7 @@ class Smartcrawl_Redirect_Utils {
 				->set_path( 'regex' );
 		} else {
 			$source_normalized = $this->prepare_source( $source );
-			$path_normalized = $this->source_to_path( $source_normalized );
+			$path_normalized   = $this->source_to_path( $source_normalized );
 			$redirect_item
 				->set_source( $source_normalized )
 				->set_path( $path_normalized );
@@ -48,7 +42,7 @@ class Smartcrawl_Redirect_Utils {
 
 	private function prepare_type( $type ) {
 		$default_type = $this->get_default_type();
-		$type = empty( $type )
+		$type         = empty( $type )
 			? $default_type
 			: $type;
 
@@ -66,7 +60,7 @@ class Smartcrawl_Redirect_Utils {
 	}
 
 	public function source_to_path( $source ) {
-		$path = $this->remove_scheme( $source );
+		$path     = $this->remove_scheme( $source );
 		$home_url = $this->remove_scheme( home_url( '/' ) );
 
 		if ( strpos( $path, $home_url ) === 0 ) {
@@ -79,21 +73,21 @@ class Smartcrawl_Redirect_Utils {
 	}
 
 	public function normalize_path( $path ) {
-		// No slash at the end
+		// No slash at the end.
 		$path = untrailingslashit( $path );
 
-		// Normalize case
+		// Normalize case.
 		$path = Smartcrawl_String_Utils::lowercase( $path );
 
-		// Encode characters
+		// Encode characters.
 		$path = $this->encode_path( $path );
 
-		// Always start with a slash
+		// Always start with a slash.
 		return $this->enforce_starting_slash( $path );
 	}
 
 	private function encode_path( $path ) {
-		$decode = [
+		$decode = array(
 			'/',
 			':',
 			'[',
@@ -104,12 +98,12 @@ class Smartcrawl_Redirect_Utils {
 			'(',
 			')',
 			';',
-		];
+		);
 
-		// URL encode everything - this converts any i10n to the proper encoding
+		// URL encode everything - this converts any i10n to the proper encoding.
 		$path = rawurlencode( $path );
 
-		// We also converted things we don't want encoding, such as a /. Change these back
+		// We also converted things we don't want encoding, such as a /. Change these back.
 		foreach ( $decode as $char ) {
 			$path = str_replace( rawurlencode( $char ), $char, $path );
 		}
@@ -126,13 +120,13 @@ class Smartcrawl_Redirect_Utils {
 	}
 
 	private function prepare_url( $url ) {
-		// Trim
+		// Trim.
 		$url = trim( $url );
-		// Remove new lines
+		// Remove new lines.
 		$url = preg_replace( "/[\r\n\t].*?$/s", '', $url );
-		// Remove control codes
+		// Remove control codes.
 		$url = preg_replace( '/[^\PC\s]/u', '', $url );
-		// Decode
+		// Decode.
 		$url = rawurldecode( $url );
 
 		return $this->is_url_absolute( $url )
@@ -141,7 +135,6 @@ class Smartcrawl_Redirect_Utils {
 	}
 
 	private function is_url_absolute( $url ) {
-		return strpos( $url, 'http://' ) === 0
-		       || strpos( $url, 'https://' ) === 0;
+		return strpos( $url, 'http://' ) === 0 || strpos( $url, 'https://' ) === 0;
 	}
 }

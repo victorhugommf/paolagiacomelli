@@ -1,9 +1,9 @@
 <?php
-$last_update_date = empty( $last_update_date ) ? '' : $last_update_date;
-$last_update_time = empty( $last_update_time ) ? '' : $last_update_time;
+$last_update_date      = empty( $last_update_date ) ? '' : $last_update_date;
+$last_update_time      = empty( $last_update_time ) ? '' : $last_update_time;
 $last_update_timestamp = empty( $last_update_timestamp ) ? '' : $last_update_timestamp;
-$engines = empty( $engines ) ? array() : $engines;
-$sitemap_stats = empty( $sitemap_stats ) ? array() : $sitemap_stats;
+$engines               = empty( $engines ) ? array() : $engines;
+$sitemap_stats         = empty( $sitemap_stats ) ? array() : $sitemap_stats;
 ?>
 
 <div class="wpmud wds-sitemaps-widget">
@@ -34,9 +34,9 @@ $sitemap_stats = empty( $sitemap_stats ) ? array() : $sitemap_stats;
 			<ul>
 				<?php
 				foreach ( $engines as $key => $engine ) {
-					$service_name = ucfirst( $key );
-					$engine_date = ! empty( $engine['time'] ) ? date_i18n( get_option( 'date_format' ), $engine['time'] ) : false;
-					$engine_time = ! empty( $engine['time'] ) ? date_i18n( get_option( 'time_format' ), $engine['time'] ) : false;
+					$service_name     = ucfirst( $key );
+					$engine_date      = ! empty( $engine['time'] ) ? date_i18n( get_option( 'date_format' ), $engine['time'] ) : false;
+					$engine_time      = ! empty( $engine['time'] ) ? date_i18n( get_option( 'time_format' ), $engine['time'] ) : false;
 					$engine_timestamp = ( $engine_date && $engine_time ) ? sprintf( __( 'Last notified on %1$s, at %2$s.', 'wds' ), $engine_date, $engine_time ) : __( 'Not notified', 'wds' );
 					?>
 					<li>

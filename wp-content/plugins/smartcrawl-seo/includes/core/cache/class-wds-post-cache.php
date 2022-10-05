@@ -1,17 +1,10 @@
 <?php
 
 class Smartcrawl_Post_Cache {
+
+	use Smartcrawl_Singleton;
+
 	private $cache = array();
-
-	private static $_instance;
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	public function get_post( $post_id ) {
 		if ( ! is_numeric( $post_id ) ) {

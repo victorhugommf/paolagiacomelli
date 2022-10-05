@@ -1,21 +1,21 @@
 <section class="tab wds-report-vertical-tab">
 	<?php
 	// TODO: DO we still need a separate report-vertical-tab?
-	// Required
-	$tab_id = empty( $tab_id ) ? '' : $tab_id;
-	$tab_name = empty( $tab_name ) ? '' : $tab_name;
-	$is_active = empty( $is_active ) ? false : $is_active;
+	// Required.
+	$tab_id       = empty( $tab_id ) ? '' : $tab_id;
+	$tab_name     = empty( $tab_name ) ? '' : $tab_name;
+	$is_active    = empty( $is_active ) ? false : $is_active;
 	$tab_sections = ! empty( $tab_sections ) && is_array( $tab_sections ) ? $tab_sections : array();
-	$option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
+	$option_name  = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
 
-	// Optional
-	$button_text = isset( $button_text ) ? $button_text : __( 'Save Settings', 'wds' );
+	// Optional.
+	$button_text   = isset( $button_text ) ? $button_text : __( 'Save Settings', 'wds' );
 	$before_output = isset( $before_output ) ? $before_output : null;
-	$after_output = isset( $after_output ) ? $after_output : null;
-	$title_button = isset( $title_button ) ? $title_button : 'ignore';
+	$after_output  = isset( $after_output ) ? $after_output : null;
+	$title_button  = isset( $title_button ) ? $title_button : 'ignore';
 
-	// Variables
-	$is_singular = count( $tab_sections ) === 1;
+	// Variables.
+	$is_singular        = count( $tab_sections ) === 1;
 	$smartcrawl_options = Smartcrawl_Settings::get_options();
 	?>
 
@@ -52,12 +52,15 @@
 
 		<?php foreach ( $tab_sections as $section ) : ?>
 			<?php
-			$this->_render( 'vertical-tab-section', array_merge(
-				$section,
-				array(
-					'show_accordion' => ! $is_singular,
+			$this->render_view(
+				'vertical-tab-section',
+				array_merge(
+					$section,
+					array(
+						'show_accordion' => ! $is_singular,
+					)
 				)
-			) );
+			);
 			?>
 		<?php endforeach; ?>
 

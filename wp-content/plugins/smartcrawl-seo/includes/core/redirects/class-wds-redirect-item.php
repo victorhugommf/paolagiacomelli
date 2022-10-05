@@ -1,30 +1,37 @@
 <?php
 
 class Smartcrawl_Redirect_Item {
+
 	/**
 	 * @var int
 	 */
 	private $id = 0;
+
 	/**
 	 * @var string
 	 */
 	private $title = '';
+
 	/**
 	 * @var string
 	 */
 	private $source = '';
+
 	/**
 	 * @var string
 	 */
 	private $path = '';
+
 	/**
 	 * @var string
 	 */
 	private $destination = '';
+
 	/**
 	 * @var int
 	 */
 	private $type = 0;
+
 	/**
 	 * @var array
 	 */
@@ -38,12 +45,13 @@ class Smartcrawl_Redirect_Item {
 	}
 
 	/**
-	 * @param int $id
+	 * @param int $id Item ID.
 	 *
 	 * @return Smartcrawl_Redirect_Item
 	 */
 	public function set_id( $id ) {
 		$this->id = (int) $id;
+
 		return $this;
 	}
 
@@ -55,12 +63,13 @@ class Smartcrawl_Redirect_Item {
 	}
 
 	/**
-	 * @param string $title
+	 * @param string $title Title.
 	 *
 	 * @return Smartcrawl_Redirect_Item
 	 */
 	public function set_title( $title ) {
 		$this->title = $title;
+
 		return $this;
 	}
 
@@ -72,12 +81,13 @@ class Smartcrawl_Redirect_Item {
 	}
 
 	/**
-	 * @param string $source
+	 * @param string $source Source.
 	 *
 	 * @return Smartcrawl_Redirect_Item
 	 */
 	public function set_source( $source ) {
 		$this->source = $source;
+
 		return $this;
 	}
 
@@ -89,10 +99,11 @@ class Smartcrawl_Redirect_Item {
 	}
 
 	/**
-	 * @param string $path
+	 * @param string $path Path.
 	 */
 	public function set_path( $path ) {
 		$this->path = $path;
+
 		return $this;
 	}
 
@@ -113,12 +124,13 @@ class Smartcrawl_Redirect_Item {
 	}
 
 	/**
-	 * @param string $destination
+	 * @param string $destination Destination.
 	 *
 	 * @return Smartcrawl_Redirect_Item
 	 */
 	public function set_destination( $destination ) {
 		$this->destination = $destination;
+
 		return $this;
 	}
 
@@ -130,7 +142,7 @@ class Smartcrawl_Redirect_Item {
 	}
 
 	/**
-	 * @param array $options
+	 * @param array $options Options.
 	 *
 	 * @return Smartcrawl_Redirect_Item
 	 */
@@ -143,7 +155,7 @@ class Smartcrawl_Redirect_Item {
 	}
 
 	public function is_regex() {
-		return array_search( 'regex', $this->get_options() ) !== false;
+		return array_search( 'regex', $this->get_options(), true ) !== false;
 	}
 
 	/**
@@ -154,12 +166,13 @@ class Smartcrawl_Redirect_Item {
 	}
 
 	/**
-	 * @param int $type
+	 * @param int $type Type.
 	 *
 	 * @return Smartcrawl_Redirect_Item
 	 */
 	public function set_type( $type ) {
 		$this->type = (int) $type;
+
 		return $this;
 	}
 

@@ -1,58 +1,60 @@
 <?php
+/**
+ * Class Smartcrawl_OpenGraph_Printer
+ *
+ * @package SmartCrawl
+ */
 
 /**
  * Outputs OG tags to the page
  */
 class Smartcrawl_OpenGraph_Printer {
 
+	use Smartcrawl_Singleton;
+
 	/**
-	 * Singleton instance holder
+	 * Is running flag.
+	 *
+	 * @var bool $is_running
 	 */
-	private static $_instance;
+	private $is_running = false;
 
-	private $_is_running = false;
-	private $_is_done = false;
-
-	public function __construct() {
-	}
+	/**
+	 * Is done flag.
+	 *
+	 * @var bool $is_done
+	 */
+	private $is_done = false;
 
 	/**
 	 * Boot the hooking part
 	 */
 	public static function run() {
-		self::get()->_add_hooks();
+		self::get()->add_hooks();
 	}
 
-	private function _add_hooks() {
-		// Do not double-bind
-		if ( apply_filters( 'wds-opengraph-is_running', $this->_is_running ) ) {
-			return true;
+	/**
+	 * Register hooks.
+	 *
+	 * @return void
+	 */
+	private function add_hooks() {
+		// Do not double-bind.
+		if ( apply_filters( 'wds-opengraph-is_running', $this->is_running ) ) { // phpcs:ignore
+			return;
 		}
 
 		add_action( 'wp_head', array( $this, 'dispatch_og_tags_injection' ), 50 );
 		add_action( 'wds_head-after_output', array( $this, 'dispatch_og_tags_injection' ) );
 
-		$this->_is_running = true;
+		$this->is_running = true;
 	}
 
 	/**
-	 * Singleton instance getter
-	 *
-	 * @return Smartcrawl_OpenGraph_Printer instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
-	 * First-line dispatching of OG tags injection
+	 * First-line dispatching of OG tags injection.
 	 */
 	public function dispatch_og_tags_injection() {
-		if ( ! ! $this->_is_done ) {
+		if ( ! ! $this->is_done ) {
 			return false;
 		}
 
@@ -62,13 +64,13 @@ class Smartcrawl_OpenGraph_Printer {
 		}
 		$this->inject_global_tags();
 
-		$this->_is_done = true;
+		$this->is_done = true;
 
 		return $this->inject_og_tags();
 	}
 
 	/**
-	 * Injects globally valid tags - regardless of context
+	 * Injects globally valid tags - regardless of context.
 	 */
 	public function inject_global_tags() {
 		$settings = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
@@ -78,10 +80,10 @@ class Smartcrawl_OpenGraph_Printer {
 	}
 
 	/**
-	 * Actually prints the OG tag
+	 * Actually prints the OG tag.
 	 *
-	 * @param string $tag Tagname or tagname-like string to print
-	 * @param mixed $value Tag value as string, or list of string tag values
+	 * @param string $tag   Tagname or tagname-like string to print.
+	 * @param mixed  $value Tag value as string, or list of string tag values.
 	 *
 	 * @return bool
 	 */
@@ -103,8 +105,8 @@ class Smartcrawl_OpenGraph_Printer {
 	/**
 	 * Gets the markup for an OG tag
 	 *
-	 * @param string $tag Tagname or tagname-like string to print
-	 * @param mixed $value Tag value as string, or list of string tag values
+	 * @param string $tag   Tagname or tagname-like string to print.
+	 * @param mixed  $value Tag value as string, or list of string tag values.
 	 *
 	 * @return string
 	 */
@@ -117,9 +119,9 @@ class Smartcrawl_OpenGraph_Printer {
 	}
 
 	/**
-	 * Attempt to use post-specific meta setup to resolve tag values
+	 * Attempt to use post-specific meta setup to resolve tag values.
 	 *
-	 * Fallback to generic, global values
+	 * Fallback to generic, global values.
 	 *
 	 * @return bool
 	 */
@@ -134,6 +136,13 @@ class Smartcrawl_OpenGraph_Printer {
 		return true;
 	}
 
+	/**
+	 * Print og tags.
+	 *
+	 * @param array $opengraph_tags Tags.
+	 *
+	 * @return void
+	 */
 	public function print_og_tags( $opengraph_tags ) {
 		if ( empty( $opengraph_tags ) ) {
 			return;
@@ -149,16 +158,16 @@ class Smartcrawl_OpenGraph_Printer {
 	}
 
 	/**
+	 * Get allowed tags.
+	 *
 	 * @return array
 	 */
 	private function get_allowed_tags() {
-		$allowed_tags = array(
+		return array(
 			'meta' => array(
 				'property' => array(),
 				'content'  => array(),
 			),
 		);
-
-		return $allowed_tags;
 	}
 }

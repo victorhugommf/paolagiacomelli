@@ -2,9 +2,9 @@
 
 namespace Automattic\WooCommerce\Internal\Admin\Orders;
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use Automattic\WooCommerce\Internal\DataStores\Orders\OrdersTableDataStore;
 use WC_Order;
-use WC_Order_Data_Store_Interface;
 use WP_List_Table;
 use WP_Screen;
 
@@ -12,6 +12,20 @@ use WP_Screen;
  * Admin list table for orders as managed by the OrdersTableDataStore.
  */
 class ListTable extends WP_List_Table {
+	/**
+	 * Contains the arguments to be used in the order query.
+	 *
+	 * @var array
+	 */
+	private $order_query_args = array();
+
+	/**
+	 * Tracks if a filter (ie, date or customer filter) has been applied.
+	 *
+	 * @var bool
+	 */
+	private $has_filter = false;
+
 	/**
 	 * Sets up the admin list table for orders (specifically, for orders managed by the OrdersTableDataStore).
 	 *
@@ -33,9 +47,11 @@ class ListTable extends WP_List_Table {
 	 * @return void
 	 */
 	public function setup(): void {
+		add_action( 'admin_notices', array( $this, 'bulk_action_notices' ) );
 		add_filter( 'manage_woocommerce_page_wc-orders_columns', array( $this, 'get_columns' ) );
 		add_filter( 'set_screen_option_edit_orders_per_page', array( $this, 'set_items_per_page' ), 10, 3 );
 		add_filter( 'default_hidden_columns', array( $this, 'default_hidden_columns' ), 10, 2 );
+
 		$this->items_per_page();
 		set_screen_options();
 	}
@@ -63,7 +79,7 @@ class ListTable extends WP_List_Table {
 	 * @return mixed
 	 */
 	public function set_items_per_page( $default, string $option, int $value ) {
-		return 'edit_orders_per_page' === $option ? absint( $value ) : $default;
+		return $option === 'edit_orders_per_page' ? absint( $value ) : $default;
 	}
 
 	/**
@@ -83,7 +99,7 @@ class ListTable extends WP_List_Table {
 				<hr class='wp-header-end'>
 		";
 
-		if ( $this->has_items() ) {
+		if ( $this->has_items() || $this->has_filter ) {
 			$this->views();
 
 			echo '<form id="wc-orders-filter" method="get" action="' . esc_url( get_admin_url( null, 'admin.php' ) ) . '">';
@@ -117,8 +133,10 @@ class ListTable extends WP_List_Table {
 			<?php
 			/**
 			 * Renders after the 'blank state' message for the order list table has rendered.
+			 *
+			 * @since 6.6.1
 			 */
-			do_action( 'wc_marketplace_suggestions_orders_empty_state' );
+			do_action( 'wc_marketplace_suggestions_orders_empty_state' ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceComment
 			?>
 
 			</div>
@@ -150,23 +168,109 @@ class ListTable extends WP_List_Table {
 	 */
 	public function prepare_items() {
 		$limit = $this->get_items_per_page( 'edit_orders_per_page' );
-		$args  = array(
+
+		$this->order_query_args = array(
 			'limit'    => $limit,
 			'page'     => $this->get_pagenum(),
 			'paginate' => true,
-			'status'   => sanitize_text_field( wp_unslash( $_REQUEST['status'] ?? 'all' ) ),
 			'type'     => 'shop_order',
 		);
 
-		$orders      = wc_get_orders( $args );
+		$this->set_status_args();
+		$this->set_order_args();
+		$this->set_date_args();
+		$this->set_customer_args();
+
+		/**
+		 * Provides an opportunity to modify the query arguments used in the (Custom Order Table-powered) order list
+		 * table.
+		 *
+		 * @since 6.9.0
+		 *
+		 * @param array $query_args Arguments to be passed to `wc_get_orders()`.
+		 */
+		$orders      = wc_get_orders( (array) apply_filters( 'woocommerce_order_list_table_prepare_items_query_args', $this->order_query_args ) );
 		$this->items = $orders->orders;
 
 		$this->set_pagination_args(
 			array(
-				'total_items' => $orders->total,
+				'total_items' => $orders->total ?? 0,
 				'per_page'    => $limit,
 			)
 		);
+	}
+
+	/**
+	 * Updates the WC Order Query arguments as needed to support orderable columns.
+	 */
+	private function set_order_args() {
+		$sortable  = $this->get_sortable_columns();
+		$field     = sanitize_text_field( wp_unslash( $_GET['orderby'] ?? '' ) );
+		$direction = strtoupper( sanitize_text_field( wp_unslash( $_GET['order'] ?? '' ) ) );
+
+		if ( ! in_array( $field, $sortable, true ) ) {
+			return;
+		}
+
+		$this->order_query_args['orderby'] = $field;
+		$this->order_query_args['order']   = in_array( $direction, array( 'ASC', 'DESC' ), true ) ? $direction : 'ASC';
+	}
+
+	/**
+	 * Implements date (month-based) filtering.
+	 */
+	private function set_date_args() {
+		$year_month = sanitize_text_field( wp_unslash( $_GET['m'] ?? '' ) );
+
+		if ( empty( $year_month ) || ! preg_match( '/^[0-9]{6}$/', $year_month ) ) {
+			return;
+		}
+
+		$year  = (int) substr( $year_month, 0, 4 );
+		$month = (int) substr( $year_month, 4, 2 );
+
+		if ( $month < 0 || $month > 12 ) {
+			return;
+		}
+
+		$last_day_of_month                      = date_create( "$year-$month" )->format( 'Y-m-t' );
+		$this->order_query_args['date_created'] = "$year-$month-01..." . $last_day_of_month;
+		$this->has_filter                       = true;
+	}
+
+	/**
+	 * Implements filtering of orders by customer.
+	 */
+	private function set_customer_args() {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$customer = (int) wp_unslash( $_GET['_customer_user'] ?? '' );
+
+		if ( $customer < 1 ) {
+			return;
+		}
+
+		$this->order_query_args['customer'] = $customer;
+		$this->has_filter                   = true;
+	}
+
+	/**
+	 * Implements filtering of orders by status.
+	 */
+	private function set_status_args() {
+		$status         = trim( sanitize_text_field( wp_unslash( $_REQUEST['status'] ?? '' ) ) );
+		$query_statuses = array();
+
+		if ( empty( $status ) || 'all' === $status ) {
+			$query_statuses = array_intersect(
+				array_keys( wc_get_order_statuses() ),
+				get_post_stati( array( 'show_in_admin_all_list' => true ), 'names' )
+			);
+		} else {
+			$query_statuses[] = $status;
+			$this->has_filter = true;
+		}
+
+		$this->order_query_args['status'] = $query_statuses;
 	}
 
 	/**
@@ -181,7 +285,14 @@ class ListTable extends WP_List_Table {
 		$statuses    = wc_get_order_statuses();
 		$current     = isset( $_GET['status'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['status'] ?? '' ) ) : 'all';
 
-		foreach ( $statuses as $slug => $name ) {
+		// Add 'draft' and 'trash' to list.
+		foreach ( array( 'draft', 'trash' ) as $wp_status ) {
+			$statuses[ $wp_status ] = ( get_post_status_object( $wp_status ) )->label;
+		}
+
+		$statuses_in_list = array_intersect( array_keys( $statuses ), get_post_stati( array( 'show_in_admin_status_list' => true ) ) );
+
+		foreach ( $statuses_in_list as $slug ) {
 			$total_in_status = $this->count_orders_by_status( $slug );
 
 			if ( $total_in_status > 0 ) {
@@ -190,7 +301,7 @@ class ListTable extends WP_List_Table {
 		}
 
 		$all_count         = array_sum( $view_counts );
-		$view_links['all'] = $this->get_view_link( 'all', __( 'All', 'woocommerce' ), $all_count, 'all' === $current );
+		$view_links['all'] = $this->get_view_link( 'all', __( 'All', 'woocommerce' ), $all_count, '' === $current || 'all' === $current );
 
 		foreach ( $view_counts as $slug => $count ) {
 			$view_links[ $slug ] = $this->get_view_link( $slug, $statuses[ $slug ], $count, $slug === $current );
@@ -201,8 +312,6 @@ class ListTable extends WP_List_Table {
 
 	/**
 	 * Count orders by status.
-	 *
-	 * @todo review and replace (probably not ideal to do this work here).
 	 *
 	 * @param string $status The order status we are interested in.
 	 *
@@ -247,7 +356,7 @@ class ListTable extends WP_List_Table {
 	protected function extra_tablenav( $which ) {
 		echo '<div class="alignleft actions">';
 
-		if ( 'top' === $which ) {
+		if ( $which === 'top' ) {
 			$this->months_filter();
 			$this->customers_filter();
 
@@ -264,11 +373,11 @@ class ListTable extends WP_List_Table {
 	/**
 	 * Render the months filter dropdown.
 	 *
-	 * @todo [review] we may prefer to move this logic outside of the ListTable class
-	 *
 	 * @return void
 	 */
 	private function months_filter() {
+		// XXX: [review] we may prefer to move this logic outside of the ListTable class.
+
 		global $wp_locale;
 		global $wpdb;
 
@@ -364,6 +473,19 @@ class ListTable extends WP_List_Table {
 	}
 
 	/**
+	 * Defines the default sortable columns.
+	 *
+	 * @return string[]
+	 */
+	public function get_sortable_columns() {
+		return array(
+			'order_number' => 'ID',
+			'order_date'   => 'date',
+			'order_total'  => 'order_total',
+		);
+	}
+
+	/**
 	 * Specify the columns we wish to hide by default.
 	 *
 	 * @param array     $hidden Columns set to be hidden.
@@ -372,7 +494,7 @@ class ListTable extends WP_List_Table {
 	 * @return array
 	 */
 	public function default_hidden_columns( array $hidden, WP_Screen $screen ) {
-		if ( isset( $screen->id ) && 'woocommerce_page_wc-orders' === $screen->id ) {
+		if ( isset( $screen->id ) && wc_get_page_screen_id( 'shop-order' ) === $screen->id ) {
 			$hidden = array_merge(
 				$hidden,
 				array(
@@ -431,8 +553,21 @@ class ListTable extends WP_List_Table {
 			echo '<strong>#' . esc_attr( $order->get_order_number() ) . ' ' . esc_html( $buyer ) . '</strong>';
 		} else {
 			echo '<a href="#" class="order-preview" data-order-id="' . absint( $order->get_id() ) . '" title="' . esc_attr( __( 'Preview', 'woocommerce' ) ) . '">' . esc_html( __( 'Preview', 'woocommerce' ) ) . '</a>';
-			echo '<a href="' . esc_url( admin_url( 'post.php?post=' . absint( $order->get_id() ) ) . '&action=edit' ) . '" class="order-view"><strong>#' . esc_attr( $order->get_order_number() ) . ' ' . esc_html( $buyer ) . '</strong></a>';
+			echo '<a href="' . esc_url( $this->get_order_edit_link( $order ) ) . '" class="order-view"><strong>#' . esc_attr( $order->get_order_number() ) . ' ' . esc_html( $buyer ) . '</strong></a>';
 		}
+	}
+
+	/**
+	 * Get the edit link for an order.
+	 *
+	 * @param WC_Order $order Order object.
+	 *
+	 * @return mixed|string Edit link for the order.
+	 */
+	private function get_order_edit_link( WC_Order $order ) {
+		return wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ?
+			admin_url( 'admin.php?page=wc-orders&id=' . absint( $order->get_id() ) ) . '&action=edit' :
+			admin_url( 'post.php?post=' . absint( $order->get_id() ) ) . '&action=edit';
 	}
 
 	/**
@@ -458,7 +593,7 @@ class ListTable extends WP_List_Table {
 				human_time_diff( $order->get_date_created()->getTimestamp(), time() )
 			);
 		} else {
-			$show_date = $order->get_date_created()->date_i18n( apply_filters( 'woocommerce_admin_order_date_format', __( 'M j, Y', 'woocommerce' ) ) );
+			$show_date = $order->get_date_created()->date_i18n( apply_filters( 'woocommerce_admin_order_date_format', __( 'M j, Y', 'woocommerce' ) ) ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment
 		}
 		printf(
 			'<time datetime="%1$s" title="%2$s">%3$s</time>',
@@ -491,7 +626,7 @@ class ListTable extends WP_List_Table {
 
 			$latest_note = current( $latest_notes );
 
-			if ( isset( $latest_note->content ) && 1 === $approved_comments_count ) {
+			if ( isset( $latest_note->content ) && $approved_comments_count === 1 ) {
 				$tooltip = wc_sanitize_tooltip( $latest_note->content );
 			} elseif ( isset( $latest_note->content ) ) {
 				/* translators: %d: notes count */
@@ -502,10 +637,17 @@ class ListTable extends WP_List_Table {
 			}
 		}
 
-		if ( $tooltip ) {
-			printf( '<mark class="order-status %s tips" data-tip="%s"><span>%s</span></mark>', esc_attr( sanitize_html_class( 'status-' . $order->get_status() ) ), wp_kses_post( $tooltip ), esc_html( wc_get_order_status_name( $order->get_status() ) ) );
+		// Gracefully handle legacy statuses.
+		if ( in_array( $order->get_status(), array( 'trash', 'draft' ), true ) ) {
+			$status_name = ( get_post_status_object( $order->get_status() ) )->label;
 		} else {
-			printf( '<mark class="order-status %s"><span>%s</span></mark>', esc_attr( sanitize_html_class( 'status-' . $order->get_status() ) ), esc_html( wc_get_order_status_name( $order->get_status() ) ) );
+			$status_name = wc_get_order_status_name( $order->get_status() );
+		}
+
+		if ( $tooltip ) {
+			printf( '<mark class="order-status %s tips" data-tip="%s"><span>%s</span></mark>', esc_attr( sanitize_html_class( 'status-' . $order->get_status() ) ), wp_kses_post( $tooltip ), esc_html( $status_name ) );
+		} else {
+			printf( '<mark class="order-status %s"><span>%s</span></mark>', esc_attr( sanitize_html_class( 'status-' . $order->get_status() ) ), esc_html( $status_name ) );
 		}
 	}
 
@@ -583,6 +725,7 @@ class ListTable extends WP_List_Table {
 		 * are registered.
 		 *
 		 * @param WC_Order $order Current order object.
+		 * @since 6.7.0
 		 */
 		do_action( 'woocommerce_admin_order_actions_start', $order );
 
@@ -609,6 +752,7 @@ class ListTable extends WP_List_Table {
 		 *
 		 * @param array    $action Order actions.
 		 * @param WC_Order $order  Current order object.
+		 * @since 6.7.0
 		 */
 		$actions = apply_filters( 'woocommerce_admin_order_actions', $actions, $order );
 
@@ -620,6 +764,7 @@ class ListTable extends WP_List_Table {
 		 * are rendered.
 		 *
 		 * @param WC_Order $order Current order object.
+		 * @since 6.7.0
 		 */
 		do_action( 'woocommerce_admin_order_actions_end', $order );
 
@@ -635,8 +780,6 @@ class ListTable extends WP_List_Table {
 		echo '<input type="hidden" name="page" value="wc-orders" >';
 
 		$state_params = array(
-			'_customer_user',
-			'm',
 			'paged',
 			'status',
 		);
@@ -646,7 +789,151 @@ class ListTable extends WP_List_Table {
 				continue;
 			}
 
-			echo '<input type="hidden" name="status" value="' . esc_attr( sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) . '" >';
+			echo '<input type="hidden" name="' . esc_attr( $param ) . '" value="' . esc_attr( sanitize_text_field( wp_unslash( $_GET[ $param ] ) ) ) . '" >';
 		}
 	}
+
+	/**
+	 * Handle bulk actions.
+	 */
+	public function handle_bulk_actions() {
+		$action = $this->current_action();
+
+		if ( ! $action ) {
+			return;
+		}
+
+		check_admin_referer( 'bulk-orders' );
+
+		$redirect_to = remove_query_arg( array( 'deleted', 'ids' ), wp_get_referer() );
+		$redirect_to = add_query_arg( 'paged', $this->get_pagenum(), $redirect_to );
+
+		/**
+		 * Allows 3rd parties to modify order IDs about to be affected by a bulk action.
+		 *
+		 * @param array Array of order IDs.
+		 */
+		$ids = apply_filters( // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingSinceComment
+			'woocommerce_bulk_action_ids',
+			isset( $_REQUEST['order'] ) ? array_reverse( array_map( 'absint', $_REQUEST['order'] ) ) : array(),
+			$action,
+			'order'
+		);
+
+		if ( ! $ids ) {
+			wp_safe_redirect( $redirect_to );
+			exit;
+		}
+
+		$report_action = '';
+		$changed       = 0;
+
+		if ( 'remove_personal_data' === $action ) {
+			$report_action = 'removed_personal_data';
+			$changed       = $this->do_bulk_action_remove_personal_data( $ids );
+		} elseif ( false !== strpos( $action, 'mark_' ) ) {
+			$order_statuses = wc_get_order_statuses();
+			$new_status     = substr( $action, 5 );
+			$report_action  = 'marked_' . $new_status;
+
+			if ( isset( $order_statuses[ 'wc-' . $new_status ] ) ) {
+				$changed = $this->do_bulk_action_mark_orders( $ids, $new_status );
+			}
+		}
+
+		if ( $changed ) {
+			$redirect_to = add_query_arg(
+				array(
+					'bulk_action' => $report_action,
+					'changed'     => $changed,
+					'ids'         => implode( ',', $ids ),
+				),
+				$redirect_to
+			);
+		}
+
+		wp_safe_redirect( $redirect_to );
+		exit;
+	}
+
+	/**
+	 * Implements the "remove personal data" bulk action.
+	 *
+	 * @param array $order_ids The Order IDs.
+	 * @return int Number of orders modified.
+	 */
+	private function do_bulk_action_remove_personal_data( $order_ids ): int {
+		$changed = 0;
+
+		foreach ( $order_ids as $id ) {
+			$order = wc_get_order( $id );
+
+			if ( ! $order ) {
+				continue;
+			}
+
+			do_action( 'woocommerce_remove_order_personal_data', $order ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment
+			$changed++;
+		}
+
+		return $changed;
+	}
+
+	/**
+	 * Implements the "mark <status>" bulk action.
+	 *
+	 * @param array  $order_ids  The order IDs to change.
+	 * @param string $new_status The new order status.
+	 * @return int Number of orders modified.
+	 */
+	private function do_bulk_action_mark_orders( $order_ids, $new_status ): int {
+		$changed = 0;
+
+		// Initialize payment gateways in case order has hooked status transition actions.
+		WC()->payment_gateways();
+
+		foreach ( $order_ids as $id ) {
+			$order = wc_get_order( $id );
+
+			if ( ! $order ) {
+				continue;
+			}
+
+			$order->update_status( $new_status, __( 'Order status changed by bulk edit.', 'woocommerce' ), true );
+			do_action( 'woocommerce_order_edit_status', $id, $new_status ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment
+			$changed++;
+		}
+
+		return $changed;
+	}
+
+	/**
+	 * Show confirmation message that order status changed for number of orders.
+	 */
+	public function bulk_action_notices() {
+		if ( empty( $_REQUEST['bulk_action'] ) ) {
+			return;
+		}
+
+		$order_statuses = wc_get_order_statuses();
+		$number         = absint( $_REQUEST['changed'] ?? 0 );
+		$bulk_action    = wc_clean( wp_unslash( $_REQUEST['bulk_action'] ) );
+
+		// Check if any status changes happened.
+		foreach ( $order_statuses as $slug => $name ) {
+			if ( 'marked_' . str_replace( 'wc-', '', $slug ) === $bulk_action ) { // WPCS: input var ok, CSRF ok.
+				/* translators: %s: orders count */
+				$message = sprintf( _n( '%s order status changed.', '%s order statuses changed.', $number, 'woocommerce' ), number_format_i18n( $number ) );
+				echo '<div class="updated"><p>' . esc_html( $message ) . '</p></div>';
+				break;
+			}
+		}
+
+		if ( 'removed_personal_data' === $bulk_action ) { // WPCS: input var ok, CSRF ok.
+			/* translators: %s: orders count */
+			$message = sprintf( _n( 'Removed personal data from %s order.', 'Removed personal data from %s orders.', $number, 'woocommerce' ), number_format_i18n( $number ) );
+			echo '<div class="updated"><p>' . esc_html( $message ) . '</p></div>';
+		}
+	}
+
 }

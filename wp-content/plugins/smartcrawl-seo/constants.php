@@ -1,11 +1,18 @@
 <?php
 /**
+ * The plugin constants.
+ *
+ * @package    Smartcrawl
+ * @subpackage Constants
+ */
+
+/**
  * Internal constants, not to be overridden
  */
-define( 'SMARTCRAWL_VERSION', '3.0.1' );
-define( 'SMARTCRAWL_BUILD', '1657771279772' );
+define( 'SMARTCRAWL_VERSION', '3.2.1' );
+define( 'SMARTCRAWL_BUILD', '1664434791827' );
 define( 'SMARTCRAWL_BUILD_TYPE', 'free' );
-define( 'SMARTCRAWL_SUI_VERSION', '2.10.9' );
+define( 'SMARTCRAWL_SUI_VERSION', '2.12.11' );
 define( 'SMARTCRAWL_PACKAGE_ID', 167 );
 define( 'SMARTCRAWL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) . 'includes/' );
 define( 'SMARTCRAWL_PLUGIN_URL', plugin_dir_url( __FILE__ ) . 'includes/' );
@@ -21,10 +28,10 @@ if ( ! defined( 'SMARTCRAWL_EXPIRE_TRANSIENT_TIMEOUT' ) ) {
 if ( ! defined( 'SMARTCRAWL_AUTOLINKS_DEFAULT_CHAR_LIMIT' ) ) {
 	define( 'SMARTCRAWL_AUTOLINKS_DEFAULT_CHAR_LIMIT', 3 );
 }
-// Suppress redundant canonicals?
-//if ( ! defined( 'SMARTCRAWL_SUPPRESS_REDUNDANT_CANONICAL' ) ) {
-//	define( 'SMARTCRAWL_SUPPRESS_REDUNDANT_CANONICAL', false );
-//}
+// Suppress redundant canonicals?.
+// if ( ! defined( 'SMARTCRAWL_SUPPRESS_REDUNDANT_CANONICAL' ) ) {
+// define( 'SMARTCRAWL_SUPPRESS_REDUNDANT_CANONICAL', false );
+// }.
 if ( ! defined( 'SMARTCRAWL_SITEMAP_SKIP_IMAGES' ) ) {
 	define( 'SMARTCRAWL_SITEMAP_SKIP_IMAGES', false );
 }

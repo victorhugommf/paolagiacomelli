@@ -6,7 +6,9 @@ if ( empty( $seo_sections ) ) {
 ?>
 
 <div class="wds-form">
-	<?php foreach ( $seo_sections as $template => $args ) {
-		$this->_render( $template, $args );
-	} ?>
+	<?php
+	foreach ( $seo_sections as $template => $args ) {
+		$this->render_view( $template, $args );
+	}
+	?>
 </div>

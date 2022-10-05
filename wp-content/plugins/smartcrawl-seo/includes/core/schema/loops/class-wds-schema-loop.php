@@ -20,5 +20,10 @@ abstract class Smartcrawl_Schema_Loop {
 		}
 	}
 
-	public abstract function get_property_value( $property );
+	/**
+	 * @param $property
+	 *
+	 * @return mixed
+	 */
+	abstract public function get_property_value( $property );
 }

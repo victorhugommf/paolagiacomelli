@@ -6,14 +6,14 @@
  */
 
 $analysis_model = new Smartcrawl_Model_Analysis();
-$overview = $analysis_model->get_overall_seo_analysis();
+$overview       = $analysis_model->get_overall_seo_analysis();
 
 if ( ! $overview ) {
 	return;
 }
 
-$total = smartcrawl_get_array_value( $overview, 'total' );
-$passed = smartcrawl_get_array_value( $overview, 'passed' );
+$total          = smartcrawl_get_array_value( $overview, 'total' );
+$passed         = smartcrawl_get_array_value( $overview, 'passed' );
 $type_breakdown = smartcrawl_get_array_value( $overview, 'post-types' );
 
 if ( is_null( $total ) || is_null( $passed ) || is_null( $type_breakdown ) ) {
@@ -25,17 +25,17 @@ $percentage = ! empty( $total )
 	: 0;
 
 if ( 0 === $passed && 0 === $total ) {
-	$class = 'wds-check-invalid';
+	$class           = 'wds-check-invalid';
 	$indicator_class = 'sui-tag-inactive';
-	$indicator = esc_html__( 'No data yet', 'wds' );
+	$indicator       = esc_html__( 'No data yet', 'wds' );
 } elseif ( $percentage > 60 ) {
-	$class = 'wds-check-success sui-success';
+	$class           = 'wds-check-success sui-success';
 	$indicator_class = 'sui-tag-success';
-	$indicator = esc_html__( 'Good', 'wds' );
+	$indicator       = esc_html__( 'Good', 'wds' );
 } else {
-	$class = 'wds-check-warning sui-warning';
+	$class           = 'wds-check-warning sui-warning';
 	$indicator_class = 'sui-tag-warning';
-	$indicator = esc_html__( 'Poor', 'wds' );
+	$indicator       = esc_html__( 'Poor', 'wds' );
 }
 ?>
 <section class="wds-accordion wds-draw-left sui-accordion wds-seo-analysis-overview">
@@ -50,9 +50,11 @@ if ( 0 === $passed && 0 === $total ) {
 			<div class="sui-accordion-col-1">
 				<span class="sui-accordion-open-indicator">
 					<span aria-hidden="true" class="sui-icon-chevron-down"></span>
-					<button type="button"
-					        aria-label="<?php esc_html_e( 'Expand overall SEO analysis', 'wds' ); ?>"
-					        class="sui-screen-reader-text"><?php esc_html_e( 'Expand', 'wds' ); ?></button>
+					<button
+						type="button"
+						aria-label="<?php esc_html_e( 'Expand overall SEO analysis', 'wds' ); ?>"
+						class="sui-screen-reader-text"
+					><?php esc_html_e( 'Expand', 'wds' ); ?></button>
 				</span>
 			</div>
 		</div>
@@ -70,33 +72,33 @@ if ( 0 === $passed && 0 === $total ) {
 						<th><?php esc_html_e( 'Good', 'wds' ); ?></th>
 					</tr>
 					</thead>
-					<?php foreach ( $type_breakdown as $post_type => $type_overview ) : ?>
+					<?php foreach ( $type_breakdown as $post_type_name => $type_overview ) : ?>
 						<?php
-						$total_for_type = intval( smartcrawl_get_array_value( $type_overview, 'total' ) );
-						$passed_for_type = intval( smartcrawl_get_array_value( $type_overview, 'passed' ) );
-						$failed_for_type = $total_for_type - $passed_for_type;
-						$post_type_object = get_post_type_object( $post_type );
+						$total_for_type      = intval( smartcrawl_get_array_value( $type_overview, 'total' ) );
+						$passed_for_type     = intval( smartcrawl_get_array_value( $type_overview, 'passed' ) );
+						$failed_for_type     = $total_for_type - $passed_for_type;
+						$wp_post_type_object = get_post_type_object( $post_type_name );
 
-						$fail_url = admin_url( "edit.php?post_type={$post_type}&wds_analysis_threshold=99" );
-						$success_url = admin_url( "edit.php?post_type={$post_type}&wds_analysis_threshold=100" );
+						$fail_url    = admin_url( "edit.php?post_type={$post_type_name}&wds_analysis_threshold=99" );
+						$success_url = admin_url( "edit.php?post_type={$post_type_name}&wds_analysis_threshold=100" );
 						?>
 						<tr>
-							<th><?php echo esc_html( $post_type_object->label ); ?></th>
+							<th><?php echo esc_html( $wp_post_type_object->label ); ?></th>
 							<td>
-								<?php if ( $failed_for_type > 0 ): ?>
+								<?php if ( $failed_for_type > 0 ) : ?>
 									<a href="<?php echo esc_url( $fail_url ); ?>">
 										<span class="wds-seo-analysis-poor sui-tag sui-tag-warning"><?php echo intval( $failed_for_type ); ?></span>
 									</a>
-								<?php else: ?>
+								<?php else : ?>
 									<?php esc_html_e( 'None', 'wds' ); ?>
 								<?php endif; ?>
 							</td>
 							<td>
-								<?php if ( $passed_for_type > 0 ): ?>
+								<?php if ( $passed_for_type > 0 ) : ?>
 									<a href="<?php echo esc_url( $success_url ); ?>">
 										<span class="wds-seo-analysis-good sui-tag sui-tag-success"><?php echo intval( $passed_for_type ); ?></span>
 									</a>
-								<?php else: ?>
+								<?php else : ?>
 									<?php esc_html_e( 'None', 'wds' ); ?>
 								<?php endif; ?>
 							</td>

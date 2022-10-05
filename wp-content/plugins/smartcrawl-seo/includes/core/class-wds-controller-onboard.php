@@ -2,26 +2,14 @@
 
 class Smartcrawl_Controller_Onboard extends Smartcrawl_Base_Controller {
 
+	use Smartcrawl_Singleton;
+
 	const ONBOARDING_DONE_OPTION = 'wds-onboarding-done';
-	private static $_instance;
-
-	/**
-	 * Obtain instance without booting up
-	 *
-	 * @return Smartcrawl_Controller_Onboard instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	/**
 	 * Dispatches action listeners for admin pages
 	 *
-	 * @return bool
+	 * @return void
 	 */
 	public function dispatch_actions() {
 		add_action( 'wds-dshboard-after_settings', array( $this, 'add_onboarding' ) );
@@ -37,7 +25,7 @@ class Smartcrawl_Controller_Onboard extends Smartcrawl_Base_Controller {
 	}
 
 	public function process_boarding_action() {
-		$data = $this->get_request_data();
+		$data   = $this->get_request_data();
 		$target = ! empty( $data['target'] ) ? sanitize_key( $data['target'] ) : false;
 		$enable = empty( $data['enable'] ) ? false : true;
 
@@ -47,28 +35,28 @@ class Smartcrawl_Controller_Onboard extends Smartcrawl_Base_Controller {
 			return;
 		}
 
-		// Throw the switch on onboarding
+		// Throw the switch on onboarding.
 		$this->mark_onboarding_done();
 
 		switch ( $target ) {
 			case 'analysis-enable':
-				$opts = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
-				$opts['analysis-seo'] = $enable;
+				$opts                         = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
+				$opts['analysis-seo']         = $enable;
 				$opts['analysis-readability'] = $enable;
 				Smartcrawl_Settings::update_specific_options( 'wds_settings_options', $opts );
 				wp_send_json_success();
 
 				return;
 			case 'opengraph-twitter-enable':
-				$opts = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
-				$opts['og-enable'] = $enable;
+				$opts                        = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
+				$opts['og-enable']           = $enable;
 				$opts['twitter-card-enable'] = $enable;
 				Smartcrawl_Settings::update_component_options( Smartcrawl_Settings::COMP_SOCIAL, $opts );
 				wp_send_json_success();
 
 				return;
 			case 'sitemaps-enable':
-				$opts = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
+				$opts            = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
 				$opts['sitemap'] = $enable;
 				Smartcrawl_Settings::update_specific_options( 'wds_settings_options', $opts );
 				wp_send_json_success();
@@ -76,7 +64,7 @@ class Smartcrawl_Controller_Onboard extends Smartcrawl_Base_Controller {
 				return;
 
 			case 'robots-txt-enable':
-				$opts = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
+				$opts               = Smartcrawl_Settings::get_specific_options( 'wds_settings_options' );
 				$opts['robots-txt'] = $enable;
 				Smartcrawl_Settings::update_specific_options( 'wds_settings_options', $opts );
 				wp_send_json_success();
@@ -90,7 +78,7 @@ class Smartcrawl_Controller_Onboard extends Smartcrawl_Base_Controller {
 
 	public function add_onboarding() {
 		if ( $this->onboarding_done() ) {
-			return false;
+			return;
 		}
 
 		Smartcrawl_Simple_Renderer::render( 'dashboard/onboarding' );
@@ -119,7 +107,7 @@ class Smartcrawl_Controller_Onboard extends Smartcrawl_Base_Controller {
 	}
 
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-onboard-nonce' ) ? stripslashes_deep( $_POST ) : array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-onboard-nonce' ) ? stripslashes_deep( $_POST ) : array(); // phpcs:ignore
 	}
 
 	public function get_onboarding_done_version() {

@@ -1,15 +1,15 @@
 <?php
-$active_tab = empty( $active_tab ) ? false : $active_tab;
-$already_exists = empty( $already_exists ) ? false : $already_exists;
-$rootdir_install = empty( $rootdir_install ) ? false : true;
+$active_tab      = empty( $active_tab ) ? false : $active_tab;
+$already_exists  = empty( $already_exists ) ? false : $already_exists;
+$rootdir_install = ! empty( $rootdir_install );
 
-$robots_enabled = (boolean) Smartcrawl_Settings::get_setting( 'robots-txt' );
-$show_settings = $robots_enabled && $rootdir_install && ! $already_exists;
+$robots_enabled = (bool) Smartcrawl_Settings::get_setting( 'robots-txt' );
+$show_settings  = $robots_enabled && $rootdir_install && ! $already_exists;
 
 $section_template = $show_settings
 	? 'advanced-tools/advanced-robots-settings'
 	: 'advanced-tools/advanced-robots-disabled';
-$section_args = $show_settings
+$section_args     = $show_settings
 	? array()
 	: array(
 		'already_exists'  => $already_exists,
@@ -29,4 +29,4 @@ $tab_args = array(
 		),
 	),
 );
-$this->_render( 'vertical-tab', $tab_args );
+$this->render_view( 'vertical-tab', $tab_args );

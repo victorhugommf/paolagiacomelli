@@ -1,56 +1,66 @@
 <?php
 
 class Smartcrawl_String {
+
 	/**
 	 * @var string
 	 */
 	private $string;
+
 	/**
 	 * @var int
 	 */
 	private $syllable_count;
+
 	/**
 	 * @var Smartcrawl_Syllable
 	 */
 	private $syllable_helper;
+
 	/**
 	 * @var string[]
 	 */
 	private $sentences_with_punctuation;
+
 	/**
 	 * @var string[]
 	 */
 	private $sentences;
+
 	/**
 	 * @var string[]
 	 */
 	private $words;
+
 	/**
 	 * @var string[]
 	 */
 	private $paragraphs;
+
 	/**
 	 * @var string[]
 	 */
 	private $keywords;
+
 	/**
 	 * @var string
 	 */
 	private $language_code;
+
 	/**
 	 * @var string[]
 	 */
 	private $language_stopwords;
 
 	/**
-	 * @param $string string The string to analyse.
-	 * @param $language_code string
+	 * @param string $string        The string to analyse.
+	 * @param string $language_code Language code.
 	 */
 	public function __construct( $string, $language_code = 'en' ) {
 		$this->string = $string;
 
 		$this->syllable_helper = new Smartcrawl_Syllable( $language_code );
-		$this->language_code = $language_code;
+		$this->language_code   = $language_code;
 	}
 
 	public function uppercase() {
@@ -81,6 +91,7 @@ class Smartcrawl_String {
 		if ( is_null( $this->sentences ) ) {
 			$this->sentences = Smartcrawl_String_Utils::sentences( $this->string, false );
 		}
+
 		return $this->sentences;
 	}
 
@@ -88,6 +99,7 @@ class Smartcrawl_String {
 		if ( is_null( $this->sentences_with_punctuation ) ) {
 			$this->sentences_with_punctuation = Smartcrawl_String_Utils::sentences( $this->string, true );
 		}
+
 		return $this->sentences_with_punctuation;
 	}
 
@@ -95,6 +107,7 @@ class Smartcrawl_String {
 		if ( is_null( $this->paragraphs ) ) {
 			$this->paragraphs = Smartcrawl_String_Utils::paragraphs( $this->string );
 		}
+
 		return $this->paragraphs;
 	}
 
@@ -111,7 +124,7 @@ class Smartcrawl_String {
 	}
 
 	public function has_stopwords() {
-		$has = false;
+		$has   = false;
 		$stops = $this->get_language_stopwords();
 		$words = $this->get_words();
 
@@ -130,6 +143,7 @@ class Smartcrawl_String {
 		if ( is_null( $this->language_stopwords ) ) {
 			$this->language_stopwords = $this->import_language_stopwords();
 		}
+
 		return $this->language_stopwords;
 	}
 
@@ -139,7 +153,7 @@ class Smartcrawl_String {
 		}
 
 		$stop_words_file = sprintf(
-			SMARTCRAWL_PLUGIN_DIR . "core/resources/stop-words/%s.php",
+			SMARTCRAWL_PLUGIN_DIR . 'core/resources/stop-words/%s.php',
 			$this->language_code
 		);
 

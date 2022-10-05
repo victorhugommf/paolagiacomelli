@@ -8,27 +8,29 @@ if ( ! $component ) {
 }
 
 $cron = Smartcrawl_Controller_Cron::get();
-// This does the actual rescheduling
+// This does the actual rescheduling.
 $cron->set_up_schedule();
 $option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
 
 $frequency_radio_name = "{$option_name}[{$component}-frequency]";
-$frequency_radio_id = "wds-{$component}-frequency-radio";
-$pane_id = "wds-{$component}-frequency-pane";
+$frequency_radio_id   = "wds-{$component}-frequency-radio";
+$pane_id              = "wds-{$component}-frequency-pane";
 ?>
 
-<div id="wds-<?php echo esc_attr( $component ); ?>-frequency-tabs"
-     class="wds-frequency-tabs sui-side-tabs sui-tabs">
-
+<div
+	id="wds-<?php echo esc_attr( $component ); ?>-frequency-tabs"
+	class="wds-frequency-tabs sui-side-tabs sui-tabs"
+>
 	<div class="sui-tabs-menu">
 		<?php foreach ( $cron->get_frequencies() as $key => $label ) : ?>
 			<label class="sui-tab-item <?php echo $key === $frequency ? 'active' : ''; ?>">
 
 				<?php echo esc_html( $label ); ?>
-				<input name="<?php echo esc_attr( $frequency_radio_name ); ?>"
-				       value="<?php echo esc_attr( $key ); ?>"
-				       type="radio" <?php checked( $key, $frequency ); ?>
-				       class="<?php echo esc_attr( $frequency_radio_id ); ?>"
+				<input
+					name="<?php echo esc_attr( $frequency_radio_name ); ?>"
+					value="<?php echo esc_attr( $key ); ?>"
+					type="radio" <?php checked( $key, $frequency ); ?>
+					class="<?php echo esc_attr( $frequency_radio_id ); ?>"
 				/>
 			</label>
 		<?php endforeach; ?>
@@ -38,29 +40,44 @@ $pane_id = "wds-{$component}-frequency-pane";
 		<div class="sui-row">
 			<div class="sui-col wds-dow weekly">
 				<div class="sui-form-field">
-					<?php $this->_render( 'reporting-dow-select', array(
-						'component' => $component,
-						'dow_value' => $dow_value,
-					) ); ?>
+					<?php
+					$this->render_view(
+						'reporting-dow-select',
+						array(
+							'component' => $component,
+							'dow_value' => $dow_value,
+						)
+					);
+					?>
 				</div>
 			</div>
 
 			<div class="sui-col wds-dow monthly">
 				<div class="sui-form-field">
-					<?php $this->_render( 'reporting-dow-select', array(
-						'component' => $component,
-						'dow_value' => $dow_value,
-						'monthly'   => true,
-					) ); ?>
+					<?php
+					$this->render_view(
+						'reporting-dow-select',
+						array(
+							'component' => $component,
+							'dow_value' => $dow_value,
+							'monthly'   => true,
+						)
+					);
+					?>
 				</div>
 			</div>
 
 			<div class="sui-col">
 				<div class="sui-form-field">
-					<?php $this->_render( 'reporting-tod-select', array(
-						'component' => $component,
-						'tod_value' => $tod_value,
-					) ); ?>
+					<?php
+					$this->render_view(
+						'reporting-tod-select',
+						array(
+							'component' => $component,
+							'tod_value' => $tod_value,
+						)
+					);
+					?>
 				</div>
 			</div>
 		</div>

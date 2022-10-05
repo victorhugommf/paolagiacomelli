@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // hungarian
-
-static $data = [
+static $data = array(
     'a',
     'ahogy',
     'ahol',
@@ -202,7 +201,7 @@ static $data = [
     'vele',
     'viszont',
     'volna',
-];
+);
 
 $result =& $data;
 unset($data);

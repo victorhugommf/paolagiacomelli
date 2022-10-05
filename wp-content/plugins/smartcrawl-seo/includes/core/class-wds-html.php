@@ -13,15 +13,15 @@ class Smartcrawl_Html {
 	 *
 	 * @var array
 	 */
-	private static $_charmap = array(
+	private static $charmap = array(
 		'2026' => '...',
-		'201C' => '"', // LEFT DOUBLE QUOTATION MARK
-		'201D' => '"', // RIGHT DOUBLE QUOTATION MARK
-		'2018' => "'", // LEFT SINGLE QUOTATION MARK
-		'2019' => "'", // RIGHT SINGLE QUOTATION MARK
-		'2014' => '-', // Emdash
-		'2013' => '-', // Endash
-		'00A0' => ' ', // NO-BREAK SPACE
+		'201C' => '"', // LEFT DOUBLE QUOTATION MARK.
+		'201D' => '"', // RIGHT DOUBLE QUOTATION MARK.
+		'2018' => "'", // LEFT SINGLE QUOTATION MARK.
+		'2019' => "'", // RIGHT SINGLE QUOTATION MARK.
+		'2014' => '-', // Emdash.
+		'2013' => '-', // Endash.
+		'00A0' => ' ', // NO-BREAK SPACE.
 	);
 
 	/**
@@ -29,12 +29,12 @@ class Smartcrawl_Html {
 	 *
 	 * @var array
 	 */
-	private static $_doms_cache = array();
+	private static $doms_cache = array();
 
 	/**
 	 * Retrieves plain text representation of HTML fragment
 	 *
-	 * @param string $html Markup fragment
+	 * @param string $html Markup fragment.
 	 *
 	 * @return string Plaintext
 	 */
@@ -53,7 +53,7 @@ class Smartcrawl_Html {
 	 * This is done instead of `the_content` filtering to prevent
 	 * triggering additional output for broken implementations.
 	 *
-	 * @param string $html Markup fragment to decorate
+	 * @param string $html Markup fragment to decorate.
 	 *
 	 * @return string Decorated markup
 	 */
@@ -74,7 +74,7 @@ class Smartcrawl_Html {
 	/**
 	 * Decodes HTML entities in a controlled fashion
 	 *
-	 * @param string $html Markup fragment
+	 * @param string $html Markup fragment.
 	 *
 	 * @return string Decoded fragment
 	 */
@@ -94,14 +94,14 @@ class Smartcrawl_Html {
 	 * @return array List of charmap replacements as utf8 code => replacement pairs
 	 */
 	public static function get_decode_charmap() {
-		return self::$_charmap;
+		return self::$charmap;
 	}
 
 	/**
 	 * Finds DOM nodes matching selector and extracts their content
 	 *
-	 * @param string $selector Expression to select DOM nodes
-	 * @param string $html Markup to select nodes from
+	 * @param string $selector Expression to select DOM nodes.
+	 * @param string $html     Markup to select nodes from.
 	 *
 	 * @return array A map of node => content pairs
 	 */
@@ -112,9 +112,9 @@ class Smartcrawl_Html {
 	/**
 	 * Finds DOM nodes matching selector and extracts their requested attribute
 	 *
-	 * @param string $selector Expression to select DOM nodes
-	 * @param string $attr Attribute to extract
-	 * @param string $html Markup to select nodes from
+	 * @param string $selector Expression to select DOM nodes.
+	 * @param string $attr     Attribute to extract.
+	 * @param string $html     Markup to select nodes from.
 	 *
 	 * @return array A map of node => attribute pairs
 	 */
@@ -133,8 +133,8 @@ class Smartcrawl_Html {
 	/**
 	 * Finds DOM nodes matching the selector
 	 *
-	 * @param string $selector Expression to select DOM nodes
-	 * @param string $html Markup to select nodes from
+	 * @param string $selector Expression to select DOM nodes.
+	 * @param string $html     Markup to select nodes from.
 	 *
 	 * @return simple_html_dom_node[] Selected DOM nodes
 	 */
@@ -153,7 +153,7 @@ class Smartcrawl_Html {
 	/**
 	 * Gets a DOM object instance
 	 *
-	 * @param string $html Optional HTML string
+	 * @param string $html Optional HTML string.
 	 *
 	 * @return object simple_html_dom object instance
 	 */
@@ -166,21 +166,21 @@ class Smartcrawl_Html {
 		}
 
 		$key = md5( $html );
-		if ( ! empty( self::$_doms_cache[ $key ] ) ) {
-			return self::$_doms_cache[ $key ];
+		if ( ! empty( self::$doms_cache[ $key ] ) ) {
+			return self::$doms_cache[ $key ];
 		}
 
-		self::$_doms_cache[ $key ] = new simple_html_dom();
-		self::$_doms_cache[ $key ]->load( $html );
+		self::$doms_cache[ $key ] = new simple_html_dom();
+		self::$doms_cache[ $key ]->load( $html );
 
-		return self::$_doms_cache[ $key ];
+		return self::$doms_cache[ $key ];
 	}
 
 	/**
 	 * Finds DOM nodes matching selector and extracts their markup
 	 *
-	 * @param string $selector Expression to select DOM nodes
-	 * @param string $html Markup to select nodes from
+	 * @param string $selector Expression to select DOM nodes.
+	 * @param string $html     Markup to select nodes from.
 	 *
 	 * @return array A map of node => markup pairs
 	 */
@@ -191,8 +191,8 @@ class Smartcrawl_Html {
 	/**
 	 * Plucks attribute value from node
 	 *
-	 * @param object $node simple_html_dom_node object
-	 * @param string $attr Attribute to extract
+	 * @param object $node simple_html_dom_node object.
+	 * @param string $attr Attribute to extract.
 	 *
 	 * @return string Attribute value
 	 */
@@ -208,26 +208,26 @@ class Smartcrawl_Html {
 	}
 
 	public static function remove_tags( $markup, $tags ) {
-		$document = new DOMDocument();
-		$internalErrors = libxml_use_internal_errors( true );
-		$document->encoding = 'UTF-8';
-		$document->substituteEntities = true;
+		$document                     = new DOMDocument();
+		$internal_errors              = libxml_use_internal_errors( true );
+		$document->encoding           = 'UTF-8';
+		$document->substituteEntities = true; // phpcs:ignore
 		$document->loadHTML(
 			mb_convert_encoding( $markup, 'HTML-ENTITIES', 'UTF-8' ),
 			LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
 		);
-		libxml_use_internal_errors( $internalErrors );
+		libxml_use_internal_errors( $internal_errors );
 
 		foreach ( $tags as $tag ) {
-			$elements = $document->getElementsByTagName( $tag );
+			$elements      = $document->getElementsByTagName( $tag );
 			$element_count = $elements->length;
 
 			for ( $i = $element_count - 1; $i >= 0; $i -- ) {
 				$element = $elements->item( $i );
-				$element->parentNode->removeChild( $element );
+				$element->parentNode->removeChild( $element ); // phpcs:ignore
 			}
 		}
 
-		return trim( $document->saveHTML( $document->documentElement ) );
+		return trim( $document->saveHTML( $document->documentElement ) ); // phpcs:ignore
 	}
 }

@@ -590,6 +590,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 'ht_ctc_woo_1',
                 'ht_ctc_woo_shop',
                 'ctc_g_opt_in',
+                'ctc_g_content',
                 'url_structure',
             ];
 
@@ -601,6 +602,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 'ht_ctc_analytics',
                 'ht_ctc_animations',
                 'ht_ctc_other_settings',
+                'ctc_g_content',
                 'url_structure',
             ];
 

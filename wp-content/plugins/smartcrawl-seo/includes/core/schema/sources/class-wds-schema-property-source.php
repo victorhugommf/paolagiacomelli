@@ -6,9 +6,15 @@ abstract class Smartcrawl_Schema_Property_Source {
 	 */
 	protected $utils;
 
+	/**
+	 *
+	 */
 	public function __construct() {
 		$this->utils = Smartcrawl_Schema_Utils::get();
 	}
 
-	public abstract function get_value();
+	/**
+	 * @return mixed
+	 */
+	abstract public function get_value();
 }

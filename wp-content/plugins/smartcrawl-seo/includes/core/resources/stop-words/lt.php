@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // lithuanian
-
-static $data = [
+static $data = array(
     'abi',
     'abidvi',
     'abiejose',
@@ -477,7 +476,7 @@ static $data = [
     'ðtai',
     'ðájá',
     'þemiau',
-];
+);
 
 $result =& $data;
 unset($data);

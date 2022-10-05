@@ -2,35 +2,20 @@
 /**
  * Initializes plugin front-end behavior
  *
- * @package wpmu-dev-seo
+ * @package Smartcrawl
  */
 
 /**
- * Frontend init class
- * 
+ * Frontend init class.
+ *
  * TODO: get rid of this class
  */
 class Smartcrawl_Front extends Smartcrawl_Base_Controller {
-	/**
-	 * Static instance
-	 *
-	 * @var self
-	 */
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
 
 	/**
-	 * Static instance getter
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	/**
-	 * Initializing method
+	 * Initializing method.
 	 */
 	protected function init() {
 		if ( defined( 'SMARTCRAWL_EXPERIMENTAL_FEATURES_ON' ) && SMARTCRAWL_EXPERIMENTAL_FEATURES_ON ) {

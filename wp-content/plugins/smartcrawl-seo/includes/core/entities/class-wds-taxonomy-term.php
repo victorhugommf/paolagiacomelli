@@ -1,6 +1,7 @@
 <?php
 
 class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
+
 	/**
 	 * @var int
 	 */
@@ -10,18 +11,22 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 	 * @var WP_Term
 	 */
 	private $wp_term;
+
 	/**
 	 * @var array
 	 */
 	private $posts;
+
 	/**
 	 * @var array
 	 */
 	private $opengraph_term_meta;
+
 	/**
 	 * @var array
 	 */
 	private $twitter_term_meta;
+
 	/**
 	 * @var int
 	 */
@@ -30,8 +35,9 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 	/**
 	 * Smartcrawl_Taxonomy_Term constructor.
 	 *
-	 * @param $term WP_Term|int
-	 * @param $posts array
+	 * @param WP_Term|int $term        Term.
+	 * @param array       $posts       Posts.
+	 * @param int         $page_number Page number.
 	 */
 	public function __construct( $term, $posts = array(), $page_number = 0 ) {
 		if ( is_a( $term, 'WP_Term' ) ) {
@@ -40,7 +46,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 		} else {
 			$this->term_id = $term;
 		}
-		$this->posts = $posts;
+		$this->posts       = $posts;
 		$this->page_number = $page_number;
 	}
 
@@ -50,6 +56,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 
 	public function get_name() {
 		$wp_term = $this->get_wp_term();
+
 		return $wp_term
 			? $wp_term->name
 			: '';
@@ -57,6 +64,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 
 	public function get_description() {
 		$wp_term = $this->get_wp_term();
+
 		return $wp_term
 			? $wp_term->description
 			: '';
@@ -64,6 +72,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 
 	public function get_slug() {
 		$wp_term = $this->get_wp_term();
+
 		return $wp_term
 			? $wp_term->slug
 			: '';
@@ -73,6 +82,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 		if ( is_null( $this->wp_term ) ) {
 			$this->wp_term = $this->load_wp_term();
 		}
+
 		return $this->wp_term;
 	}
 
@@ -81,11 +91,13 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 		if ( ! $term || is_wp_error( $term ) ) {
 			return false;
 		}
+
 		return $term;
 	}
 
 	public function get_taxonomy() {
 		$wp_term = $this->get_wp_term();
+
 		return $wp_term
 			? $wp_term->taxonomy
 			: '';
@@ -144,9 +156,9 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 			return $canonical_from_meta;
 		}
 
-		$first_page_indexed = $this->is_first_page_indexed();
+		$first_page_indexed   = $this->is_first_page_indexed();
 		$current_page_indexed = ! $this->is_noindex();
-		$term_link = get_term_link( $wp_term, $wp_term->taxonomy );
+		$term_link            = get_term_link( $wp_term, $wp_term->taxonomy );
 
 		if ( $current_page_indexed ) {
 			return $this->append_page_number( $term_link, $this->page_number );
@@ -171,6 +183,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 			$this->get_meta_title(),
 			$this->get_meta_description()
 		);
+
 		return $schema->get_schema();
 	}
 
@@ -194,8 +207,9 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 			return false;
 		}
 
-		$term_meta = $this->get_opengraph_term_meta();
+		$term_meta             = $this->get_opengraph_term_meta();
 		$disabled_in_term_meta = smartcrawl_get_array_value( $term_meta, 'disabled' );
+
 		return ! $disabled_in_term_meta;
 	}
 
@@ -203,6 +217,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 		if ( is_null( $this->opengraph_term_meta ) ) {
 			$this->opengraph_term_meta = $this->load_opengraph_term_meta();
 		}
+
 		return $this->opengraph_term_meta;
 	}
 
@@ -263,10 +278,10 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 			return array();
 		}
 
-		// Check meta
+		// Check meta.
 		$images = smartcrawl_get_array_value( call_user_func( $load_post_meta ), 'images' );
 		if ( ! $images ) {
-			// Meta not available, check options
+			// Meta not available, check options.
 			$images = call_user_func( $load_from_options, $this->get_taxonomy() );
 		}
 
@@ -288,7 +303,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 			return false;
 		}
 
-		$term_meta = $this->get_twitter_term_meta();
+		$term_meta             = $this->get_twitter_term_meta();
 		$disabled_in_term_meta = smartcrawl_get_array_value( $term_meta, 'disabled' );
 
 		return ! $disabled_in_term_meta;
@@ -298,6 +313,7 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 		if ( is_null( $this->twitter_term_meta ) ) {
 			$this->twitter_term_meta = $this->load_twitter_term_meta();
 		}
+
 		return $this->twitter_term_meta;
 	}
 
@@ -356,10 +372,10 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 		);
 
 		if ( $this->get_taxonomy() === 'category' ) {
-			$macros['%%category%%'] = array( $this, 'get_name' );
+			$macros['%%category%%']             = array( $this, 'get_name' );
 			$macros['%%category_description%%'] = array( $this, 'get_description' );
 		} elseif ( $this->get_taxonomy() === 'post_tag' ) {
-			$macros['%%tag%%'] = array( $this, 'get_name' );
+			$macros['%%tag%%']             = array( $this, 'get_name' );
 			$macros['%%tag_description%%'] = array( $this, 'get_description' );
 		}
 
@@ -382,41 +398,43 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 	}
 
 	/**
-	 * @param $wp_term
+	 * @param WP_Term $wp_term Term.
 	 *
 	 * @return bool
 	 */
 	protected function is_term_noindex( $wp_term ) {
 		$noindex_in_settings = $this->get_noindex_setting( $wp_term->taxonomy );
-		$noindex_overridden = (bool) smartcrawl_get_term_meta( $wp_term, $wp_term->taxonomy, 'wds_override_noindex' );
-		$noindex_in_meta = (bool) smartcrawl_get_term_meta( $wp_term, $wp_term->taxonomy, 'wds_noindex' );
+		$noindex_overridden  = (bool) smartcrawl_get_term_meta( $wp_term, $wp_term->taxonomy, 'wds_override_noindex' );
+		$noindex_in_meta     = (bool) smartcrawl_get_term_meta( $wp_term, $wp_term->taxonomy, 'wds_noindex' );
 		if ( $noindex_in_settings ) {
 			$noindex = ! $noindex_overridden;
 		} else {
 			$noindex = $noindex_in_meta;
 		}
+
 		return $noindex;
 	}
 
 	/**
-	 * @param $wp_term
+	 * @param WP_Term $wp_term Term.
 	 *
 	 * @return bool
 	 */
 	protected function is_term_nofollow( $wp_term ) {
 		$nofollow_in_settings = $this->get_nofollow_setting( $wp_term->taxonomy );
-		$nofollow_overridden = (bool) smartcrawl_get_term_meta( $wp_term, $wp_term->taxonomy, 'wds_override_nofollow' );
-		$nofollow_in_meta = (bool) smartcrawl_get_term_meta( $wp_term, $wp_term->taxonomy, 'wds_nofollow' );
+		$nofollow_overridden  = (bool) smartcrawl_get_term_meta( $wp_term, $wp_term->taxonomy, 'wds_override_nofollow' );
+		$nofollow_in_meta     = (bool) smartcrawl_get_term_meta( $wp_term, $wp_term->taxonomy, 'wds_nofollow' );
 		if ( $nofollow_in_settings ) {
 			$nofollow = ! $nofollow_overridden;
 		} else {
 			$nofollow = $nofollow_in_meta;
 		}
+
 		return $nofollow;
 	}
 
 	/**
-	 * @param $page_number
+	 * @param int $page_number Page number.
 	 *
 	 * @return string
 	 */
@@ -433,11 +451,12 @@ class Smartcrawl_Taxonomy_Term extends Smartcrawl_Entity_With_Archive {
 			return '';
 		}
 
-		$noindex = $this->is_term_noindex( $wp_term );
+		$noindex  = $this->is_term_noindex( $wp_term );
 		$nofollow = $this->is_term_nofollow( $wp_term );
 
-		$noindex_string = $noindex ? 'noindex' : 'index';
+		$noindex_string  = $noindex ? 'noindex' : 'index';
 		$nofollow_string = $nofollow ? 'nofollow' : 'follow';
+
 		return "{$noindex_string},{$nofollow_string}";
 	}
 }

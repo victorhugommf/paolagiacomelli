@@ -43,7 +43,7 @@
                 return '<td>' + field.setValue(field.html, content)[0].outerHTML + '</td>';
             }
             // Default
-            return '<td><input type="text" value="' + content.toString().replace(/"/g, "&quot;") + '" /></td>';
+            return '<td><input type="text" value="' + content.toString().replace(/"/g, "&quot;") + '" placeholder="Enter value" /></td>';
         }
 
         // Build row
@@ -201,9 +201,9 @@
         $table.on('click', '.addcol', function () {
 
             var colid = parseInt($(this).closest('tr').children().index($(this).parent('th')), 10);
-
+            
             colnumber += 1;
-
+            
             $table.find('thead tr').find('th:eq(' + colid + ')').after(defaultth);
 
             $table.find('tbody tr').each(function () {
@@ -246,7 +246,7 @@
             }
 
             rownumber += 1;
-
+            
             $(this).closest('tr').after(buildRow(0, colnumber));
 
             $table.find('.delrow').removeClass('disabled');
@@ -314,7 +314,7 @@
 jQuery(window).ready(function ($) {
         	
         	// Initialize table example 0
-        	$('#chart-table').editTable();  	
+        	$('#chart-table').editTable();
         	// Initialize table example 1
 	        var eTable = $('#edittable').editTable({
 	        	data : [

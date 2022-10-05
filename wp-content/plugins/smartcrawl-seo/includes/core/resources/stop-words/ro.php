@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // romanian
-
-static $data = [
+static $data = array(
     'vreo',
     'acelea',
     'cita',
@@ -261,7 +260,7 @@ static $data = [
     'ni',
     'aceia',
     'am',
-];
+);
 
 $result =& $data;
 unset($data);

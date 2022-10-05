@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // danish
-
-static $data = [
+static $data = array(
     'ad',
     'af',
     'aldrig',
@@ -173,7 +172,7 @@ static $data = [
     'vores',
     'være',
     'været',
-];
+);
 
 $result =& $data;
 unset($data);

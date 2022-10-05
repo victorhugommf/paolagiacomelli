@@ -1,6 +1,7 @@
 <?php
 
 abstract class Smartcrawl_Importer {
+
 	private $status = null;
 
 	abstract public function data_exists();
@@ -28,11 +29,11 @@ abstract class Smartcrawl_Importer {
 	}
 
 	public function import_for_all_sites( $options = array() ) {
-		$runner = new Smartcrawl_Subsite_Process_Runner(
+		$runner          = new Smartcrawl_Subsite_Process_Runner(
 			$this->get_next_network_site_option_id(),
 			array( $this, 'import' )
 		);
-		$total_sites = $runner->get_total_site_count();
+		$total_sites     = $runner->get_total_site_count();
 		$processed_sites = $runner->run( $options );
 		$this->update_site_status( $total_sites, $processed_sites );
 		$this->enable_settings_page_on_subsites();
@@ -53,18 +54,21 @@ abstract class Smartcrawl_Importer {
 	abstract protected function get_next_network_site_option_id();
 
 	public function import( $options = array() ) {
-		$options = wp_parse_args( $options, array(
-			'import-options'          => true,
-			'import-term-meta'        => true,
-			'import-post-meta'        => true,
-			'force-restart'           => false,
-			'keep-existing-post-meta' => false,
-		) );
-		$import_options = (boolean) smartcrawl_get_array_value( $options, 'import-options' );
-		$import_term_meta = (boolean) smartcrawl_get_array_value( $options, 'import-term-meta' );
-		$import_post_meta = (boolean) smartcrawl_get_array_value( $options, 'import-post-meta' );
-		$force_restart = (boolean) smartcrawl_get_array_value( $options, 'force-restart' );
-		$keep_post_meta = (boolean) smartcrawl_get_array_value( $options, 'keep-existing-post-meta' );
+		$options          = wp_parse_args(
+			$options,
+			array(
+				'import-options'          => true,
+				'import-term-meta'        => true,
+				'import-post-meta'        => true,
+				'force-restart'           => false,
+				'keep-existing-post-meta' => false,
+			)
+		);
+		$import_options   = (bool) smartcrawl_get_array_value( $options, 'import-options' );
+		$import_term_meta = (bool) smartcrawl_get_array_value( $options, 'import-term-meta' );
+		$import_post_meta = (bool) smartcrawl_get_array_value( $options, 'import-post-meta' );
+		$force_restart    = (bool) smartcrawl_get_array_value( $options, 'force-restart' );
+		$keep_post_meta   = (bool) smartcrawl_get_array_value( $options, 'keep-existing-post-meta' );
 
 		if ( ! $this->is_import_in_progress() || $force_restart ) {
 			$this->set_import_flag();
@@ -91,7 +95,7 @@ abstract class Smartcrawl_Importer {
 	}
 
 	public function is_import_in_progress() {
-		return (boolean) get_option( $this->get_import_in_progress_option_id() );
+		return (bool) get_option( $this->get_import_in_progress_option_id() );
 	}
 
 	abstract protected function get_import_in_progress_option_id();
@@ -104,7 +108,8 @@ abstract class Smartcrawl_Importer {
 		Smartcrawl_Settings::reset_options();
 
 		global $wpdb;
-		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%wds-sitemap%'" );
+
+		$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%wds-sitemap%'" ); // phpcs:ignore -- direct db call needed.
 	}
 
 	private function remove_existing_wds_taxonomy_meta() {
@@ -117,7 +122,7 @@ abstract class Smartcrawl_Importer {
 
 	private function remove_existing_wds_post_meta() {
 		global $wpdb;
-		$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_wds_%'" );
+		$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE '_wds_%'" ); // phpcs:ignore -- direct db call needed.
 	}
 
 	abstract public function import_post_meta();
@@ -127,7 +132,7 @@ abstract class Smartcrawl_Importer {
 	}
 
 	private function enable_settings_page_on_subsites() {
-		$blog_tabs = get_site_option( 'wds_blog_tabs', array() );
+		$blog_tabs                 = get_site_option( 'wds_blog_tabs', array() );
 		$blog_tabs['wds_settings'] = true;
 		update_site_option( 'wds_blog_tabs', $blog_tabs );
 	}
@@ -139,8 +144,8 @@ abstract class Smartcrawl_Importer {
 	protected function get_posts_with_source_metas( $prefix ) {
 		global $wpdb;
 		$posts_with_target_meta = implode( ',', $this->get_posts_with_target_metas() );
-		$not_in = $posts_with_target_meta ? $posts_with_target_meta : '-1';
-		$meta_query = "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key LIKE '{$prefix}%' AND post_id NOT IN ({$not_in}) GROUP BY post_id";
+		$not_in                 = $posts_with_target_meta ? $posts_with_target_meta : '-1';
+		$meta_query             = "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key LIKE '{$prefix}%' AND post_id NOT IN ({$not_in}) GROUP BY post_id";
 
 		return $wpdb->get_col( $meta_query ); // phpcs:ignore -- Preparation difficult due to % escaping and complex IN clause
 	}
@@ -148,7 +153,7 @@ abstract class Smartcrawl_Importer {
 	protected function get_posts_with_target_metas() {
 		global $wpdb;
 
-		return $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key LIKE '_wds_%' AND meta_key NOT IN ('_wds_analysis','_wds_readability') GROUP BY post_id" );
+		return $wpdb->get_col( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key LIKE '_wds_%' AND meta_key NOT IN ('_wds_analysis','_wds_readability') GROUP BY post_id" ); // phpcs:ignore -- direct db call needed.
 	}
 
 	protected function load_mapping_file( $file ) {
@@ -195,14 +200,14 @@ abstract class Smartcrawl_Importer {
 
 			if ( $this->is_post_type_option( $source_key ) ) {
 				foreach ( $post_types as $post_type ) {
-					$new_source_key = str_replace( 'POSTTYPE', $post_type, $source_key );
-					$new_target_key = false === $target_key ? false : str_replace( 'POSTTYPE', $post_type, $target_key );
+					$new_source_key              = str_replace( 'POSTTYPE', $post_type, $source_key );
+					$new_target_key              = false === $target_key ? false : str_replace( 'POSTTYPE', $post_type, $target_key );
 					$mappings[ $new_source_key ] = $new_target_key;
 				}
 			} elseif ( $this->is_taxonomy_option( $source_key ) ) {
 				foreach ( $taxonomies as $taxonomy ) {
-					$new_source_key = str_replace( 'TAXONOMY', $taxonomy, $source_key );
-					$new_target_key = false === $target_key ? false : str_replace( 'TAXONOMY', $taxonomy, $target_key );
+					$new_source_key              = str_replace( 'TAXONOMY', $taxonomy, $source_key );
+					$new_target_key              = false === $target_key ? false : str_replace( 'TAXONOMY', $taxonomy, $target_key );
 					$mappings[ $new_source_key ] = $new_target_key;
 				}
 			}
@@ -221,7 +226,12 @@ abstract class Smartcrawl_Importer {
 	protected function get_taxonomies() {
 		return array_merge(
 			array( 'post_tag', 'category' ),
-			get_taxonomies( array( '_builtin' => false, 'public' => true ) )
+			get_taxonomies(
+				array(
+					'_builtin' => false,
+					'public'   => true,
+				)
+			)
 		);
 	}
 
@@ -268,12 +278,7 @@ abstract class Smartcrawl_Importer {
 	}
 
 	private function is_value_truthy( $value ) {
-		return 'on' === $value
-		       || '1' === $value
-		       || true === $value
-		       || ( is_int( $value ) && $value > 0 )
-			? true
-			: false;
+		return 'on' === $value || '1' === $value || true === $value || ( is_int( $value ) && $value > 0 );
 	}
 
 	private function requires_boolean_inversion( $key ) {
@@ -292,12 +297,10 @@ abstract class Smartcrawl_Importer {
 			return $source_value;
 		}
 
-		$source_value = call_user_func_array(
+		return call_user_func_array(
 			array( $this, $pre_processor ),
 			$all_arguments
 		);
-
-		return $source_value;
 	}
 
 	protected function get_pre_processors() {
@@ -351,12 +354,15 @@ abstract class Smartcrawl_Importer {
 	}
 
 	/**
-	 * @param $completed_sites
+	 * @param int $total_sites     Total sites.
+	 * @param int $completed_sites Completed sites.
 	 */
 	private function update_site_status( $total_sites, $completed_sites ) {
-		$this->update_status( array(
-			'total_sites'     => $total_sites,
-			'completed_sites' => $completed_sites,
-		) );
+		$this->update_status(
+			array(
+				'total_sites'     => $total_sites,
+				'completed_sites' => $completed_sites,
+			)
+		);
 	}
 }

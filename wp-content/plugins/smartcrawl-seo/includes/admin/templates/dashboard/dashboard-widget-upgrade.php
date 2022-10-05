@@ -1,13 +1,14 @@
 <?php
-$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
+$service   = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
 $is_member = $service->is_member();
 if ( $is_member ) {
 	return;
 }
 ?>
 
-<section id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_UPGRADE ); ?>"
-         class="sui-box wds-dashboard-widget">
+<section
+	id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_UPGRADE ); ?>"
+	class="sui-box wds-dashboard-widget">
 
 	<div class="sui-box-header">
 		<h2 class="sui-box-title">
@@ -15,8 +16,9 @@ if ( $is_member ) {
 			<?php esc_html_e( 'SmartCrawl Pro', 'wds' ); ?>
 		</h2>
 
-		<span class="sui-tag sui-tag-pro sui-tooltip"
-		      data-tooltip="<?php esc_attr_e( 'Try SmartCrawl Pro Free', 'wds' ); ?>">
+		<span
+			class="sui-tag sui-tag-pro sui-tooltip"
+			data-tooltip="<?php esc_attr_e( 'Try SmartCrawl Pro Free', 'wds' ); ?>">
 			<?php esc_html_e( 'Pro', 'wds' ); ?>
 		</span>
 	</div>
@@ -34,8 +36,9 @@ if ( $is_member ) {
 			<li><?php esc_html_e( 'The WPMU DEV guarantee', 'wds' ); ?></li>
 		</ul>
 
-		<a target="_blank" class="sui-button sui-button-purple"
-		   href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dashboard_upsellwidget_button">
+		<a
+			target="_blank" class="sui-button sui-button-purple"
+			href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dashboard_upsellwidget_button">
 			<?php esc_html_e( 'Try Pro Free Today!', 'wds' ); ?>
 		</a>
 	</div>

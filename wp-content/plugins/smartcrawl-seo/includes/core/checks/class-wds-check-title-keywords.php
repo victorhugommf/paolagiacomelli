@@ -2,14 +2,14 @@
 
 class Smartcrawl_Check_Title_Keywords extends Smartcrawl_Check_Post_Abstract {
 
-	private $_state;
+	private $state;
 
 	public function get_status_msg() {
-		if ( - 1 === $this->_state ) {
+		if ( - 1 === $this->state ) {
 			return __( 'We couldn\'t find a title to check for keywords', 'wds' );
 		}
 
-		return false === $this->_state
+		return false === $this->state
 			? __( "Your focus keyword(s) aren't used in the SEO title", 'wds' )
 			: __( 'The SEO title contains your focus keyword(s)', 'wds' );
 	}
@@ -21,38 +21,38 @@ class Smartcrawl_Check_Title_Keywords extends Smartcrawl_Check_Post_Abstract {
 			$subject = $this->get_markup();
 		} else {
 			$smartcrawl_post = Smartcrawl_Post_Cache::get()->get_post( $post->ID );
-			$subject = $smartcrawl_post
+			$subject         = $smartcrawl_post
 				? $smartcrawl_post->get_meta_title()
 				: '';
 		}
 
-		$this->_state = $this->has_focus( $subject );
+		$this->state = $this->has_focus( $subject );
 
-		return ! ! $this->_state;
+		return ! ! $this->state;
 	}
 
 	public function apply_html() {
 		$titles = Smartcrawl_Html::find_content( 'title', $this->get_markup() );
 		if ( empty( $titles ) ) {
-			$this->_state = - 1;
+			$this->state = - 1;
 
 			return false;
 		}
 
 		$title = reset( $titles );
 		if ( empty( $title ) ) {
-			$this->_state = - 1;
+			$this->state = - 1;
 
 			return false;
 		}
 
-		$this->_state = $this->has_focus( $title );
+		$this->state = $this->has_focus( $title );
 
-		return ! ! $this->_state;
+		return ! ! $this->state;
 	}
 
 	public function get_recommendation() {
-		if ( $this->_state ) {
+		if ( $this->state ) {
 			$message = __( "You've got your focus keyword(s) in the SEO title meaning it has the best chance of matching what users are searching for first up - nice work.", 'wds' );
 		} else {
 			$message = __( "The focus keyword(s) for this article doesn't appear in the SEO title which means it has less of a chance of matching what your visitors will search for.", 'wds' );

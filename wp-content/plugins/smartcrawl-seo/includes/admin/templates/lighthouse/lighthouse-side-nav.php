@@ -1,14 +1,14 @@
 <?php
-$active_tab = empty( $active_tab ) ? '' : $active_tab;
+$active_tab        = empty( $active_tab ) ? '' : $active_tab;
 $lighthouse_report = empty( $lighthouse_report ) ? false : $lighthouse_report;
 if ( ! $lighthouse_report ) {
 	return;
 }
-$is_member = empty( $_view['is_member'] ) ? false : true;
+$is_member               = ! empty( $_view['is_member'] );
 $lighthouse_cron_enabled = Smartcrawl_Lighthouse_Options::is_cron_enabled() && $is_member;
-$is_reporting_enabled = empty( $is_reporting_enabled ) ? false : $is_reporting_enabled;
+$is_reporting_enabled    = ! empty( $is_reporting_enabled ) && $is_reporting_enabled;
 
-$tabs = array(
+$tab_items = array(
 	array(
 		'id'        => 'tab_lighthouse',
 		'name'      => esc_html__( 'SEO audits', 'wds' ),
@@ -18,7 +18,7 @@ $tabs = array(
 );
 
 if ( $is_reporting_enabled ) {
-	$tabs[] = array(
+	$tab_items[] = array(
 		'id'        => 'tab_reporting',
 		'name'      => esc_html__( 'Reporting', 'wds' ),
 		'tag_value' => $is_member ? '' : esc_html__( 'Pro', 'wds' ),
@@ -27,12 +27,15 @@ if ( $is_reporting_enabled ) {
 	);
 }
 
-$tabs[] = array(
+$tab_items[] = array(
 	'id'   => 'tab_settings',
 	'name' => esc_html__( 'Settings', 'wds' ),
 );
 
-$this->_render( 'vertical-tabs-side-nav', array(
-	'active_tab' => $active_tab,
-	'tabs'       => $tabs,
-) );
+$this->render_view(
+	'vertical-tabs-side-nav',
+	array(
+		'active_tab' => $active_tab,
+		'tabs'       => $tab_items,
+	)
+);

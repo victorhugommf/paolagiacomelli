@@ -13,12 +13,15 @@ $autolinks_exclude = empty( $autolinks_exclude ) ? false : $autolinks_exclude;
 	</div>
 	<div class="sui-box-settings-col-2">
 		<?php
-		$this->_render( 'toggle-item', array(
-			'inverted'   => true,
-			'field_name' => 'wds_autolinks-exclude',
-			'checked'    => $autolinks_exclude,
-			'item_label' => esc_html__( 'Enable automatic linking for this post', 'wds' ),
-		) );
+		$this->render_view(
+			'toggle-item',
+			array(
+				'inverted'   => true,
+				'field_name' => 'wds_autolinks-exclude',
+				'checked'    => $autolinks_exclude,
+				'item_label' => esc_html__( 'Enable automatic linking for this post', 'wds' ),
+			)
+		);
 		?>
 	</div>
 </div>

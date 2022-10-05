@@ -4,7 +4,7 @@ $default_settings_message = smartcrawl_format_link(
 	Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_ONPAGE ),
 	esc_html__( 'Titles & Meta', 'wds' )
 );
-$social_sections = empty( $social_sections ) ? array() : $social_sections;
+$social_sections          = empty( $social_sections ) ? array() : $social_sections;
 if ( empty( $social_sections ) ) {
 	return;
 }
@@ -12,7 +12,9 @@ if ( empty( $social_sections ) ) {
 <div class="wds-metabox-section wds-social-settings-metabox-section sui-box-body">
 	<p><?php echo wp_kses_post( $default_settings_message ); ?></p>
 
-	<?php foreach ( $social_sections as $template => $args ) {
-		$this->_render( $template, $args );
-	} ?>
+	<?php
+	foreach ( $social_sections as $template => $args ) {
+		$this->render_view( $template, $args );
+	}
+	?>
 </div>

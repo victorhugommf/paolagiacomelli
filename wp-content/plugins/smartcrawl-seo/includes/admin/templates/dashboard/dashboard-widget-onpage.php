@@ -3,12 +3,12 @@ if ( ! Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAG
 	return;
 }
 
-$page_url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_ONPAGE );
+$page_url          = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_ONPAGE );
 $public_post_types = get_post_types( array( 'public' => true ) );
-$show_on_front = get_option( 'show_on_front' );
-$options = $_view['options'];
-$option_name = Smartcrawl_Settings::TAB_SETTINGS . '_options';
-$onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
+$show_on_front     = get_option( 'show_on_front' );
+$options           = $_view['options'];
+$option_name       = Smartcrawl_Settings::TAB_SETTINGS . '_options';
+$onpage_enabled    = Smartcrawl_Settings::get_setting( 'onpage' );
 ?>
 <section id="<?php echo esc_attr( Smartcrawl_Settings_Dashboard::BOX_ONPAGE ); ?>" class="sui-box wds-dashboard-widget">
 	<div class="sui-box-header">
@@ -37,21 +37,23 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 		<?php endif; ?>
 	</div>
 	<div class="sui-box-footer">
-		<?php if ( $onpage_enabled ): ?>
-			<a href="<?php echo esc_attr( $page_url ); ?>"
-			   aria-label="<?php esc_html_e( 'Configure titles and meta component', 'wds' ); ?>"
-			   class="sui-button sui-button-ghost">
-
-				<span class="sui-icon-wrench-tool"
-				      aria-hidden="true"></span> <?php esc_html_e( 'Configure', 'wds' ); ?>
+		<?php if ( $onpage_enabled ) : ?>
+			<a
+				href="<?php echo esc_attr( $page_url ); ?>"
+				aria-label="<?php esc_html_e( 'Configure titles and meta component', 'wds' ); ?>"
+				class="sui-button sui-button-ghost"
+			>
+				<span
+					class="sui-icon-wrench-tool"
+					aria-hidden="true"></span> <?php esc_html_e( 'Configure', 'wds' ); ?>
 			</a>
 		<?php else : ?>
-			<button type="button"
-			        data-option-id="<?php echo esc_attr( $option_name ); ?>"
-			        data-flag="<?php echo esc_attr( 'onpage' ); ?>"
-			        aria-label="<?php esc_html_e( 'Activate title and meta component', 'wds' ); ?>"
-			        class="wds-activate-component wds-disabled-during-request sui-button sui-button-blue">
-
+			<button
+				type="button"
+				data-option-id="<?php echo esc_attr( $option_name ); ?>"
+				data-flag="<?php echo esc_attr( 'onpage' ); ?>"
+				aria-label="<?php esc_html_e( 'Activate title and meta component', 'wds' ); ?>"
+				class="wds-activate-component wds-disabled-during-request sui-button sui-button-blue">
 				<span class="sui-loading-text"><?php esc_html_e( 'Activate', 'wds' ); ?></span>
 				<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 			</button>

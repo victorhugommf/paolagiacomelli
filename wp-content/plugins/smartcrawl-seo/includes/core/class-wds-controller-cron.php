@@ -2,6 +2,8 @@
 /**
  * Periodical execution module
  *
+ * phpcs:disable WordPress.DateTime.RestrictedFunctions.date_date
+ *
  * @package wpmu-dev-seo
  */
 
@@ -10,42 +12,20 @@
  */
 class Smartcrawl_Controller_Cron {
 
-	const ACTION_CRAWL = 'wds-cron-start_service';
-	const ACTION_LIGHTHOUSE = 'wds-cron-start_lighthouse';
-	const ACTION_LIGHTHOUSE_RESULT = 'wds-cron-lighthouse_result';
+	use Smartcrawl_Singleton;
 
-	/**
-	 * Singleton instance
-	 *
-	 * @var Smartcrawl_Controller_Cron
-	 */
-	private static $_instance;
+	const ACTION_CRAWL = 'wds-cron-start_service';
+
+	const ACTION_LIGHTHOUSE = 'wds-cron-start_lighthouse';
+
+	const ACTION_LIGHTHOUSE_RESULT = 'wds-cron-lighthouse_result';
 
 	/**
 	 * Controller actively running flag
 	 *
 	 * @var bool
 	 */
-	private $_is_running = false;
-
-	/**
-	 * Constructor
-	 */
-	private function __construct() {
-	}
-
-	/**
-	 * Singleton instance getter
-	 *
-	 * @return object Smartcrawl_Controller_Cron instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
+	private $is_running = false;
 
 	/**
 	 * Boots controller interface
@@ -54,7 +34,7 @@ class Smartcrawl_Controller_Cron {
 	 */
 	public function run() {
 		if ( ! $this->is_running() ) {
-			$this->_add_hooks();
+			$this->add_hooks();
 		}
 
 		return $this->is_running();
@@ -66,7 +46,7 @@ class Smartcrawl_Controller_Cron {
 	 * @return bool
 	 */
 	public function is_running() {
-		return ! ! $this->_is_running;
+		return ! ! $this->is_running;
 	}
 
 	/**
@@ -76,10 +56,10 @@ class Smartcrawl_Controller_Cron {
 	 *
 	 * @return void
 	 */
-	private function _add_hooks() {
+	private function add_hooks() {
 		add_filter( 'cron_schedules', array( $this, 'add_cron_schedule_intervals' ) );
 
-		$this->_is_running = true;
+		$this->is_running = true;
 	}
 
 	/**
@@ -124,7 +104,7 @@ class Smartcrawl_Controller_Cron {
 	 */
 	public function stop() {
 		if ( $this->is_running() ) {
-			$this->_remove_hooks();
+			$this->remove_hooks();
 		}
 
 		return $this->is_running();
@@ -137,12 +117,12 @@ class Smartcrawl_Controller_Cron {
 	 *
 	 * @return void
 	 */
-	private function _remove_hooks() {
+	private function remove_hooks() {
 
 		remove_action( $this->get_filter( self::ACTION_CRAWL ), array( $this, 'start_crawl' ) );
 		remove_filter( 'cron_schedules', array( $this, 'add_cron_schedule_intervals' ) );
 
-		$this->_is_running = false;
+		$this->is_running = false;
 	}
 
 	/**
@@ -159,8 +139,8 @@ class Smartcrawl_Controller_Cron {
 	/**
 	 * Sets up overall schedules
 	 *
-	 * @return void
 	 * @uses Smartcrawl_Controller_Cron::set_up_crawler_schedule()
+	 * @return void
 	 */
 	public function set_up_schedule() {
 		Smartcrawl_Logger::debug( 'Setting up schedules' );
@@ -179,19 +159,19 @@ class Smartcrawl_Controller_Cron {
 	/**
 	 * Gets estimated next event time based on parameters
 	 *
-	 * @param int $pivot Pivot time - base estimation relative to this (UNIX timestamp).
+	 * @param int    $pivot     Pivot time - base estimation relative to this (UNIX timestamp).
 	 * @param string $frequency Valid frequency interval.
-	 * @param int $dow Day of the week (0-6).
-	 * @param int $tod Time of day (0-23).
+	 * @param int    $dow       Day of the week (0-6).
+	 * @param int    $tod       Time of day (0-23).
 	 *
 	 * @return int Estimated next event time as UNIX timestamp
 	 */
 	public function get_estimated_next_event( $pivot, $frequency, $dow, $tod ) {
-		$start = $this->get_initial_pivot_time( $pivot, $frequency );
-		$offset = $start + ( $dow * DAY_IN_SECONDS );
-		$time = strtotime( date( "Y-m-d {$tod}:00", $offset ) );
+		$start                = $this->get_initial_pivot_time( $pivot, $frequency );
+		$offset               = $start + ( $dow * DAY_IN_SECONDS );
+		$time                 = strtotime( date( "Y-m-d {$tod}:00", $offset ) );
 		$current_month_length = (int) date( 'd', strtotime( 'last day of this month' ) );
-		$freqs = array(
+		$freqs                = array(
 			'daily'   => DAY_IN_SECONDS,
 			'weekly'  => 7 * DAY_IN_SECONDS,
 			'monthly' => $current_month_length * DAY_IN_SECONDS,
@@ -208,13 +188,14 @@ class Smartcrawl_Controller_Cron {
 	private function convert_to_utc( $timestamp ) {
 		$date_time = new DateTime( date( 'Y-m-d H:i:s', $timestamp ), wp_timezone() );
 		$date_time->setTimezone( new DateTimeZone( 'UTC' ) );
+
 		return $date_time->format( 'U' );
 	}
 
 	/**
 	 * Gets primed pivot time for a given frequency value
 	 *
-	 * @param int $pivot Raw pivot UNIX timestamp.
+	 * @param int    $pivot     Raw pivot UNIX timestamp.
 	 * @param string $frequency Frequency interval.
 	 *
 	 * @return int Zeroed pivot time for given frequency interval
@@ -236,7 +217,7 @@ class Smartcrawl_Controller_Cron {
 		}
 
 		if ( 'monthly' === $frequency ) {
-			$day = (int) date( 'd', $pivot );
+			$day   = (int) date( 'd', $pivot );
 			$today = strtotime( date( 'Y-m-d H:i', $pivot ) );
 
 			return $today - ( $day * DAY_IN_SECONDS );
@@ -285,8 +266,8 @@ class Smartcrawl_Controller_Cron {
 	/**
 	 * Schedules a particular event
 	 *
-	 * @param string $event Event name.
-	 * @param int $time UNIX timestamp.
+	 * @param string $event      Event name.
+	 * @param int    $time       UNIX timestamp.
 	 * @param string $recurrence Event recurrence.
 	 *
 	 * @return bool

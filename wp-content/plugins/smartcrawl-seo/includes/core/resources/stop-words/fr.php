@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // french
-
-static $data = [
+static $data = array(
     'a',
     'A',
     'à',
@@ -710,7 +709,7 @@ static $data = [
     '-y',
     'Z',
     'zéro',
-];
+);
 
 $result =& $data;
 unset($data);

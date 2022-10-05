@@ -10,22 +10,38 @@ class Smartcrawl_Schema_Fragment_Blog_Home extends Smartcrawl_Schema_Fragment {
 	 * @var Smartcrawl_Schema_Utils
 	 */
 	private $utils;
+	/**
+	 * @var string
+	 */
 	private $url;
+	/**
+	 * @var
+	 */
 	private $title;
+	/**
+	 * @var
+	 */
 	private $description;
 
+	/**
+	 * @param $title
+	 * @param $description
+	 */
 	public function __construct( $title, $description ) {
-		$this->title = $title;
+		$this->title       = $title;
 		$this->description = $description;
-		$this->url = get_site_url();
-		$this->utils = Smartcrawl_Schema_Utils::get();
+		$this->url         = get_site_url();
+		$this->utils       = Smartcrawl_Schema_Utils::get();
 	}
 
+	/**
+	 * @return array|mixed
+	 */
 	protected function get_raw() {
 		$is_publisher_page = $this->is_publisher_output_page();
 
 		$publisher = new Smartcrawl_Schema_Fragment_Publisher( $is_publisher_page );
-		$schema = array(
+		$schema    = array(
 			new Smartcrawl_Schema_Fragment_Header( $this->url, $this->title, $this->description ),
 			new Smartcrawl_Schema_Fragment_Footer( $this->url, $this->title, $this->description ),
 			$publisher,
@@ -61,10 +77,13 @@ class Smartcrawl_Schema_Fragment_Blog_Home extends Smartcrawl_Schema_Fragment {
 		return $schema;
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function is_publisher_output_page() {
 		$publisher_output_page = $this->utils->get_special_page( 'schema_output_page' );
 
-		// We are on the home page which is the default schema_output_page if another page has not been specified
+		// We are on the home page which is the default schema_output_page if another page has not been specified.
 		return ! $publisher_output_page;
 	}
 }

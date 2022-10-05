@@ -3,6 +3,9 @@
 class Smartcrawl_Lighthouse_Link_Text_Check extends Smartcrawl_Lighthouse_Check {
 	const ID = 'link-text';
 
+	/**
+	 * @return void
+	 */
 	public function prepare() {
 		$this->set_success_title( esc_html__( 'Links have descriptive text', 'wds' ) );
 		$this->set_failure_title( esc_html__( 'Links do not have descriptive text', 'wds' ) );
@@ -11,6 +14,9 @@ class Smartcrawl_Lighthouse_Link_Text_Check extends Smartcrawl_Lighthouse_Check 
 		$this->set_copy_description( $this->format_copy_description() );
 	}
 
+	/**
+	 * @return void
+	 */
 	private function print_common_description() {
 		?>
 		<strong><?php esc_html_e( 'Overview', 'wds' ); ?></strong>
@@ -18,6 +24,9 @@ class Smartcrawl_Lighthouse_Link_Text_Check extends Smartcrawl_Lighthouse_Check 
 		<?php
 	}
 
+	/**
+	 * @return false|string
+	 */
 	private function format_success_description() {
 		ob_start();
 		?>
@@ -27,15 +36,23 @@ class Smartcrawl_Lighthouse_Link_Text_Check extends Smartcrawl_Lighthouse_Check 
 
 		<div class="wds-lh-section">
 			<strong><?php esc_html_e( 'Status', 'wds' ); ?></strong>
-			<?php Smartcrawl_Simple_Renderer::render( 'notice', array(
-				'class'   => 'sui-notice-success',
-				'message' => esc_html__( "All your links have descriptive text, nice work.", 'wds' ),
-			) ); ?>
+			<?php
+			Smartcrawl_Simple_Renderer::render(
+				'notice',
+				array(
+					'class'   => 'sui-notice-success',
+					'message' => esc_html__( 'All your links have descriptive text, nice work.', 'wds' ),
+				)
+			);
+			?>
 		</div>
 		<?php
 		return ob_get_clean();
 	}
 
+	/**
+	 * @return false|string
+	 */
 	private function format_failure_description() {
 		ob_start();
 		?>
@@ -62,10 +79,15 @@ class Smartcrawl_Lighthouse_Link_Text_Check extends Smartcrawl_Lighthouse_Check 
 
 		<div class="wds-lh-section">
 			<strong><?php esc_html_e( 'Status', 'wds' ); ?></strong>
-			<?php Smartcrawl_Simple_Renderer::render( 'notice', array(
-				'class'   => 'sui-notice-warning',
-				'message' => esc_html__( 'Some links are empty and without helpful descriptive text.', 'wds' ),
-			) ); ?>
+			<?php
+			Smartcrawl_Simple_Renderer::render(
+				'notice',
+				array(
+					'class'   => 'sui-notice-warning',
+					'message' => esc_html__( 'Some links are empty and without helpful descriptive text.', 'wds' ),
+				)
+			);
+			?>
 
 			<?php $this->print_details_table(); ?>
 		</div>
@@ -93,49 +115,62 @@ class Smartcrawl_Lighthouse_Link_Text_Check extends Smartcrawl_Lighthouse_Check 
 
 				<div class="wds-lh-highlight-container">
 					<p>
-						<strong class="wds-lh-red-word"><?php esc_html_e( 'Don’t. ' ); ?></strong>
+						<strong
+							class="wds-lh-red-word"><?php esc_html_e( 'Don’t. ' ); ?></strong>
 						<?php esc_html_e( '"Click here" doesn\'t convey where the hyperlink will take users.', 'wds' ); ?>
 					</p>
 					<div class="wds-lh-highlight wds-lh-highlight-error">
-						<?php echo join( '', array(
-							$this->tag( '<p>' ),
-							esc_html__( 'To see all of our basketball videos, ', 'wds' ),
-							$this->tag( '<a ' ),
-							$this->attr( 'href=' ),
-							$this->tag( '"videos.html">' ),
-							esc_html__( 'click here', 'wds' ),
-							$this->tag( '</a>.</p>' ),
-						) ); ?>
+						<?php
+						echo join(
+							'',
+							array(
+								$this->tag( '<p>' ),
+								esc_html__( 'To see all of our basketball videos, ', 'wds' ),
+								$this->tag( '<a ' ),
+								$this->attr( 'href=' ),
+								$this->tag( '"videos.html">' ),
+								esc_html__( 'click here', 'wds' ),
+								$this->tag( '</a>.</p>' ),
+							)
+						);
+						?>
 					</div>
 
 					<p>
-						<strong class="wds-lh-green-word"><?php esc_html_e( 'Do. ' ); ?></strong>
+						<strong
+							class="wds-lh-green-word"><?php esc_html_e( 'Do. ' ); ?></strong>
 						<?php esc_html_e( '"Basketball videos" clearly conveys that the hyperlink will take users to a page of videos.' ); ?>
 					</p>
 					<div class="wds-lh-highlight wds-lh-highlight-success">
-						<?php echo join( '', array(
-							$this->tag( '<p>' ),
-							esc_html__( 'Check out all of our ', 'wds' ),
-							$this->tag( '<a ' ),
-							$this->attr( 'href=' ),
-							$this->tag( '"videos.html">' ),
-							esc_html__( 'basketball videos', 'wds' ),
-							$this->tag( '</a>.</p>' ),
-						) ); ?>
+						<?php
+						echo join(
+							'',
+							array(
+								$this->tag( '<p>' ),
+								esc_html__( 'Check out all of our ', 'wds' ),
+								$this->tag( '<a ' ),
+								$this->attr( 'href=' ),
+								$this->tag( '"videos.html">' ),
+								esc_html__( 'basketball videos', 'wds' ),
+								$this->tag( '</a>.</p>' ),
+							)
+						);
+						?>
 					</div>
 				</div>
 
-				<?php printf(
-					esc_html__( "See the %s section of %s for more tips.", 'wds' ),
+				<?php
+				printf(
+					esc_html__( 'See the %1$s section of %2$s for more tips.', 'wds' ),
 					sprintf(
 						'<a target="%s" href="%s">%s</a>',
-						"_blank",
+						'_blank',
 						esc_url_raw( 'https://developers.google.com/search/docs/beginner/seo-starter-guide#use-links-wisely' ),
 						esc_html__( 'Use links wisely', 'wds' )
 					),
 					sprintf(
 						'<a target="%s" href="%s">%s</a>',
-						"_blank",
+						'_blank',
 						esc_url_raw( 'https://developers.google.com/search/docs/beginner/seo-starter-guide' ),
 						esc_html__( "Google's Search Engine Optimization (SEO) Starter Guide", 'wds' )
 					)
@@ -148,59 +183,86 @@ class Smartcrawl_Lighthouse_Link_Text_Check extends Smartcrawl_Lighthouse_Check 
 		return ob_get_clean();
 	}
 
-	function get_id() {
+	/**
+	 * @return string
+	 */
+	public function get_id() {
 		return self::ID;
 	}
 
+	/**
+	 * @return false|string
+	 */
 	private function get_link_text_tooltip() {
 		ob_start();
 		?>
 		<span class="sui-tooltip sui-tooltip-constrained"
-		      data-tooltip="<?php esc_html_e( 'To locate the Link text on your homepage, use the Find tool of your browser.', 'wds' ); ?>">
-			<span class="sui-notice-icon sui-icon-info sui-sm" aria-hidden="true"></span>
+			data-tooltip="<?php esc_html_e( 'To locate the Link text on your homepage, use the Find tool of your browser.', 'wds' ); ?>">
+			<span class="sui-notice-icon sui-icon-info sui-sm"
+				aria-hidden="true"></span>
 		</span>
 		<?php
 		return ob_get_clean();
 	}
 
+	/**
+	 * @param $raw_details
+	 *
+	 * @return Smartcrawl_Lighthouse_Table
+	 */
 	public function parse_details( $raw_details ) {
-		$table = new Smartcrawl_Lighthouse_Table( array(
-			esc_html__( 'Link Text', 'wds' ) . $this->get_link_text_tooltip(),
-			esc_html__( 'Link Destination', 'wds' ),
-		), $this->get_report() );
+		$table = new Smartcrawl_Lighthouse_Table(
+			array(
+				esc_html__( 'Link Text', 'wds' ) . $this->get_link_text_tooltip(),
+				esc_html__( 'Link Destination', 'wds' ),
+			),
+			$this->get_report()
+		);
 
 		$items = smartcrawl_get_array_value( $raw_details, 'items' );
 		foreach ( $items as $item ) {
-			$table->add_row( array(
-				smartcrawl_get_array_value( $item, 'text' ),
-				smartcrawl_get_array_value( $item, 'href' ),
-			) );
+			$table->add_row(
+				array(
+					smartcrawl_get_array_value( $item, 'text' ),
+					smartcrawl_get_array_value( $item, 'href' ),
+				)
+			);
 		}
 
 		return $table;
 	}
 
+	/**
+	 * @return false|string
+	 */
 	public function get_action_button() {
 		return $this->edit_homepage_button();
 	}
 
+	/**
+	 * @return string
+	 */
 	private function format_copy_description() {
-		$parts = array_merge( array(
-			__( 'Tested Device: ', 'wds' ) . $this->get_device_label(),
-			__( 'Audit Type: Content audits', 'wds' ),
-			"",
-			__( 'Failing Audit: Links do not have descriptive text', 'wds' ),
-			"",
-			__( 'Status: Some links are empty and without helpful descriptive text.', 'wds' ),
-			"",
-		), $this->get_flattened_details(), array(
-			"",
-			__( 'Overview:', 'wds' ),
-			__( "Link text is the clickable word or phrase in a hyperlink. When link text clearly conveys a hyperlink's target, both users and search engines can more easily understand your content and how it relates to other pages.", 'wds' ),
-			__( 'Lighthouse flags the following generic link text: click here, click this, go,here,this,start,right here,more and learn more', 'wds' ),
-			"",
-			__( 'For more information please check the SEO Audits section in SmartCrawl plugin.', 'wds' ),
-		) );
+		$parts = array_merge(
+			array(
+				__( 'Tested Device: ', 'wds' ) . $this->get_device_label(),
+				__( 'Audit Type: Content audits', 'wds' ),
+				'',
+				__( 'Failing Audit: Links do not have descriptive text', 'wds' ),
+				'',
+				__( 'Status: Some links are empty and without helpful descriptive text.', 'wds' ),
+				'',
+			),
+			$this->get_flattened_details(),
+			array(
+				'',
+				__( 'Overview:', 'wds' ),
+				__( "Link text is the clickable word or phrase in a hyperlink. When link text clearly conveys a hyperlink's target, both users and search engines can more easily understand your content and how it relates to other pages.", 'wds' ),
+				__( 'Lighthouse flags the following generic link text: click here, click this, go,here,this,start,right here,more and learn more', 'wds' ),
+				'',
+				__( 'For more information please check the SEO Audits section in SmartCrawl plugin.', 'wds' ),
+			)
+		);
 
 		return implode( "\n", $parts );
 	}

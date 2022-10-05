@@ -5,8 +5,6 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 abstract class Smartcrawl_Base_Controller {
-	protected function __construct() {
-	}
 
 	/**
 	 * Currently running state flag
@@ -14,6 +12,10 @@ abstract class Smartcrawl_Base_Controller {
 	 * @var bool
 	 */
 	private $is_running = false;
+
+	protected function __construct() {
+
+	}
 
 	/**
 	 * Do the thing!
@@ -24,11 +26,11 @@ abstract class Smartcrawl_Base_Controller {
 		}
 		$this->is_running = true;
 
-		// Some parts need to be run every time
+		// Some parts need to be run every time.
 		$this->always();
 
 		if ( $this->should_run() ) {
-			// while the rest are run when should_run returns true
+			// while the rest are run when should_run returns true.
 			$this->init();
 			return true;
 		}

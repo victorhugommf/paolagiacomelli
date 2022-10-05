@@ -5,10 +5,10 @@ $option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
 <div class="sui-form-field">
 	<label for="redirect-attachments-images_only" class="sui-checkbox">
 		<input
-				type="checkbox"
-				id="redirect-attachments-images_only"
-				aria-labelledby="label-redirect-attachments-images_only"
-				name="<?php echo esc_html( $option_name ); ?>[redirect-attachments-images_only]"
+			type="checkbox"
+			id="redirect-attachments-images_only"
+			aria-labelledby="label-redirect-attachments-images_only"
+			name="<?php echo esc_html( $option_name ); ?>[redirect-attachments-images_only]"
 			<?php checked( ! empty( $_view['options']['redirect-attachments-images_only'] ) ); ?>
 		/>
 		<span aria-hidden="true"></span>

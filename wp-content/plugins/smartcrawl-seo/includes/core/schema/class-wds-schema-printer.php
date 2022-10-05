@@ -4,49 +4,38 @@
  * Outputs JSON+LD schema.org data to the page
  */
 class Smartcrawl_Schema_Printer extends Smartcrawl_WorkUnit {
+
+	use Smartcrawl_Singleton;
+
 	/**
-	 * Singleton instance holder
+	 * @var bool
 	 */
-	private static $_instance;
+	private $is_running = false;
 
-	private $_is_running = false;
-	private $_is_done = false;
-
-	public function __construct() {
-	}
+	/**
+	 * @var bool
+	 */
+	private $is_done = false;
 
 	/**
 	 * Boot the hooking part
 	 */
 	public static function run() {
-		self::get()->_add_hooks();
-	}
-
-	/**
-	 * Singleton instance getter
-	 *
-	 * @return object Smartcrawl_Schema_Printer instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
+		self::get()->add_hooks();
 	}
 
 	/**
 	 * First-line dispatching of schema tags injection
 	 */
 	public function dispatch_schema_injection() {
-		if ( ! ! $this->_is_done ) {
+		if ( ! ! $this->is_done ) {
 			return false;
 		}
 
 		if ( $this->is_schema_disabled() ) {
-			$this->_is_done = true;
+			$this->is_done = true;
 
-			return false; // Disabled
+			return false; // Disabled.
 		}
 
 		$entity = Smartcrawl_Endpoint_Resolver::resolve()->get_queried_entity();
@@ -59,18 +48,27 @@ class Smartcrawl_Schema_Printer extends Smartcrawl_WorkUnit {
 			return false;
 		}
 
-		$this->_is_done = true;
+		$this->is_done = true;
 
-		echo '<script type="application/ld+json">' . wp_json_encode( array(
-				"@context" => "https://schema.org",
-				"@graph"   => $data,
-			) ) . "</script>\n";
+		echo '<script type="application/ld+json">' .
+			wp_json_encode(
+				array(
+					'@context' => 'https://schema.org',
+					'@graph'   => $data,
+				)
+			) . "</script>\n";
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_filter_prefix() {
 		return 'wds-schema';
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function admin_bar_menu_items( $admin_bar ) {
 		$schema_options = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SCHEMA );
 		if (
@@ -91,39 +89,65 @@ class Smartcrawl_Schema_Printer extends Smartcrawl_WorkUnit {
 			return $admin_bar;
 		}
 
-		$url = 'http' . ( isset( $_SERVER['HTTPS'] ) ? 's' : '' ) . '://' . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
-		$admin_bar->add_menu( array(
-			'id'    => 'smartcrawl-test-item',
-			'title' => __( 'Test Schema', 'wds' ),
-			'href'  => sprintf( 'https://search.google.com/test/rich-results?url=%s&user_agent=2', urlencode( $url ) ),
-			'meta'  => array(
-				'title'  => __( 'Test Schema', 'wds' ),
-				'target' => __( '_blank', 'wds' ),
-			),
-		) );
+		$url = esc_url_raw( 'http' . ( isset( $_SERVER['HTTPS'] ) ? 's' : '' ) . '://' . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}" ); // phpcs:ignore
+		$admin_bar->add_menu(
+			array(
+				'id'    => 'smartcrawl-test-item',
+				'title' => __( 'Test Schema', 'wds' ),
+				'href'  => sprintf( 'https://search.google.com/test/rich-results?url=%s&user_agent=2', urlencode( $url ) ), // phpcs:ignore
+				'meta'  => array(
+					'title'  => __( 'Test Schema', 'wds' ),
+					'target' => __( '_blank', 'wds' ),
+				),
+			)
+		);
 
 		return $admin_bar;
 	}
 
-	private function _add_hooks() {
-		// Do not double-bind
-		if ( $this->apply_filters( 'is_running', $this->_is_running ) ) {
+	/**
+	 * @return bool|void
+	 */
+	private function add_hooks() {
+		// Do not double-bind.
+		if ( $this->apply_filters( 'is_running', $this->is_running ) ) {
 			return true;
 		}
 
-		add_action( 'wp_head', array( $this, 'dispatch_schema_injection' ), 50 );
-		add_action( 'wds_head-after_output', array( $this, 'dispatch_schema_injection' ) );
-		add_action( 'admin_bar_menu', array( $this, 'admin_bar_menu_items' ), 99 );
+		add_action(
+			'wp_head',
+			array(
+				$this,
+				'dispatch_schema_injection',
+			),
+			50
+		);
+		add_action(
+			'wds_head-after_output',
+			array(
+				$this,
+				'dispatch_schema_injection',
+			)
+		);
+		add_action(
+			'admin_bar_menu',
+			array(
+				$this,
+				'admin_bar_menu_items',
+			),
+			99
+		);
 
-		$this->_is_running = true;
+		$this->is_running = true;
 	}
 
 	/**
-	 * @return mixed
+	 * @return bool
 	 */
 	private function is_schema_disabled() {
 		$social = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
+
 		return ! empty( $social['disable-schema'] )
-		       || ! Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SCHEMA );
+			|| ! Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SCHEMA );
 	}
 }

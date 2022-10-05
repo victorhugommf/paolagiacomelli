@@ -1,30 +1,35 @@
 <?php
 
 class Smartcrawl_Product extends Smartcrawl_Entity {
+
 	/**
 	 * @var Smartcrawl_Post
 	 */
 	private $post;
+
 	/**
 	 * @var WC_Product
 	 */
 	private $woo_product;
+
 	/**
 	 * @var string
 	 */
 	private $brand;
+
 	/**
 	 * @var Smartcrawl_Woocommerce_Data
 	 */
 	private $data;
+
 	/**
 	 * @var Smartcrawl_Woocommerce_Api
 	 */
 	private $woo_api;
 
 	public function __construct( $wp_post, $page_number = 0, $comments_page = 0 ) {
-		$this->post = new Smartcrawl_Post( $wp_post, $page_number, $comments_page );
-		$this->data = new Smartcrawl_Woocommerce_Data();
+		$this->post    = new Smartcrawl_Post( $wp_post, $page_number, $comments_page );
+		$this->data    = new Smartcrawl_Woocommerce_Data();
 		$this->woo_api = new Smartcrawl_Woocommerce_Api();
 	}
 
@@ -41,9 +46,8 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 		if ( is_null( $this->woo_product ) ) {
 			$this->woo_product = $this->woo_api->wc_get_product( $wp_post );
 		}
-		return $this->woo_product
-			? $this->woo_product
-			: false;
+
+		return $this->woo_product ? $this->woo_product : false;
 	}
 
 	protected function load_meta_title() {
@@ -55,7 +59,7 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 	}
 
 	protected function load_robots() {
-		$woo_product = $this->get_woo_product();
+		$woo_product             = $this->get_woo_product();
 		$noindex_hidden_products = smartcrawl_get_array_value( $this->get_options(), 'noindex_hidden_products' );
 		if (
 			$woo_product
@@ -73,13 +77,14 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 	}
 
 	protected function load_schema() {
-		// Notice that we are not checking Woo module status here because schema is not dependent on that
+		// Notice that we are not checking Woo module status here because schema is not dependent on that.
 		$wp_post = $this->post->get_wp_post();
 		if ( ! $wp_post ) {
 			return array();
 		}
 
 		$fragment = new Smartcrawl_Schema_Fragment_Singular( $this->post, false );
+
 		return $fragment->get_schema();
 	}
 
@@ -126,6 +131,7 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 		if ( is_null( $this->brand ) ) {
 			$this->brand = $this->load_brand();
 		}
+
 		return $this->brand;
 	}
 
@@ -141,6 +147,7 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 		}
 
 		$brands = get_the_terms( $woo_product->get_id(), $brand );
+
 		return is_wp_error( $brands ) || empty( $brands[0] )
 			? false
 			: $brands[0];
@@ -149,15 +156,15 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 	public function load_opengraph_tags() {
 		$tags = array();
 
-		$woo_product = $this->get_woo_product();
+		$woo_product    = $this->get_woo_product();
 		$woo_og_enabled = (bool) smartcrawl_get_array_value( $this->get_options(), 'enable_open_graph' );
 		if ( $woo_product && $woo_og_enabled ) {
-			$tags = parent::load_opengraph_tags();
+			$tags            = parent::load_opengraph_tags();
 			$tags['og:type'] = 'og:product';
 
 			$price = $this->get_opengraph_product_price();
 			if ( $price ) {
-				$tags['product:price:amount'] = $price;
+				$tags['product:price:amount']   = $price;
 				$tags['product:price:currency'] = $this->woo_api->get_woocommerce_currency();
 			}
 
@@ -179,12 +186,12 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 		}
 
 		$price = $woo_product->get_price();
-		if ( $price === '' ) {
+		if ( '' === $price ) {
 			return '';
 		}
 
 		if ( $woo_product->is_type( 'variable' ) ) {
-			$lowest = $woo_product->get_variation_price( 'min', false );
+			$lowest  = $woo_product->get_variation_price( 'min', false );
 			$highest = $woo_product->get_variation_price( 'max', false );
 
 			return $lowest === $highest
@@ -196,7 +203,7 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 	}
 
 	/**
-	 * @param array $tags
+	 * @param array $tags Tags.
 	 *
 	 * @return array
 	 */
@@ -206,15 +213,19 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 			return $tags;
 		}
 
-		$product_availability = $og_availability = false;
+		$og_availability      = false;
+		$product_availability = false;
+
 		$stock_status = $woo_product->get_stock_status();
-		if ( $stock_status === 'onbackorder' ) {
+		if ( 'onbackorder' === $stock_status ) {
 			$product_availability = 'available for order';
-			$og_availability = 'backorder';
-		} elseif ( $stock_status === 'instock' ) {
-			$product_availability = $og_availability = 'instock';
-		} elseif ( $stock_status === 'outofstock' ) {
-			$product_availability = $og_availability = 'out of stock';
+			$og_availability      = 'backorder';
+		} elseif ( 'instock' === $stock_status ) {
+			$og_availability      = 'instock';
+			$product_availability = 'instock';
+		} elseif ( 'outofstock' === $stock_status ) {
+			$og_availability      = 'out of stock';
+			$product_availability = 'out of stock';
 		}
 
 		if ( $og_availability ) {
@@ -223,6 +234,7 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 		if ( $product_availability ) {
 			$tags['product:availability'] = $product_availability;
 		}
+
 		return $tags;
 	}
 
@@ -242,7 +254,7 @@ class Smartcrawl_Product extends Smartcrawl_Entity {
 	}
 
 	/**
-	 * @param Smartcrawl_Woocommerce_Api $woo_api
+	 * @param Smartcrawl_Woocommerce_Api $woo_api Woo API.
 	 */
 	public function set_woo_api( $woo_api ) {
 		$this->woo_api = $woo_api;

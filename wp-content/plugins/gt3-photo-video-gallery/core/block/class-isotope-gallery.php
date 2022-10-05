@@ -63,6 +63,10 @@ abstract class Isotope_Gallery extends Basic {
 					'type'    => 'string',
 					'default' => 'default',
 				),
+				'lightboxContinuous'   => array(
+					'type'    => 'string',
+					'default' => 'default',
+				),
 			)
 		);
 	}
@@ -82,6 +86,7 @@ abstract class Isotope_Gallery extends Basic {
 				'showCaption'          => $this->TYPE_BOOL,
 				'ytWidth'              => $this->TYPE_BOOL,
 				'lightboxAutoplay'     => $this->TYPE_BOOL,
+				'lightboxContinuous'   => $this->TYPE_BOOL,
 				'lightboxAutoplayTime' => $this->TYPE_INT,
 				'lightboxThumbnails'   => $this->TYPE_BOOL,
 				'lightboxCover'        => $this->TYPE_BOOL,

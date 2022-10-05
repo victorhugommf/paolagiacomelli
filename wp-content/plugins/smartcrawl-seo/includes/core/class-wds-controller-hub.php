@@ -2,13 +2,9 @@
 
 class Smartcrawl_Controller_Hub extends Smartcrawl_Controller_Hub_Abstract {
 
+	use Smartcrawl_Singleton;
 
-	private static $_instance;
-
-	private $_is_running = false;
-
-	private function __construct() {
-	}
+	private $is_running = false;
 
 	/**
 	 * Boot controller listeners
@@ -23,22 +19,9 @@ class Smartcrawl_Controller_Hub extends Smartcrawl_Controller_Hub_Abstract {
 			return false;
 		}
 
-		$me->_add_hooks();
+		$me->add_hooks();
 
 		return true;
-	}
-
-	/**
-	 * Obtain instance without booting up
-	 *
-	 * @return Smartcrawl_Controller_Hub instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	/**
@@ -47,16 +30,16 @@ class Smartcrawl_Controller_Hub extends Smartcrawl_Controller_Hub_Abstract {
 	 * @return bool Status
 	 */
 	public function is_running() {
-		return $this->_is_running;
+		return $this->is_running;
 	}
 
 	/**
 	 * Bind listening actions
 	 */
-	private function _add_hooks() {
+	private function add_hooks() {
 		add_filter( 'wdp_register_hub_action', array( $this, 'register_hub_actions' ) );
 
-		$this->_is_running = true;
+		$this->is_running = true;
 	}
 
 	public function register_hub_actions( $actions ) {
@@ -65,9 +48,9 @@ class Smartcrawl_Controller_Hub extends Smartcrawl_Controller_Hub_Abstract {
 		}
 
 		$actions['wds-seo-summary'] = array( $this, 'json_seo_summary' );
-		$actions['wds-run-crawl'] = array( $this, 'json_run_crawl' );
+		$actions['wds-run-crawl']   = array( $this, 'json_run_crawl' );
 
-		$actions['wds-apply-config'] = array( $this, 'apply_config' );
+		$actions['wds-apply-config']  = array( $this, 'apply_config' );
 		$actions['wds-export-config'] = array( $this, 'export_config' );
 
 		$actions['wds-refresh-lighthouse-report'] = array( $this, 'json_refresh_lighthouse_report' );

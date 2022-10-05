@@ -1,6 +1,6 @@
 <div class="wp-link-text-field wp-link-rel-attribute">
 	<label>
-		<span><?php _e( 'Rel Attributes' ); ?></span>
+		<span><?php esc_html_e( 'Rel Attributes', 'wds' ); ?></span>
 		<input id="wp-link-rel-attributes" type="text" value=""/>
 	</label>
 	<p>

@@ -3,9 +3,9 @@ Contributors: dots
 Donate link: 
 Tags: popup,chart,guideecommerce,size guide, size table, table size, chart size guide, chart size product category, chart size single product, custom size guide, default template,  product size chart, product size guide, size chart template, Woocommerce chart tables
 Requires at least: 4.0
-Tested up to: 6.0
-Stable tag: 2.3.0
-WC tested up to: 6.5.1
+Tested up to: 6.0.2
+Stable tag: 2.4.0
+WC tested up to: 6.9.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -213,6 +213,22 @@ Automatic updates should work great for you.  As always, though, we recommend ba
 2. Size Chart Setting page.
 
 == Changelog ==
+= 2.4.0 =
+* New - Add/Delete multiple columns/rows in the size chart.
+* New - Size chart link type (Text/Icon)
+* New - Size chart icon with text button
+* New - Allow customer to show note for size chart
+* Enhancement - Additional tab position hook for priority
+* Update – Compatible with Woocommece 6.9.x
+* Update – Compatible with WordPress 6.0.x
+
+= 2.3.1 =
+* Fixed – Fixed issue related to string translation with WPML
+* Fixed – Fixed CSS conflict issue with Booster Elite Plugin
+* Update – Updated Freemius SDK version to 2.4.5
+* Update – Compatible with WooCommerce 6.8.x
+* Update – Compatible with WordPress 6.0.x
+
 = 2.3.0 =
 * Enhancement – Improvise Plugin layout and design
 * Enhancement – Move Category and Tag field from Normal to side section on the edit page

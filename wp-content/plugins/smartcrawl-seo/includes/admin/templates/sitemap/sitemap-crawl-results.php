@@ -15,10 +15,13 @@ if ( ! $report ) {
 	<?php
 	if ( $report->has_state_messages() ) {
 		foreach ( $report->get_state_messages() as $state_message ) {
-			$this->_render( 'notice', array(
-				'message' => $state_message,
-				'class'   => 'sui-notice-error',
-			) );
+			$this->render_view(
+				'notice',
+				array(
+					'message' => $state_message,
+					'class'   => 'sui-notice-error',
+				)
+			);
 		}
 	}
 	?>

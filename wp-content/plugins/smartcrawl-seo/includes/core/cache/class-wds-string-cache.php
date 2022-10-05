@@ -1,21 +1,16 @@
 <?php
 
 class Smartcrawl_String_Cache {
+
+	use Smartcrawl_Singleton;
+
 	private $cache = array();
 
-	private static $_instance;
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 	/**
-	 * @param $string
-	 * @param $language
+	 * Get string.
+	 *
+	 * @param string $string   String.
+	 * @param string $language Language.
 	 *
 	 * @return Smartcrawl_String
 	 */

@@ -1,33 +1,38 @@
 <?php
 
 class Smartcrawl_Post_Author extends Smartcrawl_Entity_With_Archive {
+
 	/**
 	 * @var WP_User
 	 */
 	private $user;
+
 	/**
 	 * @var array
 	 */
 	private $posts;
+
 	/**
 	 * @var string
 	 */
 	private $display_name;
+
 	/**
 	 * @var string
 	 */
 	private $description;
+
 	/**
 	 * @var int
 	 */
 	private $page_number;
 
 	/**
-	 * @param $user WP_User
+	 * @param WP_User $user User object.
 	 */
 	public function __construct( $user, $posts = array(), $page_number = 0 ) {
-		$this->user = $user;
-		$this->posts = $posts;
+		$this->user        = $user;
+		$this->posts       = $posts;
 		$this->page_number = $page_number;
 	}
 
@@ -78,9 +83,9 @@ class Smartcrawl_Post_Author extends Smartcrawl_Entity_With_Archive {
 			return '';
 		}
 
-		$first_page_indexed = $this->is_first_page_indexed();
+		$first_page_indexed   = $this->is_first_page_indexed();
 		$current_page_indexed = ! $this->is_noindex();
-		$author_posts_url = get_author_posts_url( $this->user->ID );
+		$author_posts_url     = get_author_posts_url( $this->user->ID );
 
 		if ( $current_page_indexed ) {
 			return $this->append_page_number( $author_posts_url, $this->page_number );
@@ -178,6 +183,7 @@ class Smartcrawl_Post_Author extends Smartcrawl_Entity_With_Archive {
 		if ( is_null( $this->display_name ) ) {
 			$this->display_name = $this->load_display_name();
 		}
+
 		return $this->display_name;
 	}
 
@@ -218,7 +224,7 @@ class Smartcrawl_Post_Author extends Smartcrawl_Entity_With_Archive {
 	}
 
 	/**
-	 * @param $page_number
+	 * @param int $page_number Page number.
 	 *
 	 * @return string
 	 */
@@ -236,7 +242,7 @@ class Smartcrawl_Post_Author extends Smartcrawl_Entity_With_Archive {
 			return '';
 		}
 
-		$noindex = $this->get_noindex_setting( $setting_key ) ? 'noindex' : 'index';
+		$noindex  = $this->get_noindex_setting( $setting_key ) ? 'noindex' : 'index';
 		$nofollow = $this->get_nofollow_setting( $setting_key ) ? 'nofollow' : 'follow';
 
 		return "{$noindex},{$nofollow}";

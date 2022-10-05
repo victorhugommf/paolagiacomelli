@@ -10,7 +10,10 @@
  */
 class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 
+	use Smartcrawl_Singleton;
+
 	const ENDPOINT = 'endpoint';
+
 	const POST = 'post';
 
 	/**
@@ -18,14 +21,14 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 *
 	 * @var Smartcrawl_Core_Request
 	 */
-	private $_endpoint_remote_handler;
+	private $endpoint_remote_handler;
 
 	/**
 	 * Holds reference to checks that deal with final rendered content
 	 *
 	 * @var array
 	 */
-	private $_endpoint_checks = array(
+	private $endpoint_checks = array(
 		'imgalts_keywords',
 		'content_length',
 		'keyword_density',
@@ -39,7 +42,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 *
 	 * @var array
 	 */
-	private $_post_checks = array(
+	private $post_checks = array(
 		'focus',
 		'focus_stopwords',
 		'title_keywords',
@@ -56,21 +59,21 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 *
 	 * @var array
 	 */
-	private $_applied_checks = array();
+	private $applied_checks = array();
 
 	/**
 	 * Post ID
 	 *
 	 * @var int
 	 */
-	private $_post_id;
+	private $post_id;
 
 	/**
 	 * Static entry point, can be used instead of constructor
 	 *
 	 * Applies all queued checks to the subject post
 	 *
-	 * @param int $post_id ID of the post to check.
+	 * @param int    $post_id ID of the post to check.
 	 * @param object $request Optional Smartcrawl_Core_Request instance to use - used in testing.
 	 *
 	 * @return object Smartcrawl_Checks instance
@@ -83,8 +86,8 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 			$me->set_remote_handler( $request );
 		}
 
-		$post_status = $me->apply_post_checks();
-		$endpoint_status = $me->apply_endpoint_checks();
+		$me->apply_post_checks();
+		$me->apply_endpoint_checks();
 
 		return $me;
 	}
@@ -97,13 +100,13 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 * @return bool Status
 	 */
 	public function set_post_id( $post_id ) {
-		$this->_post_id = (int) $post_id;
+		$this->post_id = (int) $post_id;
 
-		return ! ! $this->_post_id;
+		return ! ! $this->post_id;
 	}
 
 	public function set_remote_handler( $request ) {
-		$this->_endpoint_remote_handler = $request;
+		$this->endpoint_remote_handler = $request;
 	}
 
 	/**
@@ -117,16 +120,16 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 			false
 		);
 		if ( empty( $subject ) ) {
-			$subject = get_post( $this->_post_id );
+			$subject = get_post( $this->post_id );
 		}
 
-		return $this->apply_checks( $this->_post_checks, $subject );
+		return $this->apply_checks( $this->post_checks, $subject );
 	}
 
 	/**
 	 * Applies the checks in queue
 	 *
-	 * @param array $checks A list of checks to apply.
+	 * @param array $checks  A list of checks to apply.
 	 * @param mixed $subject Subject to apply the checks to.
 	 *
 	 * @return bool Overall status
@@ -138,6 +141,8 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 		$language = $this->get_seo_analysis_language();
 		foreach ( $checks as $check_id ) {
 			/**
+			 * Check.
+			 *
 			 * @var $check Smartcrawl_Check_Abstract
 			 */
 			$check = $this->get_check( $check_id );
@@ -146,7 +151,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 			$check->set_language( $language );
 
 			$is_ignored = $this->is_ignored_check( $check_id );
-			$result = true;
+			$result     = true;
 			if ( ! $is_ignored ) {
 				$result = $check->apply();
 				if ( ! $result ) {
@@ -154,7 +159,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 					$this->add_error( $check_id, $check->get_status_msg() );
 				}
 			}
-			$this->_applied_checks[ $check_id ] = array(
+			$this->applied_checks[ $check_id ] = array(
 				'status'         => $result,
 				'ignored'        => $is_ignored,
 				'recommendation' => $check->get_recommendation(),
@@ -172,14 +177,15 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 * @return array A list of expected keywords
 	 */
 	public function get_focus() {
-		$post = Smartcrawl_Post_Cache::get()->get_post( $this->_post_id );
+		$post     = Smartcrawl_Post_Cache::get()->get_post( $this->post_id );
 		$keywords = $post
 			? $post->get_focus_keywords()
 			: array();
 
 		return (array) $this->apply_filters(
 			'focus',
-			$keywords, $this->_post_id
+			$keywords,
+			$this->post_id
 		);
 	}
 
@@ -201,7 +207,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	}
 
 	private function get_check_class_name( $check_id ) {
-		$cname = sprintf( "Smartcrawl Check %s", str_replace( '_', ' ', $check_id ) );
+		$cname = sprintf( 'Smartcrawl Check %s', str_replace( '_', ' ', $check_id ) );
 
 		return str_replace( ' ', '_', ucwords( $cname ) );
 	}
@@ -214,7 +220,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 * @return bool
 	 */
 	public function is_ignored_check( $check_id ) {
-		$ignored = self::get_ignored_checks( $this->_post_id );
+		$ignored = self::get_ignored_checks( $this->post_id );
 
 		return in_array( $check_id, $ignored, true );
 	}
@@ -229,9 +235,10 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 * @return array A list of check IDs
 	 */
 	public static function get_ignored_checks( $post_id ) {
-		// Make sure meta is fetched from the post, not a revision. The same thing is done in WP function update_post_meta
-		if ( $the_post = wp_is_post_revision( $post_id ) ) {
-			$post_id = $the_post;
+		// Make sure meta is fetched from the post, not a revision. The same thing is done in WP function update_post_meta.
+		$revision_parent = wp_is_post_revision( $post_id );
+		if ( $revision_parent ) {
+			$post_id = $revision_parent;
 		}
 		$ignored = get_post_meta( $post_id, '_wds_ignored_checks', true );
 
@@ -246,7 +253,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 * @return bool Overall status
 	 */
 	public function apply_endpoint_checks() {
-		if ( empty( $this->_endpoint_checks ) ) {
+		if ( empty( $this->endpoint_checks ) ) {
 			return true;
 		}
 
@@ -263,7 +270,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 			return false;
 		}
 
-		return $this->apply_checks( $this->_endpoint_checks, $subject );
+		return $this->apply_checks( $this->endpoint_checks, $subject );
 	}
 
 	/**
@@ -275,10 +282,10 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	public function get_endpoint_content() {
 		$content = false;
 
-		if ( empty( $this->_endpoint_remote_handler ) || ! ( $this->_endpoint_remote_handler instanceof Smartcrawl_Core_Request ) ) {
+		if ( empty( $this->endpoint_remote_handler ) || ! ( $this->endpoint_remote_handler instanceof Smartcrawl_Core_Request ) ) {
 			$this->set_remote_handler( new Smartcrawl_Core_Request() );
 		}
-		$content = $this->_endpoint_remote_handler->get_rendered_post( $this->_post_id );
+		$content = $this->endpoint_remote_handler->get_rendered_post( $this->post_id );
 		if ( is_wp_error( $content ) ) {
 			return false;
 		}
@@ -303,13 +310,13 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	/**
 	 * Adds a single check to the ignored checks stack
 	 *
-	 * @param int $post_id ID of the post.
+	 * @param int    $post_id  ID of the post.
 	 * @param string $check_id ID of the check.
 	 *
 	 * @return bool
 	 */
 	public static function add_ignored_check( $post_id, $check_id ) {
-		$ignored = self::get_ignored_checks( $post_id );
+		$ignored   = self::get_ignored_checks( $post_id );
 		$ignored[] = $check_id;
 
 		return self::set_ignored_checks( $post_id, $ignored );
@@ -318,8 +325,8 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	/**
 	 * Updates a list of ignored checks
 	 *
-	 * @param int $post_id ID of the post.
-	 * @param array $checks Full list of checks.
+	 * @param int   $post_id ID of the post.
+	 * @param array $checks  Full list of checks.
 	 *
 	 * @return bool
 	 */
@@ -335,14 +342,14 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	/**
 	 * Removes a single check from the ignored checks stack
 	 *
-	 * @param int $post_id ID of the post.
+	 * @param int    $post_id  ID of the post.
 	 * @param string $check_id ID of the check.
 	 *
 	 * @return bool
 	 */
 	public static function remove_ignored_check( $post_id, $check_id ) {
 		$ignored = self::get_ignored_checks( $post_id );
-		$key = array_search( $check_id, $ignored, true );
+		$key     = array_search( $check_id, $ignored, true );
 
 		if ( false === $key ) {
 			return false;
@@ -358,7 +365,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 * @return array
 	 */
 	public function get_applied_checks() {
-		return $this->_applied_checks;
+		return $this->applied_checks;
 	}
 
 	/**
@@ -375,7 +382,7 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 
 		$cnum = count( $this->get_checks() );
 		$enum = count( $this->get_errors() );
-		$err = (int) ( ( $enum / $cnum ) * 100 );
+		$err  = (int) ( ( $enum / $cnum ) * 100 );
 
 		return 100 - $err;
 	}
@@ -400,13 +407,13 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 	 */
 	public function get_checks( $which = false ) {
 		if ( self::ENDPOINT === $which ) {
-			return $this->_endpoint_checks;
+			return $this->endpoint_checks;
 		}
 		if ( self::POST === $which ) {
-			return $this->_post_checks;
+			return $this->post_checks;
 		}
 
-		return array_merge( $this->_endpoint_checks, $this->_post_checks );
+		return array_merge( $this->endpoint_checks, $this->post_checks );
 	}
 
 	/**
@@ -420,7 +427,8 @@ class Smartcrawl_Checks extends Smartcrawl_WorkUnit {
 
 	private function get_seo_analysis_language() {
 		$locale = str_replace( array( '-', '_' ), '-', get_locale() );
-		$parts = explode( '-', $locale );
-		return apply_filters( 'wds_post_seo_analysis_language', $parts[0], $this->_post_id );
+		$parts  = explode( '-', $locale );
+
+		return apply_filters( 'wds_post_seo_analysis_language', $parts[0], $this->post_id );
 	}
 }

@@ -3,7 +3,7 @@ Contributors: sujaypawar, wpcrafter
 Tags: woocommerce, cart abandonment, cart recovery
 Requires at least: 5.4
 Tested up to: 6.0
-Stable tag: 1.2.18
+Stable tag: 1.2.19
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -127,6 +127,12 @@ Here are few thoughts behind making it available for free:
 4. General settings for Email, Webhook (Coupon Code), GDPR
 
 == Changelog ==
+
+= Version 1.2.19 - Tuesday, 6th September 2022 =
+* New: Added `woo_ca_recovery_email_data` filter for email data before sending the recovery email.
+* Improvement: Updated default cron time for abandoned carts to 20 min and limited the minimum cron run time.
+* Improvement: Showing shipping name on the abandoned list if billing email is empty.
+* Improvement: Handling test webhook response for pabbly and integromat webhooks.
 
 = Version 1.2.18 - Friday, 27th May 2022 =
 * New: Allowing entering multiple email addresses to receive weekly report emails.

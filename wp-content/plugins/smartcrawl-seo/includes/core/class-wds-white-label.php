@@ -1,25 +1,8 @@
 <?php
 
 class Smartcrawl_White_Label extends Smartcrawl_Base_Controller {
-	/**
-	 * Singleton instance
-	 *
-	 * @var self
-	 */
-	private static $_instance;
 
-	/**
-	 * Obtain instance without booting up
-	 *
-	 * @return self instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
+	use Smartcrawl_Singleton;
 
 	/**
 	 * Bind listening actions
@@ -46,12 +29,11 @@ class Smartcrawl_White_Label extends Smartcrawl_Base_Controller {
 		if ( $this->is_hide_wpmudev_doc_link() ) {
 			wp_add_inline_style(
 				Smartcrawl_Controller_Assets::APP_CSS,
-				".wrap-wds .sui-header .sui-actions-right .wds-docs-button {
+				'.wrap-wds .sui-header .sui-actions-right .wds-docs-button {
 					display: none;
-				}"
+				}'
 			);
 		}
-
 
 	}
 

@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // english
-
-static $data = [
+static $data = array(
     'a',
     'about',
     'above',
@@ -322,7 +321,7 @@ static $data = [
     'yourself',
     'yourselves',
     'the',
-];
+);
 
 $result =& $data;
 unset($data);

@@ -1,3 +1,9 @@
+Version 1.2.19 - Tuesday, 6th September 2022
+- New: Added `woo_ca_recovery_email_data` filter for email data before sending the recovery email.
+- Improvement: Updated default cron time for abandoned carts to 20 min and limited the minimum cron run time.
+- Improvement: Showing shipping name on the abandoned list if billing email is empty.
+- Improvement: Handling test webhook response for pabbly and integromat webhooks.
+
 Version 1.2.18 - Friday, 27th May 2022
 - New: Allowing entering multiple email addresses to receive weekly report emails.
 - Improvement: Updated the weekly report email content.

@@ -1,10 +1,12 @@
 <?php
-$tweet_url = empty( $tweet_url ) ? '' : $tweet_url;
-$embed_query = new WP_Query( array(
-	'posts_per_page' => 1,
-	'post_status'    => 'any',
-) );
-$large = empty( $large ) ? false : $large;
+$tweet_url   = empty( $tweet_url ) ? '' : $tweet_url;
+$embed_query = new WP_Query(
+	array(
+		'posts_per_page' => 1,
+		'post_status'    => 'any',
+	)
+);
+$large       = empty( $large ) ? false : $large;
 
 if ( ! $tweet_url ) {
 	return;
@@ -17,6 +19,8 @@ if ( ! $tweet_url ) {
 			$embed_query->the_post();
 			global $wp_embed;
 			/**
+			 * Embed.
+			 *
 			 * @var WP_Embed $wp_embed
 			 */
 			echo $wp_embed->autoembed( $tweet_url ); // phpcs:ignore -- The embed won't work if escaped

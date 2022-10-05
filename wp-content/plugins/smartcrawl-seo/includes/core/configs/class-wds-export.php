@@ -15,13 +15,13 @@ class Smartcrawl_Export {
 	 *
 	 * @var Smartcrawl_Model_IO
 	 */
-	protected $_model;
+	protected $model;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->_model = new Smartcrawl_Model_IO();
+		$this->model = new Smartcrawl_Model_IO();
 	}
 
 	/**
@@ -34,7 +34,7 @@ class Smartcrawl_Export {
 
 		$me->load_all();
 
-		return $me->_model;
+		return $me->model;
 	}
 
 	/**
@@ -43,10 +43,10 @@ class Smartcrawl_Export {
 	 * @return Smartcrawl_Model_IO instance
 	 */
 	public function load_all() {
-		$this->_model->set_version( SMARTCRAWL_VERSION );
-		$this->_model->set_url( home_url() );
+		$this->model->set_version( SMARTCRAWL_VERSION );
+		$this->model->set_url( home_url() );
 
-		foreach ( $this->_model->get_sections() as $section ) {
+		foreach ( $this->model->get_sections() as $section ) {
 			$method = array( $this, "load_{$section}" );
 			if ( ! is_callable( $method ) ) {
 				continue;
@@ -55,7 +55,7 @@ class Smartcrawl_Export {
 			call_user_func( $method );
 		}
 
-		return $this->_model;
+		return $this->model;
 	}
 
 	/**
@@ -75,9 +75,9 @@ class Smartcrawl_Export {
 
 		$options['wds_blog_tabs'] = get_site_option( 'wds_blog_tabs' );
 
-		$this->_model->set( Smartcrawl_Model_IO::OPTIONS, $options );
+		$this->model->set( Smartcrawl_Model_IO::OPTIONS, $options );
 
-		return $this->_model;
+		return $this->model;
 	}
 
 	/**
@@ -100,9 +100,9 @@ class Smartcrawl_Export {
 	 */
 	public function load_ignores() {
 		$model = new Smartcrawl_Model_Ignores();
-		$this->_model->set( Smartcrawl_Model_IO::IGNORES, $model->get_all() );
+		$this->model->set( Smartcrawl_Model_IO::IGNORES, $model->get_all() );
 
-		return $this->_model;
+		return $this->model;
 	}
 
 	/**
@@ -111,9 +111,9 @@ class Smartcrawl_Export {
 	 * @return Smartcrawl_Model_IO instance
 	 */
 	public function load_extra_urls() {
-		$this->_model->set( Smartcrawl_Model_IO::EXTRA_URLS, Smartcrawl_Sitemap_Utils::get_extra_urls() );
+		$this->model->set( Smartcrawl_Model_IO::EXTRA_URLS, Smartcrawl_Sitemap_Utils::get_extra_urls() );
 
-		return $this->_model;
+		return $this->model;
 	}
 
 	/**
@@ -122,9 +122,9 @@ class Smartcrawl_Export {
 	 * @return Smartcrawl_Model_IO instance
 	 */
 	public function load_ignore_urls() {
-		$this->_model->set( Smartcrawl_Model_IO::IGNORE_URLS, Smartcrawl_Sitemap_Utils::get_ignore_urls() );
+		$this->model->set( Smartcrawl_Model_IO::IGNORE_URLS, Smartcrawl_Sitemap_Utils::get_ignore_urls() );
 
-		return $this->_model;
+		return $this->model;
 	}
 
 	/**
@@ -133,9 +133,9 @@ class Smartcrawl_Export {
 	 * @return Smartcrawl_Model_IO instance
 	 */
 	public function load_ignore_post_ids() {
-		$this->_model->set( Smartcrawl_Model_IO::IGNORE_POST_IDS, Smartcrawl_Sitemap_Utils::get_ignore_ids() );
+		$this->model->set( Smartcrawl_Model_IO::IGNORE_POST_IDS, Smartcrawl_Sitemap_Utils::get_ignore_ids() );
 
-		return $this->_model;
+		return $this->model;
 	}
 
 	/**
@@ -144,7 +144,7 @@ class Smartcrawl_Export {
 	 * @return Smartcrawl_Model_IO instance
 	 */
 	public function load_postmeta() {
-		return $this->_model;
+		return $this->model;
 	}
 
 	/**
@@ -153,7 +153,7 @@ class Smartcrawl_Export {
 	 * @return Smartcrawl_Model_IO instance
 	 */
 	public function load_taxmeta() {
-		return $this->_model;
+		return $this->model;
 	}
 
 	/**
@@ -163,8 +163,8 @@ class Smartcrawl_Export {
 	 */
 	public function load_redirects() {
 		$table = Smartcrawl_Redirects_Database_Table::get();
-		$this->_model->set( Smartcrawl_Model_IO::REDIRECTS, $table->get_deflated_redirects() );
+		$this->model->set( Smartcrawl_Model_IO::REDIRECTS, $table->get_deflated_redirects() );
 
-		return $this->_model;
+		return $this->model;
 	}
 }

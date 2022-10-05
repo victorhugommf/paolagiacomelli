@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // turkish
-
-static $data = [
+static $data = array(
     'acaba',
     'ama',
     'aslında',
@@ -56,7 +55,7 @@ static $data = [
     'veya',
     'ya',
     'yani',
-];
+);
 
 $result =& $data;
 unset($data);

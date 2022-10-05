@@ -5,16 +5,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 class Smartcrawl_Controller_Crawler extends Smartcrawl_Base_Controller {
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
+
 	private $seo_service;
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	public function __construct() {
 		parent::__construct();
@@ -38,10 +32,12 @@ class Smartcrawl_Controller_Crawler extends Smartcrawl_Base_Controller {
 
 		$report = $this->seo_service->get_report();
 
-		wp_send_json_success( array(
-			'in_progress' => $report->is_in_progress(),
-			'progress'    => $report->get_progress(),
-		) );
+		wp_send_json_success(
+			array(
+				'in_progress' => $report->is_in_progress(),
+				'progress'    => $report->get_progress(),
+			)
+		);
 	}
 
 	public function redirect_crawl_item() {
@@ -50,14 +46,14 @@ class Smartcrawl_Controller_Crawler extends Smartcrawl_Base_Controller {
 			wp_send_json_error();
 		}
 
-		$source = (string) smartcrawl_get_array_value( $data, 'source' );
+		$source      = (string) smartcrawl_get_array_value( $data, 'source' );
 		$destination = (string) smartcrawl_get_array_value( $data, 'destination' );
 		if ( ! $source || ! $destination ) {
 			wp_send_json_error();
 		}
 
-		$redirect = Smartcrawl_Redirect_Utils::get()->create_redirect_item( $source, $destination );
-		$table = Smartcrawl_Redirects_Database_Table::get();
+		$redirect          = Smartcrawl_Redirect_Utils::get()->create_redirect_item( $source, $destination );
+		$table             = Smartcrawl_Redirects_Database_Table::get();
 		$existing_redirect = $table->get_redirect_by_source( $redirect->get_source() );
 		if ( $existing_redirect ) {
 			$existing_redirect->set_destination( $destination );
@@ -70,17 +66,21 @@ class Smartcrawl_Controller_Crawler extends Smartcrawl_Base_Controller {
 	}
 
 	public function ignore_crawl_item() {
-		$this->change_crawl_item_status( function ( $issue ) {
-			$ignores = new Smartcrawl_Model_Ignores();
-			$ignores->set_ignore( $issue );
-		} );
+		$this->change_crawl_item_status(
+			function ( $issue ) {
+				$ignores = new Smartcrawl_Model_Ignores();
+				$ignores->set_ignore( $issue );
+			}
+		);
 	}
 
 	public function restore_crawl_item() {
-		$this->change_crawl_item_status( function ( $issue ) {
-			$ignores = new Smartcrawl_Model_Ignores();
-			$ignores->unset_ignore( $issue );
-		} );
+		$this->change_crawl_item_status(
+			function ( $issue ) {
+				$ignores = new Smartcrawl_Model_Ignores();
+				$ignores->unset_ignore( $issue );
+			}
+		);
 	}
 
 	public function change_crawl_item_status( $operation ) {
@@ -135,9 +135,6 @@ class Smartcrawl_Controller_Crawler extends Smartcrawl_Base_Controller {
 		$paths = is_array( $path )
 			? array_map( 'sanitize_text_field', (array) $path )
 			: array( sanitize_text_field( $path ) );
-		if ( ! is_array( $paths ) ) {
-			$paths = array();
-		}
 
 		$extras = Smartcrawl_Sitemap_Utils::get_extra_urls();
 		foreach ( $paths as $current_path ) {
@@ -158,15 +155,15 @@ class Smartcrawl_Controller_Crawler extends Smartcrawl_Base_Controller {
 
 	private function send_success_response() {
 		$report = $this->seo_service->get_report();
-		wp_send_json_success( array(
-			'issues' => $report->get_all_issues_grouped_by_type(),
-		) );
+		wp_send_json_success(
+			array(
+				'issues' => $report->get_all_issues_grouped_by_type(),
+			)
+		);
 	}
 
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-crawler-nonce' )
-			? stripslashes_deep( $_POST )
-			: array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-crawler-nonce' ) ? stripslashes_deep( $_POST ) : array(); // phpcs:ignore
 	}
 
 	private function sync_ignores_with_hub() {

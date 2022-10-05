@@ -3,7 +3,8 @@
 /**
  * TODO: remove (or mark as deprecated)
  */
-abstract class Smartcrawl_Type_Traverser {
+abstract class Smartcrawl_Type_Traverser
+{
 	/**
 	 * @var string
 	 */
@@ -82,7 +83,7 @@ abstract class Smartcrawl_Type_Traverser {
 	private function traversal_required( $location ) {
 		$query = $this->get_query_context();
 		$query = $query && is_a( $query, 'WP_Query' ) ? $query : array();
-		$hash = md5( json_encode( $query ) . "-{$location}" );
+		$hash  = md5( wp_json_encode( $query ) . "-{$location}" );
 		if ( $this->hash === $hash ) {
 			return false;
 		}
@@ -101,7 +102,7 @@ abstract class Smartcrawl_Type_Traverser {
 	}
 
 	protected function get_queried_object() {
-		$query_context = $this->get_resolver()->get_query_context();
+		$query_context  = $this->get_resolver()->get_query_context();
 		$queried_object = $query_context->get_queried_object();
 
 		return $queried_object;
@@ -116,7 +117,7 @@ abstract class Smartcrawl_Type_Traverser {
 	}
 
 	/**
-	 * @param $post_id int|WP_Post
+	 * @param int|WP_Post $post_id Post ID.
 	 *
 	 * @return null|WP_Post
 	 */
@@ -125,13 +126,13 @@ abstract class Smartcrawl_Type_Traverser {
 			? get_post( $post_id )
 			: null;
 		if ( ! $post ) {
-			// Try falling back on context object
+			// Try falling back on context object.
 			$post = $this->get_context();
 		}
 		if ( empty( $post->ID ) ) {
-			// Still nothing? Try the queried object
+			// Still nothing? Try the queried object.
 			$query = $this->get_resolver()->get_query_context();
-			$post = $query->get_queried_object();
+			$post  = $query->get_queried_object();
 		}
 		return $post;
 	}

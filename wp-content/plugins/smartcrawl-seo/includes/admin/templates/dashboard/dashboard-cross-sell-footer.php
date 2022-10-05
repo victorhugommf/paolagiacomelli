@@ -16,8 +16,9 @@ if ( Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE )->is_member() ) 
 			<div class="sui-box-body">
 				<h3><?php esc_html_e( 'Smush Image Compression and Optimization', 'wds' ); ?></h3>
 				<p><?php esc_html_e( 'Resize, optimize and compress all of your images with the incredibly powerful and award-winning, 100% free WordPress image optimizer.', 'wds' ); ?></p>
-				<a href="https://wordpress.org/plugins/wp-smushit/" class="sui-button sui-button-ghost"
-				   target="_blank">
+				<a
+					href="https://wordpress.org/plugins/wp-smushit/" class="sui-button sui-button-ghost"
+					target="_blank">
 					<?php esc_html_e( 'View features', 'wds' ); ?> <span class="sui-icon-arrow-right"></span>
 				</a>
 			</div>
@@ -30,8 +31,9 @@ if ( Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE )->is_member() ) 
 			<div class="sui-box-body">
 				<h3><?php esc_html_e( 'Defender Security, Monitoring, and Hack Protection', 'wds' ); ?></h3>
 				<p><?php esc_html_e( 'Security Tweaks & Recommendations, File & Malware Scanning, Login & 404 Lockout Protection, Two-Factor Authentication & more.', 'wds' ); ?></p>
-				<a href="https://wordpress.org/plugins/defender-security/"
-				   class="sui-button sui-button-ghost" target="_blank">
+				<a
+					href="https://wordpress.org/plugins/defender-security/"
+					class="sui-button sui-button-ghost" target="_blank">
 					<?php esc_html_e( 'View features', 'wds' ); ?> <span class="sui-icon-arrow-right"></span>
 				</a>
 			</div>
@@ -44,8 +46,9 @@ if ( Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE )->is_member() ) 
 			<div class="sui-box-body">
 				<h3><?php esc_html_e( 'Hummingbird Page Speed Optimization', 'wds' ); ?></h3>
 				<p><?php esc_html_e( 'Performance Tests, File Optimization & Compression, Page, Browser & Gravatar Caching, GZIP Compression, CloudFlare Integration & more.', 'wds' ); ?></p>
-				<a href="https://wordpress.org/plugins/hummingbird-performance/"
-				   class="sui-button sui-button-ghost" target="_blank">
+				<a
+					href="https://wordpress.org/plugins/hummingbird-performance/"
+					class="sui-button sui-button-ghost" target="_blank">
 					<?php esc_html_e( 'View features', 'wds' ); ?> <span class="sui-icon-arrow-right"></span>
 				</a>
 			</div>
@@ -57,15 +60,17 @@ if ( Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE )->is_member() ) 
 	<h3><?php esc_html_e( 'Your All-in-One WordPress Platform', 'wds' ); ?></h3>
 	<p><?php esc_html_e( 'Pretty much everything you need for developing and managing WordPress based websites, and then some.', 'wds' ); ?></p>
 
-	<a class="sui-button sui-button-green"
-	   target="_blank"
-	   href="https://wpmudev.com/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_footer_upsell_notice"
-	   id="dash-uptime-update-membership" rel="dialog">
+	<a
+		class="sui-button sui-button-green"
+		target="_blank"
+		href="https://wpmudev.com/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_dash_footer_upsell_notice"
+		id="dash-uptime-update-membership" rel="dialog">
 		<?php esc_html_e( 'Learn more', 'wds' ); ?>
 	</a>
 
-	<img class="sui-image"
-	     src="<?php echo esc_attr( SMARTCRAWL_PLUGIN_URL ); ?>/assets/shared-ui/images/dev-team.png"
-	     srcset="<?php echo esc_attr( SMARTCRAWL_PLUGIN_URL ); ?>/assets/shared-ui/images/dev-team@2x.png 2x"
-	     alt="<?php esc_html_e( 'Try pro features for free!', 'wds' ); ?>">
+	<img
+		class="sui-image"
+		src="<?php echo esc_attr( SMARTCRAWL_PLUGIN_URL ); ?>/assets/shared-ui/images/dev-team.png"
+		srcset="<?php echo esc_attr( SMARTCRAWL_PLUGIN_URL ); ?>/assets/shared-ui/images/dev-team@2x.png 2x"
+		alt="<?php esc_html_e( 'Try pro features for free!', 'wds' ); ?>">
 </div>

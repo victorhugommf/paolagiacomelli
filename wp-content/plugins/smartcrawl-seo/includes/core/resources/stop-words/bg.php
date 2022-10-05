@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // bulgarian
-
-static $data = [
+static $data = array(
     'а',
     'автентичен',
     'аз',
@@ -262,7 +261,7 @@ static $data = [
     'юмрук',
     'я',
     'як',
-];
+);
 
 $result =& $data;
 unset($data);

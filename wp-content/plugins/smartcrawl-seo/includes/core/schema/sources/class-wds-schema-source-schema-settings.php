@@ -3,19 +3,25 @@
 class Smartcrawl_Schema_Source_Schema_Settings extends Smartcrawl_Schema_Property_Source {
 	const ID = 'schema_settings';
 
-	const SITE_NAME = 'sitename';
-	const WEBSITE_LOGO = 'schema_website_logo';
-	const PERSON_BRAND_NAME = 'person_brand_name';
-	const PERSON_BRAND_LOGO = 'person_brand_logo';
-	const PERSON_PORTRAIT = 'person_portrait';
-	const ORGANIZATION_NAME = 'organization_name';
-	const ORGANIZATION_DESCRIPTION = 'organization_description';
-	const ORGANIZATION_LOGO = 'organization_logo';
-	const ORGANIZATION_LOGO_URL = 'organization_logo_url';
+	const SITE_NAME                 = 'sitename';
+	const WEBSITE_LOGO              = 'schema_website_logo';
+	const PERSON_BRAND_NAME         = 'person_brand_name';
+	const PERSON_BRAND_LOGO         = 'person_brand_logo';
+	const PERSON_PORTRAIT           = 'person_portrait';
+	const ORGANIZATION_NAME         = 'organization_name';
+	const ORGANIZATION_DESCRIPTION  = 'organization_description';
+	const ORGANIZATION_LOGO         = 'organization_logo';
+	const ORGANIZATION_LOGO_URL     = 'organization_logo_url';
 	const ORGANIZATION_PHONE_NUMBER = 'organization_phone_number';
 
+	/**
+	 * @var
+	 */
 	private $setting_key;
 
+	/**
+	 * @param $setting_key
+	 */
 	public function __construct( $setting_key ) {
 		parent::__construct();
 
@@ -30,12 +36,12 @@ class Smartcrawl_Schema_Source_Schema_Settings extends Smartcrawl_Schema_Propert
 	public function get_value() {
 		$schema_option_value = $this->utils->get_schema_option( $this->setting_key );
 		$social_option_value = $this->utils->get_social_option(
-			$this->setting_key === self::ORGANIZATION_LOGO_URL
+			self::ORGANIZATION_LOGO_URL === $this->setting_key
 				? str_replace( '_url', '', $this->setting_key )
 				: $this->setting_key
 		);
-		$site_url = get_site_url();
-		$schema_utils = Smartcrawl_Schema_Utils::get();
+		$site_url            = get_site_url();
+		$schema_utils        = Smartcrawl_Schema_Utils::get();
 
 		switch ( $this->setting_key ) {
 			case self::ORGANIZATION_NAME:
@@ -67,7 +73,7 @@ class Smartcrawl_Schema_Source_Schema_Settings extends Smartcrawl_Schema_Propert
 				);
 
 			case self::ORGANIZATION_LOGO:
-				$org_logo_id = smartcrawl_get_attachment_id_by_url( $social_option_value );
+				$org_logo_id        = smartcrawl_get_attachment_id_by_url( $social_option_value );
 				$org_logo_schema_id = $this->utils->url_to_id( $site_url, '#schema-organization-logo' );
 				if ( $org_logo_id ) {
 					return $this->utils->get_media_item_image_schema( $org_logo_id, $org_logo_schema_id );

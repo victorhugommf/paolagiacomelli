@@ -1,23 +1,20 @@
 <?php
 
 class Smartcrawl_Controller_Sitemap_Front extends Smartcrawl_Base_Controller {
-	const SITEMAP_TYPE_INDEX = 'index';
+
+	use Smartcrawl_Singleton;
+
+	const SITEMAP_TYPE_INDEX            = 'index';
 	const SITEMAP_REWRITE_RULES_FLUSHED = 'wds-sitemap-rewrite-rules-flushed';
 
-	private static $_instance;
 	/**
 	 * @var Smartcrawl_Sitemap[]
 	 */
 	private $sitemaps;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
+	/**
+	 *
+	 */
 	public function __construct() {
 		parent::__construct();
 
@@ -27,6 +24,9 @@ class Smartcrawl_Controller_Sitemap_Front extends Smartcrawl_Base_Controller {
 		);
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function init() {
 		add_action( 'init', array( $this, 'add_rewrites' ) );
 		add_action( 'wp', array( $this, 'serve_sitemaps' ), 999 );
@@ -35,6 +35,11 @@ class Smartcrawl_Controller_Sitemap_Front extends Smartcrawl_Base_Controller {
 		return true;
 	}
 
+	/**
+	 * @param $is_enabled
+	 *
+	 * @return false
+	 */
 	public function maybe_disable_native_sitemap( $is_enabled ) {
 		if ( Smartcrawl_Sitemap_Utils::override_native() ) {
 			return false;
@@ -43,6 +48,9 @@ class Smartcrawl_Controller_Sitemap_Front extends Smartcrawl_Base_Controller {
 		return $is_enabled;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function add_rewrites() {
 		$this->add_styling_rewrites();
 
@@ -53,6 +61,9 @@ class Smartcrawl_Controller_Sitemap_Front extends Smartcrawl_Base_Controller {
 		$this->maybe_flush_rewrite_rules();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function serve_sitemaps() {
 		$this->maybe_serve_xsl_stylesheet();
 
@@ -74,40 +85,58 @@ class Smartcrawl_Controller_Sitemap_Front extends Smartcrawl_Base_Controller {
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function maybe_flush_rewrite_rules() {
 		$flushed = get_option( self::SITEMAP_REWRITE_RULES_FLUSHED, false );
-		if ( $flushed !== SMARTCRAWL_VERSION ) {
+		if ( SMARTCRAWL_VERSION !== $flushed ) {
 			flush_rewrite_rules();
 			update_option( self::SITEMAP_REWRITE_RULES_FLUSHED, SMARTCRAWL_VERSION );
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	private function add_styling_rewrites() {
 		/**
-		 * @var $wp \WP
+		 * @var $wp WP
 		 */
 		global $wp;
 		$wp->add_query_var( 'wds_sitemap_styling' );
 	}
 
+	/**
+	 * @return void
+	 */
 	private function maybe_serve_xsl_stylesheet() {
 		if ( $this->is_styling_request() ) {
 			$this->output_xsl();
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	private function is_styling_request() {
 		return (string) get_query_var( 'wds_sitemap_styling' );
 	}
 
+	/**
+	 * @return void
+	 */
 	private function output_xsl() {
 		if ( ! headers_sent() ) {
 			$whitelabel = smartcrawl_get_array_value( $_GET, 'whitelabel' );
-			$template = smartcrawl_get_array_value( $_GET, 'template' );
-			$xsl = Smartcrawl_Simple_Renderer::load( 'sitemap/sitemap-xsl', array(
-				'whitelabel' => $whitelabel,
-				'template'   => $template,
-			) );
+			$template   = smartcrawl_get_array_value( $_GET, 'template' );
+			$xsl        = Smartcrawl_Simple_Renderer::load(
+				'sitemap/sitemap-xsl',
+				array(
+					'whitelabel' => $whitelabel,
+					'template'   => $template,
+				)
+			);
 
 			status_header( 200 );
 			header( 'Content-Type: text/xsl; charset=UTF-8' );

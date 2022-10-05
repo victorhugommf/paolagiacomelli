@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // vietnamese
-
-static $data = [
+static $data = array(
     'a ha',
     'a-lô',
     'ai',
@@ -648,7 +647,7 @@ static $data = [
     'ứ ừ',
     'ừ',
     'ử',
-];
+);
 
 $result =& $data;
 unset($data);

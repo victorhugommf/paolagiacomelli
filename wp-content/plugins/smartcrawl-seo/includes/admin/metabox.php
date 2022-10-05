@@ -10,23 +10,23 @@
  */
 class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 
-	/**
-	 * Static instance
-	 *
-	 * @var Smartcrawl_Metabox
-	 */
-	private static $_instance;
+	use Smartcrawl_Singleton;
 
 	/**
+	 * Post cache.
+	 *
 	 * @var Smartcrawl_Post_Cache
 	 */
 	private $post_cache;
+
 	/**
+	 * Term cache.
+	 *
 	 * @var Smartcrawl_Term_Cache
 	 */
 	private $term_cache;
 
-	public function __construct() {
+	protected function __construct() {
 		parent::__construct();
 
 		$this->post_cache = Smartcrawl_Post_Cache::get();
@@ -34,8 +34,10 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	}
 
 	/**
-	 * @param $post_id
-	 * @param $input
+	 * Save opengraph meta.
+	 *
+	 * @param int   $post_id Post ID.
+	 * @param array $input   Input.
 	 */
 	public function save_opengraph_meta( $post_id, $input ) {
 		$result = array();
@@ -65,8 +67,10 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	}
 
 	/**
-	 * @param $post_id
-	 * @param $input
+	 * Save twitter meta.
+	 *
+	 * @param int   $post_id Post ID.
+	 * @param array $input   Input.
 	 */
 	public function save_twitter_post_meta( $post_id, $input ) {
 		$twitter = array();
@@ -96,18 +100,20 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	}
 
 	/**
-	 * @param $post WP_Post
-	 * @param $request_data
+	 * Save robots meta data.
+	 *
+	 * @param WP_Post $post         Post object.
+	 * @param array   $request_data Request data.
 	 */
 	public function save_robots_meta( $post, $request_data ) {
-		$all_options = Smartcrawl_Settings::get_options();
-		$post_type_noindexed = (bool) smartcrawl_get_array_value( $all_options, sprintf( 'meta_robots-noindex-%s', get_post_type( $post ) ) );
+		$all_options          = Smartcrawl_Settings::get_options();
+		$post_type_noindexed  = (bool) smartcrawl_get_array_value( $all_options, sprintf( 'meta_robots-noindex-%s', get_post_type( $post ) ) );
 		$post_type_nofollowed = (bool) smartcrawl_get_array_value( $all_options, sprintf( 'meta_robots-nofollow-%s', get_post_type( $post ) ) );
 		/**
 		 * If the user un-checks a checkbox and saves the post, the value for that checkbox will not be included inside $_POST array
 		 * so we may have to delete the corresponding meta value manually.
 		 */
-		$checkbox_meta_items = array( 'wds_meta-robots-adv' );
+		$checkbox_meta_items   = array( 'wds_meta-robots-adv' );
 		$checkbox_meta_items[] = $post_type_nofollowed ? 'wds_meta-robots-follow' : 'wds_meta-robots-nofollow';
 		$checkbox_meta_items[] = $post_type_noindexed ? 'wds_meta-robots-index' : 'wds_meta-robots-noindex';
 
@@ -125,56 +131,77 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		}
 	}
 
+	/**
+	 * @param $title
+	 * @param $description
+	 *
+	 * @return string
+	 */
 	public function get_length_warnings( $title, $description ) {
 		$warnings_markup = '';
 
-		$title_length = mb_strlen( $title );
+		$title_length     = mb_strlen( $title );
 		$title_min_length = smartcrawl_title_min_length();
 		if ( $title_length < $title_min_length ) {
-			$warnings_markup .= Smartcrawl_Simple_Renderer::load( 'notice', array(
-				'message' => sprintf(
-					esc_html__( 'Your title is %d characters in length. The recommended minimum length is %d characters so you may want to consider adding a few words.', 'wds' ),
-					$title_length,
-					$title_min_length
-				),
-			) );
+			$warnings_markup .= Smartcrawl_Simple_Renderer::load(
+				'notice',
+				array(
+					'message' => sprintf(
+						esc_html__( 'Your title is %1$d characters in length. The recommended minimum length is %2$d characters so you may want to consider adding a few words.', 'wds' ),
+						$title_length,
+						$title_min_length
+					),
+				)
+			);
 		}
 		$title_max_length = smartcrawl_title_max_length();
 		if ( $title_length > $title_max_length ) {
-			$warnings_markup .= Smartcrawl_Simple_Renderer::load( 'notice', array(
-				'message' => sprintf(
-					esc_html__( 'Your title is %d characters in length. The recommended max length is %d characters so you may want to consider trimming a few words.', 'wds' ),
-					$title_length,
-					$title_max_length
-				),
-			) );
+			$warnings_markup .= Smartcrawl_Simple_Renderer::load(
+				'notice',
+				array(
+					'message' => sprintf(
+						esc_html__( 'Your title is %1$d characters in length. The recommended max length is %2$d characters so you may want to consider trimming a few words.', 'wds' ),
+						$title_length,
+						$title_max_length
+					),
+				)
+			);
 		}
 
-		$desc_length = mb_strlen( $description );
+		$desc_length     = mb_strlen( $description );
 		$desc_min_length = smartcrawl_metadesc_min_length();
 		if ( $desc_length < $desc_min_length ) {
-			$warnings_markup .= Smartcrawl_Simple_Renderer::load( 'notice', array(
-				'message' => sprintf(
-					esc_html__( 'Your description is %d characters in length. The recommended minimum length is %d characters so you may want to consider adding a few words.', 'wds' ),
-					$desc_length,
-					$desc_min_length
-				),
-			) );
+			$warnings_markup .= Smartcrawl_Simple_Renderer::load(
+				'notice',
+				array(
+					'message' => sprintf(
+						esc_html__( 'Your description is %1$d characters in length. The recommended minimum length is %2$d characters so you may want to consider adding a few words.', 'wds' ),
+						$desc_length,
+						$desc_min_length
+					),
+				)
+			);
 		}
 		$desc_max_length = smartcrawl_metadesc_max_length();
 		if ( $desc_length > $desc_max_length ) {
-			$warnings_markup .= Smartcrawl_Simple_Renderer::load( 'notice', array(
-				'message' => sprintf(
-					esc_html__( 'Your description is %d characters in length. The recommended max length is %d characters so you may want to consider trimming a few words.', 'wds' ),
-					$desc_length,
-					$desc_max_length
-				),
-			) );
+			$warnings_markup .= Smartcrawl_Simple_Renderer::load(
+				'notice',
+				array(
+					'message' => sprintf(
+						esc_html__( 'Your description is %1$d characters in length. The recommended max length is %2$d characters so you may want to consider trimming a few words.', 'wds' ),
+						$desc_length,
+						$desc_max_length
+					),
+				)
+			);
 		}
 
 		return $warnings_markup;
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function init() {
 		// WPSC integration.
 		add_action( 'wpsc_edit_product', array( $this, 'rebuild_sitemap' ) );
@@ -198,9 +225,9 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		 */
 
 		/*
-		 * When running analysis in metabox, or rendering metabox preview, 
+		 * When running analysis in metabox, or rendering metabox preview,
 		 * always use overriding values passed in the request before values saved in the DB.
-		 * 
+		 *
 		 * This is done by filtering the metadata.
 		 */
 		add_filter( 'get_post_metadata', array( $this, 'filter_meta_title' ), 10, 4 );
@@ -218,6 +245,9 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		add_filter( 'post_row_actions', array( $this, 'post_row_actions' ), 10, 2 );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function init_post_columns() {
 		foreach ( smartcrawl_frontend_post_types() as $type ) {
 			add_filter( "manage_{$type}_posts_columns", array( $this, 'smartcrawl_meta_column_heading' ), 20 );
@@ -225,36 +255,39 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		}
 	}
 
+	/**
+	 * @param $actions
+	 * @param $post
+	 *
+	 * @return array
+	 */
 	public function post_row_actions( $actions, $post ) {
 		$onpage_active = Smartcrawl_Settings::get_setting( 'onpage' );
 		if (
 			$onpage_active
 			&& ! empty( $actions )
-			&& in_array( $post->post_type, smartcrawl_frontend_post_types() )
+			&& in_array( $post->post_type, smartcrawl_frontend_post_types(), true )
 		) {
-			Smartcrawl_Simple_Renderer::render( 'post-list/meta-details', array(
-				'post' => $post,
-			) );
+			Smartcrawl_Simple_Renderer::render(
+				'post-list/meta-details',
+				array(
+					'post' => $post,
+				)
+			);
 		}
 
 		return $actions;
 	}
 
+	/**
+	 * @param $hidden
+	 *
+	 * @return array
+	 */
 	public function hide_robots_column_by_default( $hidden ) {
 		$hidden[] = 'smartcrawl-robots';
 
 		return $hidden;
-	}
-
-	/**
-	 * Static instance getter
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
 	}
 
 	/**
@@ -284,14 +317,17 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	}
 
 	/**
-	 * Handles actual metabox rendering
+	 * Handles actual metabox rendering.
 	 *
-	 * @param $post
+	 * @param WP_Post $post Post object.
 	 */
 	public function smartcrawl_meta_boxes( $post ) {
-		Smartcrawl_Simple_Renderer::render( 'metabox/metabox-main', array(
-			'post' => $post,
-		) );
+		Smartcrawl_Simple_Renderer::render(
+			'metabox/metabox-main',
+			array(
+				'post' => $post,
+			)
+		);
 	}
 
 	/**
@@ -302,19 +338,28 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		if ( function_exists( 'add_meta_box' ) ) {
 			// Show branding for singular installs.
 			$metabox_title = $this->get_metabox_title();
-			$post_types = get_post_types( array(
-				'show_ui' => true, // Only if it actually supports WP UI.
-				'public'  => true, // ... and is public
-			) );
+			$post_types    = get_post_types(
+				array(
+					'show_ui' => true, // Only if it actually supports WP UI.
+					'public'  => true, // ... and is public.
+				)
+			);
 			foreach ( $post_types as $posttype ) {
 				if ( $this->is_private_post_type( $posttype ) ) {
 					continue;
 				}
 				if ( $show ) {
-					add_meta_box( 'wds-wds-meta-box', $metabox_title, array(
-						&$this,
-						'smartcrawl_meta_boxes',
-					), $posttype, 'normal', 'high' );
+					add_meta_box(
+						'wds-wds-meta-box',
+						$metabox_title,
+						array(
+							&$this,
+							'smartcrawl_meta_boxes',
+						),
+						$posttype,
+						'normal',
+						'high'
+					);
 				}
 			}
 		}
@@ -337,6 +382,9 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		return $data;
 	}
 
+	/**
+	 * @return array|WP_Post|null
+	 */
 	private function get_post() {
 		global $post;
 
@@ -408,7 +456,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 				continue;
 			}
 
-			$id = "_{$key}";
+			$id   = "_{$key}";
 			$data = $value;
 			if ( is_array( $value ) ) {
 				$data = join( ',', $value );
@@ -427,13 +475,17 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		$this->save_robots_meta( $post, $request_data );
 
 		if ( ! isset( $request_data['wds_autolinks-exclude'] ) ) {
-			delete_post_meta( $post_id, "_wds_autolinks-exclude" );
+			delete_post_meta( $post_id, '_wds_autolinks-exclude' );
 		}
 
-		update_post_meta( $post->ID, '_wds_trimmed_excerpt', smartcrawl_get_trimmed_excerpt(
-			$post->post_excerpt,
-			$post->post_content
-		) );
+		update_post_meta(
+			$post->ID,
+			'_wds_trimmed_excerpt',
+			smartcrawl_get_trimmed_excerpt(
+				$post->post_excerpt,
+				$post->post_content
+			)
+		);
 
 		do_action( 'wds_saved_postdata' );
 	}
@@ -453,12 +505,12 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	 * @return array
 	 */
 	public function smartcrawl_meta_column_heading( $columns ) {
-		$onpage_allowed = Smartcrawl_Settings::get_setting( Smartcrawl_Settings::COMP_ONPAGE )
-		                  && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE );
+		$onpage_allowed = Smartcrawl_Settings::get_setting( Smartcrawl_Settings::COMP_ONPAGE ) && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE );
 
 		if ( $onpage_allowed ) {
 			$columns['smartcrawl-robots'] = __( 'Robots Meta', 'wds' );
 		}
+
 		return $columns;
 	}
 
@@ -466,7 +518,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	 * Puts out actual column bodies
 	 *
 	 * @param string $column_name Column ID.
-	 * @param int $id Post ID.
+	 * @param int    $id          Post ID.
 	 *
 	 * @return void
 	 */
@@ -476,7 +528,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 				( smartcrawl_get_value( 'meta-robots-noindex', $id ) ? 'noindex' : 'index' ),
 				( smartcrawl_get_value( 'meta-robots-nofollow', $id ) ? 'nofollow' : 'follow' ),
 			);
-			$meta_robots = join( ',', $meta_robots_arr );
+			$meta_robots     = join( ',', $meta_robots_arr );
 			if ( empty( $meta_robots ) ) {
 				$meta_robots = 'index,follow';
 			}
@@ -485,7 +537,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 			// Show additional robots data.
 			$advanced = array_filter( array_map( 'trim', explode( ',', smartcrawl_get_value( 'meta-robots-adv', $id ) ) ) );
 			if ( ! empty( $advanced ) && 'none' !== $advanced ) {
-				$adv_map = array(
+				$adv_map    = array(
 					'noodp'     => __( 'No ODP', 'wds' ),
 					'noydir'    => __( 'No YDIR', 'wds' ),
 					'noarchive' => __( 'No Archive', 'wds' ),
@@ -510,7 +562,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	 * @param string $column Column ID.
 	 */
 	public function smartcrawl_quick_edit_dispatch( $column ) {
-		if ( $column === 'smartcrawl-robots' ) {
+		if ( 'smartcrawl-robots' === $column ) {
 			Smartcrawl_Simple_Renderer::render( 'post-list/quick-edit-onpage', array() );
 		}
 	}
@@ -520,13 +572,17 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	 */
 	public function json_wds_postmeta() {
 		$data = $this->get_request_data();
-		$id = (int) $data['id'];
-		$post = get_post( $id );
-		die( wp_json_encode( array(
-			'title'       => smartcrawl_get_value( 'title', $id ),
-			'description' => smartcrawl_get_value( 'metadesc', $id ),
-			'focus'       => smartcrawl_get_value( 'focus-keywords', $id ),
-		) ) );
+		$id   = (int) $data['id'];
+
+		die(
+		wp_json_encode(
+			array(
+				'title'       => smartcrawl_get_value( 'title', $id ),
+				'description' => smartcrawl_get_value( 'metadesc', $id ),
+				'focus'       => smartcrawl_get_value( 'focus-keywords', $id ),
+			)
+		)
+		);
 	}
 
 	/**
@@ -541,7 +597,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	 * @return array|string|null
 	 */
 	public function filter_meta_title( $original, $post_id, $meta_key, $single ) {
-		if ( $meta_key !== '_wds_title' ) {
+		if ( '_wds_title' !== $meta_key ) {
 			return $original;
 		}
 
@@ -550,8 +606,16 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		return $this->use_request_param_value( 'wds_title', $original, $single, $post );
 	}
 
+	/**
+	 * @param $original
+	 * @param $post_id
+	 * @param $meta_key
+	 * @param $single
+	 *
+	 * @return array|string|string[]|null
+	 */
 	public function filter_meta_desc( $original, $post_id, $meta_key, $single ) {
-		if ( $meta_key !== '_wds_metadesc' ) {
+		if ( '_wds_metadesc' !== $meta_key ) {
 			return $original;
 		}
 
@@ -560,8 +624,16 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		return $this->use_request_param_value( 'wds_description', $original, $single, $post );
 	}
 
+	/**
+	 * @param $original
+	 * @param $post_id
+	 * @param $meta_key
+	 * @param $single
+	 *
+	 * @return array|string|string[]|null
+	 */
 	public function filter_focus_keyword( $original, $post_id, $meta_key, $single ) {
-		if ( $meta_key !== '_wds_focus-keywords' ) {
+		if ( '_wds_focus-keywords' !== $meta_key ) {
 			return $original;
 		}
 
@@ -570,12 +642,24 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		return $this->use_request_param_value( 'wds_focus_keywords', $original, $single, $post );
 	}
 
+	/**
+	 * @param $original
+	 * @param $term_id
+	 *
+	 * @return array|string|string[]|null
+	 */
 	public function filter_term_meta_title( $original, $term_id ) {
 		$term = $this->term_cache->get_term( $term_id );
 
 		return $this->use_request_param_value( 'wds_title', $original, true, $term );
 	}
 
+	/**
+	 * @param $original
+	 * @param $term_id
+	 *
+	 * @return array|string|string[]|null
+	 */
 	public function filter_term_meta_desc( $original, $term_id ) {
 		$term = $this->term_cache->get_term( $term_id );
 
@@ -612,18 +696,27 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 		}
 	}
 
+	/**
+	 * @return array|mixed
+	 */
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-metabox-nonce' ) ? stripslashes_deep( $_POST ) : array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-metabox-nonce' ) ? stripslashes_deep( $_POST ) : array(); // phpcs:ignore
 	}
 
+	/**
+	 * @param $post_type_name
+	 *
+	 * @return bool
+	 */
 	private function is_private_post_type( $post_type_name ) {
 		$post_type = get_post_type_object( $post_type_name );
 
-		return $post_type->name === 'attachment'
-		       || ! $post_type->show_ui
-		       || ! $post_type->public;
+		return 'attachment' === $post_type->name || ! $post_type->show_ui || ! $post_type->public;
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function is_editing_private_post_type() {
 		$current_screen = get_current_screen();
 		if ( empty( $current_screen->post_type ) ) {
@@ -634,7 +727,7 @@ class Smartcrawl_Metabox extends Smartcrawl_Base_Controller {
 	}
 
 	/**
-	 * @return string|void
+	 * @return string
 	 */
 	private function get_metabox_title() {
 		return __( 'SmartCrawl', 'wds' );

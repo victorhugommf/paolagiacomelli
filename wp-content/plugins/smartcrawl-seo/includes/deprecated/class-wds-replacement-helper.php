@@ -2,7 +2,8 @@
 
 class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 
-	private $general_replacements = array();
+	private $general_replacements  = array();
+
 	private $specific_replacements = array();
 
 	private $bp_data;
@@ -12,7 +13,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	 *
 	 * @var Smartcrawl_Replacement_Helper
 	 */
-	private static $_instance;
+	private static $instance;
 
 	/**
 	 * Constructor
@@ -29,11 +30,11 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	public static function get() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
+		if ( empty( self::$instance ) ) {
+			self::$instance = new self();
 		}
 
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	public static function replace( $subject ) {
@@ -53,15 +54,15 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 		);
 
 		$replacements = apply_filters(
-			'wds-known_macros',
+			'wds-known_macros', // phpcs:ignore
 			array_combine(
-				apply_filters( 'wds-known_macros-keys', array_keys( $replacements ) ),
-				apply_filters( 'wds-known_macros-values', array_values( $replacements ) )
+				apply_filters( 'wds-known_macros-keys', array_keys( $replacements ) ), // phpcs:ignore
+				apply_filters( 'wds-known_macros-values', array_values( $replacements ) ) // phpcs:ignore
 			)
 		);
 
 		foreach ( $replacements as $macro => $replacement ) {
-			$replacement = apply_filters( 'wds-macro-variable_replacement', $replacement, $macro );
+			$replacement = apply_filters( 'wds-macro-variable_replacement', $replacement, $macro ); // phpcs:ignore
 
 			$subject = str_replace( $macro, $me->process_replacement_value( $replacement ), $subject );
 		}
@@ -70,7 +71,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	protected function clear() {
-		$this->general_replacements = $this->prepare_general_replacements();
+		$this->general_replacements  = $this->prepare_general_replacements();
 		$this->specific_replacements = array();
 	}
 
@@ -135,14 +136,14 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function prepare_general_replacements() {
-		$query = $this->get_query_context();
-		$paged = intval( $query->get( 'paged' ) );
-		$max_num_pages = isset( $query->max_num_pages ) ? $query->max_num_pages : 1;
-		$page_x_of_y = esc_html__( 'Page %1$s of %2$s' );
+		$query              = $this->get_query_context();
+		$paged              = intval( $query->get( 'paged' ) );
+		$max_num_pages      = isset( $query->max_num_pages ) ? $query->max_num_pages : 1;
+		$page_x_of_y        = esc_html__( 'Page %1$s of %2$s' );
 		$smartcrawl_options = Smartcrawl_Settings::get_options();
-		$preset_sep = ! empty( $smartcrawl_options['preset-separator'] ) ? $smartcrawl_options['preset-separator'] : 'pipe';
-		$separator = ! empty( $smartcrawl_options['separator'] ) ? $smartcrawl_options['separator'] : smartcrawl_get_separators( $preset_sep );
-		$pagenum = $paged;
+		$preset_sep         = ! empty( $smartcrawl_options['preset-separator'] ) ? $smartcrawl_options['preset-separator'] : 'pipe';
+		$separator          = ! empty( $smartcrawl_options['separator'] ) ? $smartcrawl_options['separator'] : smartcrawl_get_separators( $preset_sep );
+		$pagenum            = $paged;
 		if ( 0 === $pagenum ) {
 			$pagenum = $max_num_pages > 1 ? 1 : '';
 		}
@@ -168,7 +169,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
 		if ( ! $this->is_bp_group( $current_group ) ) {
-			$bp = $this->get_bp_data();
+			$bp            = $this->get_bp_data();
 			$current_group = empty( $bp->groups->current_group ) ? null : $bp->groups->current_group;
 		}
 
@@ -199,8 +200,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 
 	public function handle_blog_home() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
-		// No context specific values available on blog index page
+		// No context specific values available on blog index page.
 	}
 
 	public function handle_static_home() {
@@ -221,8 +221,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 
 	public function handle_404() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
-		// No context specific values available on the 404 page
+		// No context specific values available on the 404 page.
 	}
 
 	public function handle_date_archive() {
@@ -265,16 +264,16 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 		);
 
 		if ( 'category' === $term_data['taxonomy'] ) {
-			$this->specific_replacements['%%category%%'] = $term_data['name'];
+			$this->specific_replacements['%%category%%']             = $term_data['name'];
 			$this->specific_replacements['%%category_description%%'] = $term_data['description'];
 		} elseif ( 'post_tag' === $term_data['taxonomy'] ) {
-			$this->specific_replacements['%%tag%%'] = $term_data['name'];
+			$this->specific_replacements['%%tag%%']             = $term_data['name'];
 			$this->specific_replacements['%%tag_description%%'] = $term_data['description'];
 		}
 	}
 
 	/**
-	 * @param null|WP_User $user
+	 * @param null|WP_User $user User object.
 	 */
 	public function handle_author_archive( $user = null ) {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
@@ -282,7 +281,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 		if ( $this->is_user( $user ) ) {
 			$user_id = $user->ID;
 		} else {
-			$query = $this->get_query_context();
+			$query   = $this->get_query_context();
 			$user_id = $query->get( 'author' );
 		}
 
@@ -295,14 +294,13 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 
 	public function handle_archive() {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
-
-		// No context specific values available on the archive page
+		// No context specific values available on the archive page.
 	}
 
 	public function handle_singular( $post = null ) {
 		_deprecated_function( __FUNCTION__, '2.18.0' );
 
-		$post = $this->get_post_or_fallback( $post );
+		$post      = $this->get_post_or_fallback( $post );
 		$post_data = wp_parse_args(
 			$this->is_post( $post ) ? (array) $post : array(),
 			$this->get_post_defaults()
@@ -328,7 +326,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	/**
-	 * @param $post WP_Post
+	 * @param WP_Post $post Post object.
 	 *
 	 * @return mixed|string
 	 */
@@ -399,16 +397,19 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function get_date_for_archive() {
-		$query = $this->get_query_context();
-		$day = $query->get( 'day' );
-		$month = $query->get( 'monthnum' );
-		$year = $query->get( 'year' );
+		$query  = $this->get_query_context();
+		$day    = $query->get( 'day' );
+		$month  = $query->get( 'monthnum' );
+		$year   = $query->get( 'year' );
 		$format = '';
 		if ( empty( $year ) ) {
-			// At the very least we need an year
+			// At the very least we need an year.
 			return '';
 		}
-		$timestamp = mktime( 0, 0, 0,
+		$timestamp = mktime(
+			0,
+			0,
+			0,
 			empty( $month ) ? 1 : $month,
 			empty( $day ) ? 1 : $day,
 			$year
@@ -422,9 +423,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 			$format = 'Y';
 		}
 
-		$date = date_i18n( $format, $timestamp );
-
-		return $date;
+		return date_i18n( $format, $timestamp );
 	}
 
 	private function get_context_for_dynamic_replacement() {
@@ -452,10 +451,10 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 		}
 
 		$term_desc_replacements = $this->find_term_field_replacements( $subject, $context, 'ct_desc_', 'description' );
-		$subject = str_replace( array_keys( $term_desc_replacements ), '', $subject );
+		$subject                = str_replace( array_keys( $term_desc_replacements ), '', $subject );
 
 		$term_name_replacements = $this->find_term_field_replacements( $subject, $context, 'ct_', 'name' );
-		$subject = str_replace( array_keys( $term_name_replacements ), '', $subject );
+		$subject                = str_replace( array_keys( $term_name_replacements ), '', $subject );
 
 		$meta_replacements = $this->find_meta_replacements( $subject, $context );
 
@@ -463,8 +462,8 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function find_term_field_replacements( $subject, $context, $prefix, $term_field ) {
-		$pattern = "/(%%{$prefix}[a-z_\-]+%%)/";
-		$matches = array();
+		$pattern      = "/(%%{$prefix}[a-z_\-]+%%)/";
+		$matches      = array();
 		$replacements = array();
 		$match_result = preg_match_all( $pattern, $subject, $matches, PREG_PATTERN_ORDER );
 		if ( ! empty( $match_result ) ) {
@@ -479,7 +478,7 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 
 				$terms = $this->get_linked_terms( $context, $taxonomy_name );
 				if ( ! empty( $terms ) ) {
-					$term = array_shift( $terms );
+					$term                         = array_shift( $terms );
 					$replacements[ $placeholder ] = wp_strip_all_tags( get_term_field( $term_field, $term, $taxonomy_name ) );
 				}
 			}
@@ -489,9 +488,9 @@ class Smartcrawl_Replacement_Helper extends Smartcrawl_Type_Traverser {
 	}
 
 	private function find_meta_replacements( $subject, $context ) {
-		$prefix = 'cf_';
-		$pattern = "/(%%{$prefix}[a-z_\-]+%%)/";
-		$matches = array();
+		$prefix       = 'cf_';
+		$pattern      = "/(%%{$prefix}[a-z_\-]+%%)/";
+		$matches      = array();
 		$replacements = array();
 		$match_result = preg_match_all( $pattern, $subject, $matches, PREG_PATTERN_ORDER );
 		if ( ! empty( $match_result ) ) {

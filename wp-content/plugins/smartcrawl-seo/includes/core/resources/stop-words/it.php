@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // italian
-
-static $data = [
+static $data = array(
     'ad',
     'al',
     'allo',
@@ -282,7 +281,7 @@ static $data = [
     'stessimo',
     'stessero',
     'stando',
-];
+);
 
 $result =& $data;
 unset($data);

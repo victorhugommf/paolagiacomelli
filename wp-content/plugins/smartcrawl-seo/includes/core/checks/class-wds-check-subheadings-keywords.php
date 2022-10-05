@@ -2,17 +2,18 @@
 
 class Smartcrawl_Check_Subheadings_Keywords extends Smartcrawl_Check_Abstract {
 
-	private $_state = null;
-	private $_count;
+	private $state = null;
+
+	private $count;
 
 	public function get_status_msg() {
-		if ( is_null( $this->_state ) ) {
+		if ( is_null( $this->state ) ) {
 			return __( "You don't have any subheadings", 'wds' );
 		}
 
-		return false === $this->_state
+		return false === $this->state
 			? __( "You haven't used your focus keywords in any subheadings", 'wds' )
-			: sprintf( __( 'Your focus keyword was found in %d subheadings', 'wds' ), $this->_count );
+			: sprintf( __( 'Your focus keyword was found in %d subheadings', 'wds' ), $this->count );
 	}
 
 	public function apply() {
@@ -28,17 +29,17 @@ class Smartcrawl_Check_Subheadings_Keywords extends Smartcrawl_Check_Abstract {
 			}
 		}
 
-		$this->_state = (bool) $count;
-		$this->_count = $count;
+		$this->state = (bool) $count;
+		$this->count = $count;
 
-		return ! ! $this->_state;
+		return ! ! $this->state;
 	}
 
 	public function get_recommendation() {
-		if ( is_null( $this->_state ) ) {
+		if ( is_null( $this->state ) ) {
 			$message = __( "Using subheadings in your content (such as H2's or H3's) will help both the user and search engines quickly figure out what your article is about. It also helps visually section your content which in turn is great user experience. We recommend you have at least one subheading.", 'wds' );
-		} elseif ( $this->_state ) {
-			$message = sprintf( __( "You've used keywords in %d of your subheadings which will help both the user and search engines quickly figure out what your article is about, good work!", 'wds' ), $this->_count );
+		} elseif ( $this->state ) {
+			$message = sprintf( __( "You've used keywords in %d of your subheadings which will help both the user and search engines quickly figure out what your article is about, good work!", 'wds' ), $this->count );
 		} else {
 			$message = __( "Using keywords in any of your subheadings (such as H2's or H3's) will help both the user and search engines quickly figure out what your article is about. It's best practice to include your focus keywords in at least one subheading if you can.", 'wds' );
 		}

@@ -2,11 +2,14 @@
 
 class Smartcrawl_Controller_Analysis_Content extends Smartcrawl_Base_Controller {
 
-	private static $_instance;
+	use Smartcrawl_Singleton;
 
 	const STRATEGY_STRICT = 'strict';
+
 	const STRATEGY_MODERATE = 'moderate';
+
 	const STRATEGY_LOOSE = 'loose';
+
 	const STRATEGY_MANUAL = 'manual';
 
 	private $strategy;
@@ -17,30 +20,20 @@ class Smartcrawl_Controller_Analysis_Content extends Smartcrawl_Base_Controller 
 		$this->set_analysis_strategy( $this->get_analysis_strategy_option() );
 	}
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 	private function is_analysis_running() {
-		return ! empty( $_GET['wds-frontend-check'] )
-		       && ! is_admin()
-		       && is_user_logged_in();
+		return ! empty( $_GET['wds-frontend-check'] ) && ! is_admin() && is_user_logged_in(); // phpcs:ignore -- nonce verification not needed.
 	}
 
 	protected function init() {
 		$priority = $this->priority();
 
-		// In strict mode, wrap the post content in a div
+		// In strict mode, wrap the post content in a div.
 		add_filter( 'the_content', array( $this, 'wrap_post_content' ), $priority );
 
-		// Try to remove as much stuff from the page as possible by intercepting common template tags
+		// Try to remove as much stuff from the page as possible by intercepting common template tags.
 		add_action( 'init', array( $this, 'hook_template_tag_interceptors' ), - $priority );
 
-		// Based on the current analysis strategy, return a content value
+		// Based on the current analysis strategy, return a content value.
 		add_filter( 'wds-analysis-content', array( $this, 'filter_analysis_content' ), - $priority );
 	}
 
@@ -55,25 +48,25 @@ class Smartcrawl_Controller_Analysis_Content extends Smartcrawl_Base_Controller 
 	public function filter_analysis_content( $content ) {
 		$strategy = $this->get_analysis_strategy();
 		switch ( $strategy ) {
-			// When strategy is moderate, return the page minus header, footer, sidebar etc
+			// When strategy is moderate, return the page minus header, footer, sidebar etc.
 			case self::STRATEGY_MODERATE:
 				return $this->remove_redundant_tags( $content );
 
-			// When strategy is manual, return the explicitly marked content
+			// When strategy is manual, return the explicitly marked content.
 			case self::STRATEGY_MANUAL:
 				return $this->get_fragments_by_class(
 					$content,
 					'.smartcrawl-checkup-included'
 				);
 
-			// When strategy is strict, only return whatever is within the_content()
+			// When strategy is strict, only return whatever is within the_content().
 			case self::STRATEGY_STRICT:
 				return $this->get_fragments_by_class(
 					$content,
 					'.wds-frontend-content-check'
 				);
 
-			// When strategy is loose, return the whole page content
+			// When strategy is loose, return the whole page content.
 			case self::STRATEGY_LOOSE:
 			default:
 				return $content;
@@ -85,7 +78,7 @@ class Smartcrawl_Controller_Analysis_Content extends Smartcrawl_Base_Controller 
 			return;
 		}
 
-		// We never want to see the admin bar in analysis
+		// We never want to see the admin bar in analysis.
 		add_filter( 'show_admin_bar', '__return_false' );
 
 		if ( $this->get_analysis_strategy() === self::STRATEGY_MODERATE ) {
@@ -103,7 +96,7 @@ class Smartcrawl_Controller_Analysis_Content extends Smartcrawl_Base_Controller 
 	/**
 	 * Removes each sidebar from the page.
 	 *
-	 * @param $sidebar array
+	 * @param array $sidebar Sidebar.
 	 */
 	function remove_sidebar( $sidebar ) {
 		unregister_sidebar( $sidebar['id'] );
@@ -111,6 +104,7 @@ class Smartcrawl_Controller_Analysis_Content extends Smartcrawl_Base_Controller 
 
 	/**
 	 * Removes the comment area by returning an empty file as the new comments template.
+	 *
 	 * @return string An empty string to be used as the comment template.
 	 */
 	function remove_comments_area() {
@@ -120,7 +114,7 @@ class Smartcrawl_Controller_Analysis_Content extends Smartcrawl_Base_Controller 
 	/**
 	 * Wraps post content in a container so we can identify it later
 	 *
-	 * @param $content string The original post content.
+	 * @param string $content The original post content.
 	 *
 	 * @return string Content wrapped in a container
 	 */
@@ -155,6 +149,7 @@ class Smartcrawl_Controller_Analysis_Content extends Smartcrawl_Base_Controller 
 
 	private function get_fragments_by_class( $content, $class ) {
 		$bits = Smartcrawl_Html::find( $class, $content );
+
 		return (string) trim( join( "\n", $bits ) );
 	}
 }

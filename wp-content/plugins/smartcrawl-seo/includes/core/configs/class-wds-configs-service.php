@@ -2,12 +2,14 @@
 
 class Smartcrawl_Configs_Service extends Smartcrawl_Service {
 	const VERB_GET_PACKAGE_CONFIGS = 'get-package-configs';
-	const VERB_CREATE_CONFIG = 'create-config';
-	const VERB_UPDATE_CONFIG = 'update-config';
-	const VERB_DELETE_CONFIG = 'delete-config';
-	const REST_BASE = 'package-configs';
+	const VERB_CREATE_CONFIG       = 'create-config';
+	const VERB_UPDATE_CONFIG       = 'update-config';
+	const VERB_DELETE_CONFIG       = 'delete-config';
+	const REST_BASE                = 'package-configs';
 
 	/**
+	 * Config.
+	 *
 	 * @var Smartcrawl_Config_Model
 	 */
 	private $config;
@@ -19,12 +21,12 @@ class Smartcrawl_Configs_Service extends Smartcrawl_Service {
 		}
 
 		$api = apply_filters(
-			$this->get_filter( 'api-endpoint' ),
+			$this->get_filter( 'api-endpoint' ), // phpcs:ignore
 			'api'
 		);
 
 		$namespace = apply_filters(
-			$this->get_filter( 'api-namespace' ),
+			$this->get_filter( 'api-namespace' ), // phpcs:ignore
 			'hub/v1'
 		);
 
@@ -45,7 +47,7 @@ class Smartcrawl_Configs_Service extends Smartcrawl_Service {
 	}
 
 	public function get_request_url( $verb ) {
-		$query = array(
+		$query    = array(
 			'package_id' => SMARTCRAWL_PACKAGE_ID,
 		);
 		$base_url = trailingslashit( $this->get_service_base_url() ) . self::REST_BASE;
@@ -77,7 +79,7 @@ class Smartcrawl_Configs_Service extends Smartcrawl_Service {
 				$args = array( 'method' => 'GET' );
 		}
 
-		$args['timeout'] = $this->get_timeout();
+		$args['timeout']   = $this->get_timeout();
 		$args['sslverify'] = false;
 
 		$key = (string) $this->get_dashboard_api_key();
@@ -85,13 +87,11 @@ class Smartcrawl_Configs_Service extends Smartcrawl_Service {
 			$args['headers']['Authorization'] = "Basic {$key}";
 		}
 
-		$args = apply_filters(
-			$this->get_filter( 'configs-args' ),
+		return apply_filters(
+			$this->get_filter( 'configs-args' ), // phpcs:ignore
 			$args,
 			$verb
 		);
-
-		return $args;
 	}
 
 	public function get_configs() {
@@ -99,37 +99,37 @@ class Smartcrawl_Configs_Service extends Smartcrawl_Service {
 	}
 
 	/**
-	 * @param $config Smartcrawl_Config_Model
+	 * @param Smartcrawl_Config_Model $config Config model.
 	 *
 	 * @return mixed
 	 */
 	public function publish_config( $config ) {
 		$this->config = $config;
-		$response = $this->request( self::VERB_CREATE_CONFIG );
+		$response     = $this->request( self::VERB_CREATE_CONFIG );
 		$this->config = null;
 		return $response;
 	}
 
 	/**
-	 * @param $config Smartcrawl_Config_Model
+	 * @param Smartcrawl_Config_Model $config Config model.
 	 *
 	 * @return mixed
 	 */
 	public function update_config( $config ) {
 		$this->config = $config;
-		$response = $this->request( self::VERB_UPDATE_CONFIG );
+		$response     = $this->request( self::VERB_UPDATE_CONFIG );
 		$this->config = null;
 		return $response;
 	}
 
 	/**
-	 * @param $config Smartcrawl_Config_Model
+	 * @param Smartcrawl_Config_Model $config Config model.
 	 *
 	 * @return mixed
 	 */
 	public function delete_config( $config ) {
 		$this->config = $config;
-		$response = $this->request( self::VERB_DELETE_CONFIG );
+		$response     = $this->request( self::VERB_DELETE_CONFIG );
 		$this->config = null;
 		return $response;
 	}
@@ -151,10 +151,13 @@ class Smartcrawl_Configs_Service extends Smartcrawl_Service {
 					'name' => 'SmartCrawl Pro',
 					'id'   => SMARTCRAWL_PACKAGE_ID,
 				),
-				'config'      => json_encode( array(
-					'configs' => $this->config->get_configs(),
-					'strings' => $this->config->get_strings(),
-				), true ),
+				'config'      => wp_json_encode(
+					array(
+						'configs' => $this->config->get_configs(),
+						'strings' => $this->config->get_strings(),
+					),
+					true
+				),
 			),
 		);
 	}

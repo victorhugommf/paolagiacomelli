@@ -1,26 +1,25 @@
 <?php
 
 class Smartcrawl_Config_Collection {
+
+	use Smartcrawl_Singleton;
+
 	const CONFIGS_INDEX_OPTION_ID = 'wds-configs-index';
+
 	const CONFIG_OPTION_ID_PREFIX = 'wds-config-';
 
 	/**
+	 * Configs.
+	 *
 	 * @var Smartcrawl_Config_Model[]
 	 */
 	private $configs = array();
+
 	private $deleted = array();
-	private static $_instance;
+
 	private $service;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	private function __construct() {
+	protected function __construct() {
 		$this->service = new Smartcrawl_Configs_Service();
 		$this->load_from_storage();
 	}
@@ -33,7 +32,7 @@ class Smartcrawl_Config_Collection {
 	 * @return bool
 	 */
 	public function sync_with_hub() {
-		$local_changes_pushed = $this->push_local_changes();
+		$local_changes_pushed  = $this->push_local_changes();
 		$remote_changes_pulled = $this->pull_remote_changes();
 		$this->save();
 
@@ -50,7 +49,7 @@ class Smartcrawl_Config_Collection {
 		$success = true;
 		foreach ( $this->get_configs() as $local_config ) {
 			if ( $local_config->get_hub_id() ) {
-				// The local config already exists on hub, nothing to do
+				// The local config already exists on hub, nothing to do.
 				continue;
 			}
 			$saved_to_hub = $this->service->publish_config( $local_config );
@@ -67,8 +66,9 @@ class Smartcrawl_Config_Collection {
 
 	private function pull_remote_changes() {
 		$hub_configs = $this->get_hub_configs();
-		if ( $hub_configs === false ) {
+		if ( false === $hub_configs ) {
 			Smartcrawl_Logger::error( 'There was an error fetching configs from the HUB' );
+
 			return false;
 		}
 
@@ -79,7 +79,9 @@ class Smartcrawl_Config_Collection {
 	}
 
 	/**
-	 * @param $config Smartcrawl_Config_Model
+	 * Add config.
+	 *
+	 * @param Smartcrawl_Config_Model $config Config model.
 	 */
 	public function add( $config ) {
 		$this->configs[ $this->key( $config ) ] = $config;
@@ -94,7 +96,9 @@ class Smartcrawl_Config_Collection {
 	}
 
 	/**
-	 * @param $config Smartcrawl_Config_Model
+	 * Get key.
+	 *
+	 * @param Smartcrawl_Config_Model $config Config model.
 	 *
 	 * @return string
 	 */
@@ -110,7 +114,7 @@ class Smartcrawl_Config_Collection {
 		$config_ids = $this->get_stored_config_ids();
 		foreach ( $config_ids as $config_id ) {
 			$config_data = $this->get_stored_config_data( $config_id );
-			$config = Smartcrawl_Config_Model::inflate( $config_data );
+			$config      = Smartcrawl_Config_Model::inflate( $config_data );
 			if ( $config->get_id() ) {
 				$this->add( $config );
 			}
@@ -133,10 +137,13 @@ class Smartcrawl_Config_Collection {
 	}
 
 	/**
+	 * Get stored config ids.
+	 *
 	 * @return array
 	 */
 	private function get_stored_config_ids() {
 		$option = get_option( self::CONFIGS_INDEX_OPTION_ID, array() );
+
 		return empty( $option )
 			? array()
 			: $option;
@@ -144,13 +151,16 @@ class Smartcrawl_Config_Collection {
 
 	private function get_stored_config_data( $config_id ) {
 		$config_data = get_option( $this->config_option_id( $config_id ), array() );
+
 		return empty( $config_data )
 			? array()
 			: $config_data;
 	}
 
 	/**
-	 * @param $config Smartcrawl_Config_Model
+	 * Save config data.
+	 *
+	 * @param Smartcrawl_Config_Model $config Config model.
 	 *
 	 * @return bool
 	 */
@@ -167,20 +177,21 @@ class Smartcrawl_Config_Collection {
 	}
 
 	public function get_configs() {
-		return empty( $this->configs )
-			? array()
-			: $this->configs;
+		return empty( $this->configs ) ? array() : $this->configs;
 	}
 
 	public function get_sorted_configs() {
 		$configs = $this->get_configs();
 		uasort( $configs, array( $this, 'comparator' ) );
+
 		return $configs;
 	}
 
 	/**
-	 * @param $first Smartcrawl_Config_Model
-	 * @param $second Smartcrawl_Config_Model
+	 * Sort.
+	 *
+	 * @param Smartcrawl_Config_Model $first  Config model.
+	 * @param Smartcrawl_Config_Model $second Config model.
 	 *
 	 * @return int
 	 */
@@ -193,13 +204,18 @@ class Smartcrawl_Config_Collection {
 	}
 
 	public function get_deflated_configs() {
-		return array_map( function ( $config ) {
-			return $config->deflate();
-		}, $this->get_sorted_configs() );
+		return array_map(
+			function ( $config ) {
+				return $config->deflate();
+			},
+			$this->get_sorted_configs()
+		);
 	}
 
 	/**
-	 * @param $config_id
+	 * Get item by id.
+	 *
+	 * @param string $config_id Config ID.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -222,7 +238,9 @@ class Smartcrawl_Config_Collection {
 	}
 
 	/**
-	 * @param Smartcrawl_Configs_Service $service
+	 * Set service.
+	 *
+	 * @param Smartcrawl_Configs_Service $service Service.
 	 */
 	public function set_service( $service ) {
 		$this->service = $service;
@@ -230,7 +248,7 @@ class Smartcrawl_Config_Collection {
 
 	public function reset() {
 		$this->configs = array();
-		self::$_instance = null;
+		self::get( true );
 	}
 
 	private function get_hub_configs() {
@@ -246,6 +264,7 @@ class Smartcrawl_Config_Collection {
 			}
 			$hub_configs[ $this->id_to_key( $hub_config->get_hub_id() ) ] = $hub_config;
 		}
+
 		return $hub_configs;
 	}
 
@@ -253,7 +272,7 @@ class Smartcrawl_Config_Collection {
 	 * User could update name and description of configs or add brand new configs on the hub side.
 	 * This method applies those changes to local.
 	 *
-	 * @param $hub_configs Smartcrawl_Config_Model[]
+	 * @param Smartcrawl_Config_Model[] $hub_configs Hub configs.
 	 *
 	 * @return bool
 	 */
@@ -270,21 +289,23 @@ class Smartcrawl_Config_Collection {
 				$this->add( $hub_config );
 			}
 		}
+
 		return true;
 	}
 
 	/**
 	 * The user could delete configs on the hub. This method removes such configs from local.
 	 *
-	 * @param $hub_configs
+	 * @param Smartcrawl_Config_Model[] $hub_configs Hub configs.
 	 *
 	 * @return bool
 	 */
 	private function remove_remotely_deleted_from_local( $hub_configs ) {
 		foreach ( $this->get_configs() as $local_config ) {
 			if ( ! $local_config->get_hub_id() ) {
-				// At this point in the sync process there shouldn't be any local configs without hub IDs, something is not right
+				// At this point in the sync process there shouldn't be any local configs without hub IDs, something is not right.
 				Smartcrawl_Logger::notice( 'Unexpected config without HUB ID found' );
+
 				return false;
 			}
 			$hub_config = smartcrawl_get_array_value(
@@ -292,10 +313,11 @@ class Smartcrawl_Config_Collection {
 				$this->id_to_key( $local_config->get_hub_id() )
 			);
 			if ( ! $hub_config ) {
-				// Hub version was removed, remove local version as well
+				// Hub version was removed, remove local version as well.
 				$this->remove( $local_config );
 			}
 		}
+
 		return true;
 	}
 }

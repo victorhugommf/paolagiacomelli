@@ -2,7 +2,7 @@
 $canonical_url = empty( $canonical_url ) ? '' : $canonical_url;
 ?>
 
-<?php if ( apply_filters( 'wds-metabox-visible_parts-canonical_area', true ) ) : ?>
+<?php if ( apply_filters( 'wds-metabox-visible_parts-canonical_area', true ) ) : // phpcs:ignore ?>
 	<div class="sui-box-settings-row">
 		<div class="sui-box-settings-col-1">
 			<label for="wds_canonical" class="sui-settings-label"><?php esc_html_e( 'Canonical', 'wds' ); ?></label>
@@ -11,11 +11,14 @@ $canonical_url = empty( $canonical_url ) ? '' : $canonical_url;
 			</p>
 		</div>
 		<div class="sui-box-settings-col-2">
-			<input type='text' id='wds_canonical' name='wds_canonical'
-			       value='<?php echo esc_attr( $canonical_url ); ?>'
-			       class='wds sui-form-control'/>
-			<span
-					class="sui-description"><?php esc_html_e( 'Enter the full canonical URL including http:// or https://', 'wds' ); ?></span>
+			<input
+				type="text"
+				id="wds_canonical"
+				name="wds_canonical"
+				value="<?php echo esc_attr( $canonical_url ); ?>"
+				class="wds sui-form-control"
+			/>
+			<span class="sui-description"><?php esc_html_e( 'Enter the full canonical URL including http:// or https://', 'wds' ); ?></span>
 		</div>
 	</div>
 <?php endif; ?>

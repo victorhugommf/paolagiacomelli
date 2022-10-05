@@ -1,6 +1,9 @@
 <?php
 
 class Smartcrawl_Schema_Fragment_Search extends Smartcrawl_Schema_Fragment {
+	/**
+	 * @var
+	 */
 	private $search_term;
 	/**
 	 * @var WP_Post[]
@@ -10,24 +13,39 @@ class Smartcrawl_Schema_Fragment_Search extends Smartcrawl_Schema_Fragment {
 	 * @var Smartcrawl_Schema_Utils
 	 */
 	private $utils;
+	/**
+	 * @var
+	 */
 	private $title;
+	/**
+	 * @var
+	 */
 	private $description;
 
+	/**
+	 * @param $search_term
+	 * @param $posts
+	 * @param $title
+	 * @param $description
+	 */
 	public function __construct( $search_term, $posts, $title, $description ) {
 		$this->search_term = $search_term;
-		$this->posts = $posts;
-		$this->title = $title;
+		$this->posts       = $posts;
+		$this->title       = $title;
 		$this->description = $description;
-		$this->utils = Smartcrawl_Schema_Utils::get();
+		$this->utils       = Smartcrawl_Schema_Utils::get();
 	}
 
+	/**
+	 * @return array|mixed|Smartcrawl_Schema_Fragment_Archive
+	 */
 	protected function get_raw() {
-		$enabled = (bool) $this->utils->get_schema_option( 'schema_enable_search' );
+		$enabled    = (bool) $this->utils->get_schema_option( 'schema_enable_search' );
 		$search_url = get_search_link( $this->search_term );
 
 		if ( $enabled ) {
 			return new Smartcrawl_Schema_Fragment_Archive(
-				"SearchResultsPage",
+				'SearchResultsPage',
 				$search_url,
 				$this->posts,
 				$this->title,

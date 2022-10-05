@@ -1,17 +1,10 @@
 <?php
 
 class Smartcrawl_Term_Cache {
+
+	use Smartcrawl_Singleton;
+
 	private $cache = array();
-
-	private static $_instance;
-
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	public function get_term( $term_id ) {
 		if ( empty( $this->cache[ $term_id ] ) ) {

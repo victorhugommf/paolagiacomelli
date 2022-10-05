@@ -1,52 +1,70 @@
 <?php
+/**
+ * Class Smartcrawl_WorkUnit
+ *
+ * @package SmartCrawl
+ */
 
+/**
+ * Abstract class Smartcrawl_WorkUnit
+ */
 abstract class Smartcrawl_WorkUnit {
 
 	/**
 	 * Holds reference to WP error instance
+	 *
+	 * @var WP_Error $_error
 	 */
-	protected $_error;
+	protected $error;
 
+	/**
+	 * Initialize the class.
+	 */
 	public function __construct() {
-		$this->_error = new WP_Error();
+		$this->error = new WP_Error();
 	}
 
 	/**
 	 * Adds error to the queue
 	 *
-	 * @param string $code Error code
-	 * @param string $msg Error message
+	 * @param string $code Error code.
+	 * @param string $msg  Error message.
 	 *
 	 * @return bool Status
 	 */
 	public function add_error( $code, $msg ) {
-		$prefix = $this->get_filter_prefix();
-		$errcode = "{$prefix}::{$code}";
+		$prefix     = $this->get_filter_prefix();
+		$error_code = "{$prefix}::{$code}";
 
-		Smartcrawl_Logger::debug( "({$errcode}) $msg" );
+		Smartcrawl_Logger::debug( "({$error_code}) $msg" );
 
-		$this->_error->add( $errcode, $msg );
+		$this->error->add( $error_code, $msg );
 
 		return true;
 	}
 
+	/**
+	 * Get prefix for filters.
+	 *
+	 * @return mixed
+	 */
 	abstract public function get_filter_prefix();
 
 	/**
-	 * Gets a list of detected errors
+	 * Gets a list of detected errors.
 	 *
-	 * @return array List of detected errors, as check => msg pairs
+	 * @return array List of detected errors, as check => msg pairs.
 	 */
 	public function get_errors() {
-		$error_codes = $this->_error->get_error_codes();
-		$errors = array();
+		$error_codes = $this->error->get_error_codes();
+		$errors      = array();
 
 		if ( empty( $error_codes ) ) {
 			return $errors;
 		}
 
 		foreach ( $error_codes as $code ) {
-			$errors[ $code ] = $this->_error->get_error_message( $code );
+			$errors[ $code ] = $this->error->get_error_message( $code );
 		}
 
 		return $errors;
@@ -75,7 +93,7 @@ abstract class Smartcrawl_WorkUnit {
 	/**
 	 * Expands filter suffix name
 	 *
-	 * @param string $suffix Filter suffix
+	 * @param string $suffix Filter suffix.
 	 *
 	 * @return string Full filter name
 	 */

@@ -1,13 +1,22 @@
 <?php
 
 class Smartcrawl_Sitemap_Extras_Query extends Smartcrawl_Sitemap_Query {
+
+	use Smartcrawl_Singleton;
+
 	const EXTRAS = 'extras';
 	const EXTRAS_STORAGE = 'wds-sitemap-extras';
 
+	/**
+	 * @return string[]
+	 */
 	public function get_supported_types() {
 		return array( self::EXTRAS );
 	}
 
+	/**
+	 * @return array|Smartcrawl_Sitemap_Item[]
+	 */
 	public function get_items( $type = '', $page_number = 0 ) {
 		$extras = get_option( self::EXTRAS_STORAGE );
 		$extras = empty( $extras ) || ! is_array( $extras )
@@ -15,7 +24,7 @@ class Smartcrawl_Sitemap_Extras_Query extends Smartcrawl_Sitemap_Query {
 			: $extras;
 
 		if ( ! empty( $page_number ) ) {
-			$limit = $this->get_limit( $page_number );
+			$limit  = $this->get_limit( $page_number );
 			$offset = $this->get_offset( $page_number );
 			$extras = array_slice( $extras, $offset, $limit );
 		}
@@ -28,8 +37,6 @@ class Smartcrawl_Sitemap_Extras_Query extends Smartcrawl_Sitemap_Query {
 
 			$item = new Smartcrawl_Sitemap_Item();
 			$item->set_location( $extra_url )
-			     ->set_priority( 0.5 )
-			     ->set_change_frequency( Smartcrawl_Sitemap_Item::FREQ_WEEKLY )
 			     ->set_last_modified( time() );
 
 			$items[] = $item;
@@ -38,6 +45,9 @@ class Smartcrawl_Sitemap_Extras_Query extends Smartcrawl_Sitemap_Query {
 		return $items;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_filter_prefix() {
 		return 'wds-sitemap-extras';
 	}

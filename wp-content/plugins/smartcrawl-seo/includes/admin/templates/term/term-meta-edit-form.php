@@ -1,6 +1,6 @@
 <?php
 $tax_meta = empty( $tax_meta ) ? array() : $tax_meta;
-$term = empty( $term ) ? null : $term;
+$term     = empty( $term ) ? null : $term; // phpcs:ignore
 if ( ! $term ) {
 	return;
 }
@@ -9,10 +9,10 @@ if ( ! $smartcrawl_term ) {
 	return;
 }
 
-$meta_title = smartcrawl_get_array_value( $tax_meta, 'wds_title' );
+$meta_title        = smartcrawl_get_array_value( $tax_meta, 'wds_title' );
 $title_placeholder = $smartcrawl_term->get_meta_title();
 
-$meta_desc = smartcrawl_get_array_value( $tax_meta, 'wds_desc' );
+$meta_desc        = smartcrawl_get_array_value( $tax_meta, 'wds_desc' );
 $desc_placeholder = $smartcrawl_term->get_meta_description();
 ?>
 <div class="wds-edit-meta">
@@ -27,12 +27,14 @@ $desc_placeholder = $smartcrawl_term->get_meta_description();
 			<label class="sui-label" for="wds_title">
 				<?php esc_html_e( 'SEO Title', 'wds' ); ?>
 			</label>
-			<input type="text"
-			       id="wds_title"
-			       name="wds_title"
-			       placeholder="<?php echo esc_attr( $title_placeholder ); ?>"
-			       value="<?php echo esc_attr( $meta_title ); ?>"
-			       class="sui-form-control wds-meta-field"/>
+			<input
+				type="text"
+				id="wds_title"
+				name="wds_title"
+				placeholder="<?php echo esc_attr( $title_placeholder ); ?>"
+				value="<?php echo esc_attr( $meta_title ); ?>"
+				class="sui-form-control wds-meta-field"
+			/>
 			<p class="sui-description">
 				<?php esc_html_e( 'The SEO title is used on the archive page for this term.', 'wds' ); ?>
 			</p>
@@ -42,10 +44,12 @@ $desc_placeholder = $smartcrawl_term->get_meta_description();
 			<label class="sui-label" for="wds_metadesc">
 				<?php esc_html_e( 'Description', 'wds' ); ?>
 			</label>
-			<textarea name="wds_desc"
-			          id="wds_metadesc"
-			          placeholder="<?php echo esc_attr( $desc_placeholder ); ?>"
-			          class="sui-form-control wds-meta-field"><?php echo esc_textarea( $meta_desc ); ?></textarea>
+			<textarea
+				name="wds_desc"
+				id="wds_metadesc"
+				placeholder="<?php echo esc_attr( $desc_placeholder ); ?>"
+				class="sui-form-control wds-meta-field"
+			><?php echo esc_textarea( $meta_desc ); ?></textarea>
 			<p class="sui-description">
 				<?php esc_html_e( 'The SEO description is used for the meta description on the archive page for this term.', 'wds' ); ?>
 			</p>

@@ -1,6 +1,9 @@
 <?php
 
 class Smartcrawl_Schema_Fragment_Publisher extends Smartcrawl_Schema_Fragment {
+	/**
+	 * @var
+	 */
 	private $full_output;
 	/**
 	 * @var Smartcrawl_Schema_Utils
@@ -11,26 +14,38 @@ class Smartcrawl_Schema_Fragment_Publisher extends Smartcrawl_Schema_Fragment {
 	 */
 	private $owner;
 
+	/**
+	 * @param $full_output
+	 */
 	public function __construct( $full_output ) {
 		$this->full_output = $full_output;
-		$this->utils = new Smartcrawl_Schema_Utils();
-		$this->owner = Smartcrawl_Model_User::owner();
+		$this->utils       = new Smartcrawl_Schema_Utils();
+		$this->owner       = Smartcrawl_Model_User::owner();
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	private function get_publisher_type() {
 		if ( $this->utils->is_schema_type_person() ) {
-			return "Organization";
+			return 'Organization';
 		} else {
 			return $this->full_output
-				? $this->get_organization_type_option() // Only use the specific org type If we're showing the full output
-				: "Organization";  // Otherwise use Organization
+				? $this->get_organization_type_option() // Only use the specific org type If we're showing the full output.
+				: 'Organization';  // Otherwise use Organization.
 		}
 	}
 
+	/**
+	 * @return array|mixed|void
+	 */
 	protected function get_raw() {
 		return $this->get_publisher_schema();
 	}
 
+	/**
+	 * @return string
+	 */
 	public function get_publisher_id() {
 		if ( $this->utils->is_schema_type_person() ) {
 			return $this->get_personal_brand_id();
@@ -39,6 +54,9 @@ class Smartcrawl_Schema_Fragment_Publisher extends Smartcrawl_Schema_Fragment {
 		}
 	}
 
+	/**
+	 * @return array|mixed|void
+	 */
 	protected function get_publisher_schema() {
 		if ( $this->utils->is_schema_type_person() ) {
 			return $this->get_personal_brand_schema();
@@ -47,50 +65,58 @@ class Smartcrawl_Schema_Fragment_Publisher extends Smartcrawl_Schema_Fragment {
 		}
 	}
 
+	/**
+	 * @return array
+	 */
 	private function get_personal_brand_schema() {
-		// Summary
+		// Summary.
 		$schema = array(
-			"@type" => "Organization",
-			"@id"   => $this->get_personal_brand_id(),
-			"url"   => $this->get_publisher_url(),
+			'@type' => 'Organization',
+			'@id'   => $this->get_personal_brand_id(),
+			'url'   => $this->get_publisher_url(),
 		);
 
-		// Name
-		$schema["name"] = $this->utils->get_personal_brand_name();
+		// Name.
+		$schema['name'] = $this->utils->get_personal_brand_name();
 
-		// Logo
+		// Logo.
 		$site_url = get_site_url();
-		$logo = $this->utils->get_media_item_image_schema(
+		$logo     = $this->utils->get_media_item_image_schema(
 			(int) $this->utils->get_schema_option( 'person_brand_logo' ),
 			$this->utils->url_to_id( $site_url, '#schema-personal-brand-logo' )
 		);
 		if ( $logo ) {
-			$schema["logo"] = $logo;
+			$schema['logo'] = $logo;
 		}
 
 		return $schema;
 	}
 
+	/**
+	 * @param $full
+	 *
+	 * @return mixed|void
+	 */
 	private function get_publishing_organization_schema( $full ) {
-		// Summary
+		// Summary.
 		$organization_type = $this->get_publisher_type();
 
 		$schema = array(
-			"@type" => $organization_type,
-			"@id"   => $this->get_publishing_organization_id(),
-			"url"   => $this->get_publisher_url(),
+			'@type' => $organization_type,
+			'@id'   => $this->get_publishing_organization_id(),
+			'url'   => $this->get_publisher_url(),
 		);
 
-		// Name
-		$schema["name"] = $this->utils->get_organization_name();
+		// Name.
+		$schema['name'] = $this->utils->get_organization_name();
 
-		// Logo
+		// Logo.
 		$org_logo = $this->get_organization_logo();
 		if ( $org_logo ) {
-			$schema["logo"] = $org_logo;
+			$schema['logo'] = $org_logo;
 
 			if ( $full ) {
-				$schema["image"] = $org_logo;
+				$schema['image'] = $org_logo;
 			}
 		}
 
@@ -98,10 +124,10 @@ class Smartcrawl_Schema_Fragment_Publisher extends Smartcrawl_Schema_Fragment {
 			return $this->filter_owner_data( $schema );
 		}
 
-		// Description
-		$schema["description"] = $this->utils->get_organization_description();
+		// Description.
+		$schema['description'] = $this->utils->get_organization_description();
 
-		// Contact point
+		// Contact point.
 		$contact_point = $this->utils->get_contact_point(
 			$this->utils->get_schema_option( 'organization_phone_number' ),
 			(int) $this->utils->get_schema_option( 'organization_contact_page' ),
@@ -111,19 +137,27 @@ class Smartcrawl_Schema_Fragment_Publisher extends Smartcrawl_Schema_Fragment {
 			$schema['contactPoint'] = $contact_point;
 		}
 
-		// Social URLs
+		// Social URLs.
 		$social_urls = $this->utils->get_social_urls();
 		if ( $social_urls ) {
-			$schema["sameAs"] = $social_urls;
+			$schema['sameAs'] = $social_urls;
 		}
 
 		return $this->filter_owner_data( $schema );
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @return mixed|void
+	 */
 	private function filter_owner_data( $data ) {
 		return $this->utils->apply_filters( 'owner-data', $data );
 	}
 
+	/**
+	 * @return array|mixed|void
+	 */
 	private function get_organization_logo() {
 		$url = $this->utils->get_social_option( 'organization_logo' );
 		if ( empty( $url ) ) {
@@ -136,31 +170,44 @@ class Smartcrawl_Schema_Fragment_Publisher extends Smartcrawl_Schema_Fragment {
 			60,
 			60
 		);
+
 		return $this->utils->apply_filters( 'site-logo', $schema );
 	}
 
+	/**
+	 * @return mixed|string
+	 */
 	private function get_organization_type_option() {
 		$org_type = $this->utils->get_schema_option( 'organization_type' );
 
 		// Since version 2.10 LocalBusiness is not supported as organization_type.
 		// Instead, the users are encouraged to use the LocalBusiness type in the schema builder.
-		if ( $org_type === 'LocalBusiness' ) {
+		if ( 'LocalBusiness' === $org_type ) {
 			$org_type = '';
 		}
 
 		return $org_type
 			? $org_type
-			: "Organization";
+			: 'Organization';
 	}
 
+	/**
+	 * @return string
+	 */
 	private function get_publishing_organization_id() {
-		return $this->utils->url_to_id( $this->get_publisher_url(), "#schema-publishing-organization" );
+		return $this->utils->url_to_id( $this->get_publisher_url(), '#schema-publishing-organization' );
 	}
 
+	/**
+	 * @return string
+	 */
 	private function get_personal_brand_id() {
 		return $this->utils->url_to_id( $this->get_publisher_url(), '#schema-personal-brand' );
 	}
 
+	/**
+	 * @return false|string|WP_Error
+	 */
 	public function get_publisher_url() {
 		$output_page = $this->utils->get_special_page( 'schema_output_page' );
 

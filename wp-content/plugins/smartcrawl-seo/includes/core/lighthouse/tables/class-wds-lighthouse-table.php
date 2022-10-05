@@ -1,21 +1,46 @@
 <?php
 
 class Smartcrawl_Lighthouse_Table {
+	/**
+	 * @var
+	 */
 	private $header;
+	/**
+	 * @var
+	 */
 	private $report;
+	/**
+	 * @var array
+	 */
 	private $rows = array();
+	/**
+	 * @var array
+	 */
 	private $screenshots = array();
 
+	/**
+	 * @param $header
+	 * @param $report
+	 */
 	public function __construct( $header, $report ) {
 		$this->header = $header;
 		$this->report = $report;
 	}
 
+	/**
+	 * @param $row
+	 * @param $screenshot_node_id
+	 *
+	 * @return void
+	 */
 	public function add_row( $row, $screenshot_node_id = '' ) {
-		$this->rows[] = $row;
+		$this->rows[]        = $row;
 		$this->screenshots[] = $this->get_screenshot( $screenshot_node_id );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function render() {
 		if ( empty( $this->rows ) ) {
 			return;
@@ -23,26 +48,26 @@ class Smartcrawl_Lighthouse_Table {
 		?>
 		<table class="sui-table">
 			<tr>
-				<?php foreach ( $this->header as $head_col ): ?>
+				<?php foreach ( $this->header as $head_col ) : ?>
 					<th><?php echo wp_kses_post( $head_col ); ?></th>
 				<?php endforeach; ?>
 
-				<?php if ( array_filter( $this->screenshots ) ): ?>
+				<?php if ( array_filter( $this->screenshots ) ) : ?>
 					<th class="wds-lh-screenshot-th"><?php esc_html_e( 'Screenshot', 'wds' ); ?></th>
 				<?php endif; ?>
 			</tr>
 
-			<?php foreach ( $this->rows as $index => $row_details ): ?>
+			<?php foreach ( $this->rows as $index => $row_details ) : ?>
 				<?php
-				$row = $row_details;
+				$row        = $row_details;
 				$screenshot = smartcrawl_get_array_value( $this->screenshots, $index );
 				?>
 				<tr>
-					<?php foreach ( $row as $col ): ?>
+					<?php foreach ( $row as $col ) : ?>
 						<td><?php echo esc_html( $col ); ?></td>
 					<?php endforeach; ?>
 
-					<?php if ( $screenshot ): ?>
+					<?php if ( $screenshot ) : ?>
 						<td><?php echo $screenshot; ?></td>
 					<?php endif; ?>
 				</tr>
@@ -51,6 +76,13 @@ class Smartcrawl_Lighthouse_Table {
 		<?php
 	}
 
+	/**
+	 * @param $node_id
+	 * @param $thumb_width
+	 * @param $thumb_height
+	 *
+	 * @return false|string
+	 */
 	public function get_screenshot( $node_id, $thumb_width = 160, $thumb_height = 120 ) {
 		$thumbnail = $this->get_screenshot_markup( $node_id, $thumb_width, $thumb_height );
 		if ( ! $thumbnail ) {
@@ -69,20 +101,34 @@ class Smartcrawl_Lighthouse_Table {
 		return ob_get_clean();
 	}
 
+	/**
+	 * @param $node_id
+	 * @param $scaled_frame_width
+	 * @param $scaled_frame_height
+	 *
+	 * @return false|string
+	 */
 	protected function get_screenshot_markup( $node_id, $scaled_frame_width, $scaled_frame_height ) {
 		if ( empty( $node_id ) ) {
 			return '';
 		}
 
-		$screenshot = $this->report->get_screenshot();
+		$screenshot        = $this->report->get_screenshot();
 		$screenshot_height = (int) $this->report->get_screenshot_height();
-		$screenshot_width = (int) $this->report->get_screenshot_width();
+		$screenshot_width  = (int) $this->report->get_screenshot_width();
 		if ( ! $screenshot || ! $screenshot_height || ! $screenshot_width ) {
 			return '';
 		}
 
-		$node = $this->report->get_screenshot_node( $node_id );
-		$node_details = array( 'top', 'right', 'bottom', 'left', 'width', 'height' );
+		$node         = $this->report->get_screenshot_node( $node_id );
+		$node_details = array(
+			'top',
+			'right',
+			'bottom',
+			'left',
+			'width',
+			'height',
+		);
 		foreach ( $node_details as $node_detail ) {
 			if ( ! isset( $node[ $node_detail ] ) ) {
 				return '';
@@ -100,26 +146,26 @@ class Smartcrawl_Lighthouse_Table {
 		}
 
 		$frame_height = ( $scaled_frame_height / $scaled_screenshot_height ) * $screenshot_height;
-		$top_offset = $this->calculate_top_offset( $node, $frame_height, $screenshot_height );
+		$top_offset   = $this->calculate_top_offset( $node, $frame_height, $screenshot_height );
 
 		ob_start();
 		?>
 		<div class="wds-lighthouse-screenshot"
-		     style="
-				     --element-screenshot-url: url(<?php echo esc_attr( $screenshot ); ?>);
-				     --element-screenshot-width: <?php echo esc_attr( $screenshot_width ); ?>px;
-				     --element-screenshot-height:<?php echo esc_attr( $screenshot_height ); ?>px;
-				     --element-screenshot-scaled-height: <?php echo esc_attr( $scaled_frame_height ); ?>px;
-				     --element-screenshot-scaled-width: <?php echo esc_attr( $scaled_frame_width ); ?>px;
-				     --element-screenshot-scale: <?php echo esc_attr( $scale ); ?>;
-				     --element-screenshot-top-offset: -<?php echo esc_attr( $top_offset ); ?>px;
-				     --element-screenshot-highlight-width: <?php echo esc_attr( $node['width'] ); ?>px;
-				     --element-screenshot-highlight-height: <?php echo esc_attr( $node['height'] ); ?>px;
-				     --element-screenshot-highlight-top: <?php echo esc_attr( $node['top'] ); ?>px;
-				     --element-screenshot-highlight-left: <?php echo esc_attr( $node['left'] ); ?>px;
-				     --element-screenshot-highlight-left-width: <?php echo esc_attr( $node['left'] + $node['width'] ); ?>px;
-				     --element-screenshot-highlight-top-height: <?php echo esc_attr( $node['top'] + $node['height'] ); ?>px;
-				     ">
+			style="
+				--element-screenshot-url: url(<?php echo esc_attr( $screenshot ); ?>);
+				--element-screenshot-width: <?php echo esc_attr( $screenshot_width ); ?>px;
+				--element-screenshot-height:<?php echo esc_attr( $screenshot_height ); ?>px;
+				--element-screenshot-scaled-height: <?php echo esc_attr( $scaled_frame_height ); ?>px;
+				--element-screenshot-scaled-width: <?php echo esc_attr( $scaled_frame_width ); ?>px;
+				--element-screenshot-scale: <?php echo esc_attr( $scale ); ?>;
+				--element-screenshot-top-offset: -<?php echo esc_attr( $top_offset ); ?>px;
+				--element-screenshot-highlight-width: <?php echo esc_attr( $node['width'] ); ?>px;
+				--element-screenshot-highlight-height: <?php echo esc_attr( $node['height'] ); ?>px;
+				--element-screenshot-highlight-top: <?php echo esc_attr( $node['top'] ); ?>px;
+				--element-screenshot-highlight-left: <?php echo esc_attr( $node['left'] ); ?>px;
+				--element-screenshot-highlight-left-width: <?php echo esc_attr( $node['left'] + $node['width'] ); ?>px;
+				--element-screenshot-highlight-top-height: <?php echo esc_attr( $node['top'] + $node['height'] ); ?>px;
+				">
 			<div class="wds-lighthouse-screenshot-inner">
 				<div class="wds-lighthouse-screenshot-frame">
 					<div class="wds-lighthouse-screenshot-image"></div>
@@ -132,18 +178,25 @@ class Smartcrawl_Lighthouse_Table {
 		return ob_get_clean();
 	}
 
+	/**
+	 * @param $node
+	 * @param $frame_height
+	 * @param $screenshot_height
+	 *
+	 * @return float|int|mixed
+	 */
 	private function calculate_top_offset( $node, $frame_height, $screenshot_height ) {
 		if ( $node['height'] > $frame_height ) {
-			// The highlighted element is too large to fit in the frame, show as much of it as possible
+			// The highlighted element is too large to fit in the frame, show as much of it as possible.
 			return $node['top'];
 		}
 
 		if ( $node['bottom'] < $frame_height ) {
-			// The highlighted element is within the frame already, no offset necessary
+			// The highlighted element is within the frame already, no offset necessary.
 			return 0;
 		}
 
-		$ideal_space = ( $frame_height - $node['height'] ) / 2; // Ideal space will center the element vertically
+		$ideal_space           = ( $frame_height - $node['height'] ) / 2; // Ideal space will center the element vertically.
 		$space_available_under = $screenshot_height - $node['bottom'];
 		if ( $space_available_under < $ideal_space ) {
 			return $screenshot_height - $frame_height;
@@ -154,7 +207,7 @@ class Smartcrawl_Lighthouse_Table {
 			return 0;
 		}
 
-		return $node['top'] - $ideal_space; // Center the element
+		return $node['top'] - $ideal_space; // Center the element.
 	}
 
 	/**
@@ -165,7 +218,7 @@ class Smartcrawl_Lighthouse_Table {
 	}
 
 	/**
-	 * @return mixed
+	 * @return array
 	 */
 	public function get_rows() {
 		return $this->rows;

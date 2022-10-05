@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // dutch
-
-static $data = [
+static $data = array(
     'de',
     'en',
     'van',
@@ -104,7 +103,7 @@ static $data = [
     'iemand',
     'geweest',
     'andere',
-];
+);
 
 $result =& $data;
 unset($data);

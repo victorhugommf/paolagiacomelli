@@ -1,58 +1,72 @@
 <?php
 
 class Smartcrawl_Post extends Smartcrawl_Entity {
+
 	/**
 	 * @var int
 	 */
 	private $post_id;
+
 	/**
 	 * @var WP_Post
 	 */
 	private $wp_post;
+
 	/**
 	 * @var string
 	 */
 	private $trimmed_excerpt;
+
 	/**
 	 * @var string
 	 */
 	private $permalink;
+
 	/**
 	 * @var int
 	 */
 	private $thumbnail_id;
+
 	/**
 	 * @var array
 	 */
 	private $opengraph_post_meta;
+
 	/**
 	 * @var array
 	 */
 	private $twitter_post_meta;
+
 	/**
 	 * @var string
 	 */
 	private $post_date_formatted;
+
 	/**
 	 * @var string
 	 */
 	private $category_list_string;
+
 	/**
 	 * @var string
 	 */
 	private $post_type;
+
 	/**
 	 * @var Smartcrawl_Model_User
 	 */
 	private $post_author;
+
 	/**
 	 * @var int
 	 */
 	private $page_number;
+
 	/**
 	 * @var int
 	 */
 	private $comments_page;
+
 	/**
 	 * @var array
 	 */
@@ -65,7 +79,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		} else {
 			$this->post_id = $post;
 		}
-		$this->page_number = $page_number;
+		$this->page_number   = $page_number;
 		$this->comments_page = $comments_page;
 	}
 
@@ -80,6 +94,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( is_null( $this->wp_post ) ) {
 			$this->wp_post = $this->load_wp_post();
 		}
+
 		return $this->wp_post;
 	}
 
@@ -90,6 +105,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		}
 
 		$wp_post = get_post( $post_id );
+
 		return $wp_post
 			? $wp_post
 			: false;
@@ -97,6 +113,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 
 	public function get_title() {
 		$wp_post = $this->get_wp_post();
+
 		return $wp_post
 			? $wp_post->post_title
 			: '';
@@ -104,6 +121,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 
 	public function get_excerpt() {
 		$wp_post = $this->get_wp_post();
+
 		return $wp_post
 			? $wp_post->post_excerpt
 			: '';
@@ -111,6 +129,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 
 	public function get_content() {
 		$wp_post = $this->get_wp_post();
+
 		return $wp_post
 			? $wp_post->post_content
 			: '';
@@ -118,17 +137,18 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 
 	public function get_thumbnail_id() {
 		if ( is_null( $this->thumbnail_id ) ) {
-			$wp_post = $this->get_wp_post();
+			$wp_post            = $this->get_wp_post();
 			$this->thumbnail_id = $wp_post
 				? get_post_thumbnail_id( $wp_post )
 				: 0;
 		}
+
 		return $this->thumbnail_id;
 	}
 
 	public function get_post_author() {
 		if ( is_null( $this->post_author ) ) {
-			$wp_post = $this->get_wp_post();
+			$wp_post           = $this->get_wp_post();
 			$this->post_author = $wp_post
 				? Smartcrawl_Model_User::get( $wp_post->post_author )
 				: false;
@@ -139,6 +159,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 
 	public function get_post_author_id() {
 		$author = $this->get_post_author();
+
 		return $author
 			? $author->get_id()
 			: 0;
@@ -146,6 +167,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 
 	public function get_post_author_display_name() {
 		$author = $this->get_post_author();
+
 		return $author
 			? $author->get_display_name()
 			: '';
@@ -153,6 +175,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 
 	public function get_post_author_description() {
 		$author = $this->get_post_author();
+
 		return $author
 			? $author->get_description()
 			: '';
@@ -160,6 +183,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 
 	public function get_post_modified() {
 		$wp_post = $this->get_wp_post();
+
 		return $wp_post
 			? $wp_post->post_modified
 			: '';
@@ -169,11 +193,13 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( is_null( $this->permalink ) ) {
 			$this->permalink = $this->load_permalink();
 		}
+
 		return $this->permalink;
 	}
 
 	private function load_permalink() {
 		$wp_post = $this->get_wp_post();
+
 		return $wp_post
 			? get_permalink( $wp_post->ID )
 			: '';
@@ -186,11 +212,13 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 				$this->get_content()
 			);
 		}
+
 		return $this->trimmed_excerpt;
 	}
 
 	public function get_post_date() {
 		$wp_post = $this->get_wp_post();
+
 		return $wp_post
 			? $wp_post->post_date
 			: '';
@@ -200,6 +228,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( is_null( $this->post_date_formatted ) ) {
 			$this->post_date_formatted = $this->load_post_date_formatted();
 		}
+
 		return $this->post_date_formatted;
 	}
 
@@ -216,6 +245,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( is_null( $this->category_list_string ) ) {
 			$this->category_list_string = $this->load_category_list_string();
 		}
+
 		return $this->category_list_string;
 	}
 
@@ -234,7 +264,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 			array( $this, 'load_meta_title_from_post_meta' ),
 			array( $this, 'load_meta_title_from_options' ),
 			function () {
-				return "%%title%% %%sep%% %%sitename%%";
+				return '%%title%% %%sep%% %%sitename%%';
 			}
 		);
 	}
@@ -262,6 +292,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( ! $wp_post ) {
 			return '';
 		}
+
 		return smartcrawl_get_value( 'metadesc', $wp_post->ID );
 	}
 
@@ -271,7 +302,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 			return '';
 		}
 
-		$post_id = $wp_post->ID;
+		$post_id  = $wp_post->ID;
 		$robots[] = $this->is_post_noindex( $post_id ) ? 'noindex' : 'index';
 		$robots[] = $this->is_post_nofollow( $post_id ) ? 'nofollow' : 'follow';
 
@@ -284,17 +315,17 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 	}
 
 	private function is_post_noindex( $post_id ) {
-		// Check if a comment page
+		// Check if a comment page.
 		if ( $this->comments_page ) {
 			return true;
 		}
 
-		// Check at post type level
+		// Check at post type level.
 		$post_type_noindexed = $this->get_noindex_setting( $this->get_post_type() );
 
-		// Check at post level
-		$index = (boolean) smartcrawl_get_value( 'meta-robots-index', $post_id );
-		$noindex = (boolean) smartcrawl_get_value( 'meta-robots-noindex', $post_id );
+		// Check at post level.
+		$index   = (bool) smartcrawl_get_value( 'meta-robots-index', $post_id );
+		$noindex = (bool) smartcrawl_get_value( 'meta-robots-noindex', $post_id );
 
 		if ( $post_type_noindexed ) {
 			return ! $index;
@@ -304,12 +335,12 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 	}
 
 	private function is_post_nofollow( $post_id ) {
-		// Check at post type level
+		// Check at post type level.
 		$post_type_nofollowed = $this->get_nofollow_setting( $this->get_post_type() );
 
-		// Check at post level
-		$follow = (boolean) smartcrawl_get_value( 'meta-robots-follow', $post_id );
-		$nofollow = (boolean) smartcrawl_get_value( 'meta-robots-nofollow', $post_id );
+		// Check at post level.
+		$follow   = (bool) smartcrawl_get_value( 'meta-robots-follow', $post_id );
+		$nofollow = (bool) smartcrawl_get_value( 'meta-robots-nofollow', $post_id );
 
 		if ( $post_type_nofollowed ) {
 			return ! $follow;
@@ -337,10 +368,10 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 	}
 
 	private function get_default_canonical() {
-		// Start with the permalink
+		// Start with the permalink.
 		$canonical_url = $this->get_permalink();
 
-		// Append the page number
+		// Append the page number.
 		if ( $this->page_number > 1 ) {
 			if ( ! get_option( 'permalink_structure' ) ) {
 				$canonical_url = add_query_arg( 'page', $this->page_number, $canonical_url );
@@ -349,8 +380,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 			}
 		}
 
-		// As opposed to wp_get_canonical_url we are not going to include the comment part because we noindex comment pages
-
+		// As opposed to wp_get_canonical_url we are not going to include the comment part because we noindex comment pages.
 		return $canonical_url;
 	}
 
@@ -361,6 +391,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		}
 
 		$schema = new Smartcrawl_Schema_Fragment_Singular( $this );
+
 		return $schema->get_schema();
 	}
 
@@ -375,7 +406,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 			return false;
 		}
 
-		$post_meta = $this->get_opengraph_post_meta();
+		$post_meta             = $this->get_opengraph_post_meta();
 		$disabled_in_post_meta = smartcrawl_get_array_value( $post_meta, 'disabled' );
 
 		return ! $disabled_in_post_meta;
@@ -385,6 +416,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( is_null( $this->opengraph_post_meta ) ) {
 			$this->opengraph_post_meta = $this->load_opengraph_post_meta();
 		}
+
 		return $this->opengraph_post_meta;
 	}
 
@@ -437,14 +469,14 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 			return array();
 		}
 
-		// Check meta
+		// Check meta.
 		$images = smartcrawl_get_array_value( call_user_func( $load_post_meta ), 'images' );
 		if ( ! $images ) {
-			// Meta not available, check options
+			// Meta not available, check options.
 			$images = call_user_func( $load_from_options, $this->get_post_type() );
 		}
 
-		// Include post thumbnail, if available
+		// Include post thumbnail, if available.
 		if ( $this->get_thumbnail_id() ) {
 			$images[] = $this->get_thumbnail_id();
 		}
@@ -453,7 +485,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 			return $this->image_ids_to_urls( $images );
 		}
 
-		// Still nothing? Try the first image from the content
+		// Still nothing? Try the first image from the content.
 		if ( call_user_func( $use_content_image, $this->get_post_type() ) ) {
 			$from_content = $this->get_first_image_from_content();
 			if ( $from_content ) {
@@ -496,7 +528,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 			return false;
 		}
 
-		$post_meta = $this->get_twitter_post_meta();
+		$post_meta             = $this->get_twitter_post_meta();
 		$disabled_in_post_meta = smartcrawl_get_array_value( $post_meta, 'disabled' );
 
 		return ! $disabled_in_post_meta;
@@ -506,6 +538,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( is_null( $this->twitter_post_meta ) ) {
 			$this->twitter_post_meta = $this->load_twitter_post_meta();
 		}
+
 		return $this->twitter_post_meta;
 	}
 
@@ -568,6 +601,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		}
 
 		$terms = get_the_terms( $wp_post->ID, $taxonomy_name );
+
 		return $terms && ! is_wp_error( $terms )
 			? $terms
 			: array();
@@ -609,6 +643,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( is_null( $this->post_type ) ) {
 			$this->post_type = $this->load_post_type();
 		}
+
 		return $this->post_type;
 	}
 
@@ -619,7 +654,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		}
 
 		if (
-			$wp_post->post_type === 'revision' &&
+			'revision' === $wp_post->post_type &&
 			$wp_post->post_parent
 		) {
 			return get_post_type( $wp_post->post_parent );
@@ -638,9 +673,9 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( $this->is_front_page() ) {
 			$tags['og:type'] = 'website';
 		} else {
-			$tags['og:type'] = 'article';
+			$tags['og:type']                = 'article';
 			$tags['article:published_time'] = mysql2date( 'Y-m-d\TH:i:s', $this->get_post_date() );
-			$tags['article:author'] = $this->get_post_author_display_name();
+			$tags['article:author']         = $this->get_post_author_display_name();
 		}
 
 		return $tags;
@@ -653,6 +688,7 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		if ( is_null( $this->focus_keywords ) ) {
 			$this->focus_keywords = $this->load_focus_keywords();
 		}
+
 		return $this->focus_keywords;
 	}
 
@@ -663,14 +699,13 @@ class Smartcrawl_Post extends Smartcrawl_Entity {
 		}
 
 		$string = trim( strval( $string ) );
-		$array = $string ? explode( ',', $string ) : array();
-		$array = array_map( 'trim', $array );
+		$array  = $string ? explode( ',', $string ) : array();
+		$array  = array_map( 'trim', $array );
 
 		return array_values( array_filter( array_unique( $array ) ) );
 	}
 
 	public function is_front_page() {
-		return 'page' === get_option( 'show_on_front' )
-		       && $this->get_post_id() === (int) get_option( 'page_on_front' );
+		return 'page' === get_option( 'show_on_front' ) && $this->get_post_id() === (int) get_option( 'page_on_front' );
 	}
 }

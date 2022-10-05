@@ -54,6 +54,8 @@ class String_Utils {
 	}
 
 	static strip_html(html) {
+		html = html.replace(/(<style[\w\W]+style>)/g, "");
+		html = html.replace(/(<script[\w\W]+script>)/g, "");
 		let div = document.createElement("DIV");
 		div.innerHTML = html;
 		return div.textContent || div.innerText || "";

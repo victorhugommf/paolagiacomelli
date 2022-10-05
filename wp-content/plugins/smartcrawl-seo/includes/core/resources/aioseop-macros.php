@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of mappings
 
 return array(
 	'%blog_title%'            => '%%sitename%%',

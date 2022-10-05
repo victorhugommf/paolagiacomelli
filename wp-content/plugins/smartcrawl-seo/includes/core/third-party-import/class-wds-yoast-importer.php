@@ -1,7 +1,9 @@
 <?php
 
 class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
+
 	const IMPORT_IN_PROGRESS_FLAG = 'wds-yoast-import-in-progress';
+
 	const NETWORK_IMPORT_SITES_PROCESSED_COUNT = 'wds-yoast-network-sites-processed';
 
 	private $custom_handlers = array(
@@ -14,9 +16,11 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 	);
 
 	public function data_exists() {
-		// Go ahead with the import if ...
-		return $this->version_supported()               // ... current yoast version is explicitly marked as supported
-		       || $this->mapped_options_available();    // ... or we have all the options we need in the right places
+		// Go ahead with the import if.
+		return (
+			$this->version_supported() // current yoast version is explicitly marked as supported.
+			|| $this->mapped_options_available() // or we have all the options we need in the right places.
+		);
 	}
 
 	private function version_supported() {
@@ -27,22 +31,19 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 			return false;
 		}
 
-		return apply_filters(
-			'wds-import-yoast-data-exists',
-			strpos( $version, '16.' ) === 0
-		);
+		return apply_filters( 'wds-import-yoast-data-exists', strpos( $version, '16.' ) === 0 ); // phpcs:ignore
 	}
 
 	private function mapped_options_available() {
-		$mappings = $this->expand_mappings( $this->load_option_mappings() );
+		$mappings       = $this->expand_mappings( $this->load_option_mappings() );
 		$source_options = $this->get_yoast_options();
-		$difference = array_diff_key( $mappings, $source_options );
+		$difference     = array_diff_key( $mappings, $source_options );
 
 		return empty( $difference );
 	}
 
 	public function import_options() {
-		$mappings = $this->expand_mappings( $this->load_option_mappings() );
+		$mappings       = $this->expand_mappings( $this->load_option_mappings() );
 		$source_options = $this->get_yoast_options();
 		$target_options = array();
 		foreach ( $source_options as $source_key => $source_value ) {
@@ -53,7 +54,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 				continue;
 			}
 
-			$processed_target_key = $this->pre_process_key( $target_key );
+			$processed_target_key   = $this->pre_process_key( $target_key );
 			$processed_target_value = $this->pre_process_value( $target_key, $source_value );
 
 			if ( ! $processed_target_key ) {
@@ -79,29 +80,33 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 
 	protected function expand_mappings( $mappings ) {
 		$mappings = parent::expand_mappings( $mappings );
-		$mappings = $this->remove_unnecessary_ptarchive_mappings( $mappings );
 
-		return $mappings;
+		return $this->remove_unnecessary_ptarchive_mappings( $mappings );
 	}
 
 	/**
-	 * ptarchive settings are for custom post types with archives only so let's remove mappings for:
+	 * The ptarchive settings are for custom post types with archives only so let's remove mappings for:
 	 * - builtin post types
 	 * - post types with no archives
 	 *
-	 * @param $mappings
+	 * @param array $mappings Mappings.
 	 *
 	 * @return array
 	 */
 	private function remove_unnecessary_ptarchive_mappings( $mappings ) {
 		foreach (
 			array_merge(
-				get_post_types( array( 'public' => true, '_builtin' => true ) ),
+				get_post_types(
+					array(
+						'public'   => true,
+						'_builtin' => true,
+					)
+				),
 				get_post_types( array( 'has_archive' => false ) )
 			) as $post_type
 		) {
 			$ptarchive_title_key = "wpseo_titles/title-ptarchive-$post_type";
-			$ptarchive_desc_key = "wpseo_titles/metadesc-ptarchive-$post_type";
+			$ptarchive_desc_key  = "wpseo_titles/metadesc-ptarchive-$post_type";
 
 			if ( isset( $mappings[ $ptarchive_title_key ] ) ) {
 				unset( $mappings[ $ptarchive_title_key ] );
@@ -116,7 +121,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 
 	private function get_yoast_options() {
 		$all_options = array();
-		$keys = array( 'wpseo', 'wpseo_titles', 'wpseo_social' );
+		$keys        = array( 'wpseo', 'wpseo_titles', 'wpseo_social' );
 
 		foreach ( $keys as $key ) {
 			$options = get_option( $key );
@@ -131,7 +136,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 	}
 
 	/**
-	 * @param $all_options
+	 * @param array $all_options All options.
 	 *
 	 * @return array
 	 */
@@ -158,27 +163,38 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 	}
 
 	private function activate_social_options_for_types( $target_options ) {
-		$og_enabled = smartcrawl_get_array_value( $target_options, array( 'wds_social_options', 'og-enable' ) );
-		$twitter_enabled = smartcrawl_get_array_value( $target_options, array(
-			'wds_social_options',
-			'twitter-card-enable',
-		) );
+		$og_enabled      = smartcrawl_get_array_value( $target_options, array( 'wds_social_options', 'og-enable' ) );
+		$twitter_enabled = smartcrawl_get_array_value(
+			$target_options,
+			array(
+				'wds_social_options',
+				'twitter-card-enable',
+			)
+		);
 
 		if ( $og_enabled ) {
 			foreach ( $this->get_all_supported_types() as $type ) {
-				smartcrawl_put_array_value( true, $target_options, array(
-					'wds_onpage_options',
-					sprintf( 'og-active-%s', $type ),
-				) );
+				smartcrawl_put_array_value(
+					true,
+					$target_options,
+					array(
+						'wds_onpage_options',
+						sprintf( 'og-active-%s', $type ),
+					)
+				);
 			}
 		}
 
 		if ( $twitter_enabled ) {
 			foreach ( $this->get_all_supported_types() as $type ) {
-				smartcrawl_put_array_value( true, $target_options, array(
-					'wds_onpage_options',
-					sprintf( 'twitter-active-%s', $type ),
-				) );
+				smartcrawl_put_array_value(
+					true,
+					$target_options,
+					array(
+						'wds_onpage_options',
+						sprintf( 'twitter-active-%s', $type ),
+					)
+				);
 			}
 		}
 
@@ -227,7 +243,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 	}
 
 	public function process_separator_value( $target_key, $source_value ) {
-		$mapping = array(
+		$mapping      = array(
 			'sc-dash'   => 'dash',
 			'sc-ndash'  => 'dash-l',
 			'sc-mdash'  => 'dash-l',
@@ -263,7 +279,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 			return $target_options;
 		}
 
-		$noindex_key = array( 'wds_onpage_options', sprintf( 'meta_robots-noindex-%s', $current_taxonomy ) );
+		$noindex_key           = array( 'wds_onpage_options', sprintf( 'meta_robots-noindex-%s', $current_taxonomy ) );
 		$sitemap_exclusion_key = array(
 			'wds_sitemap_options',
 			sprintf( 'taxonomies-%s-not_in_sitemap', $current_taxonomy ),
@@ -287,7 +303,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 			return $target_options;
 		}
 
-		$noindex_key = array( 'wds_onpage_options', sprintf( 'meta_robots-noindex-%s', $current_post_type ) );
+		$noindex_key           = array( 'wds_onpage_options', sprintf( 'meta_robots-noindex-%s', $current_post_type ) );
 		$sitemap_exclusion_key = array(
 			'wds_sitemap_options',
 			sprintf( 'post_types-%s-not_in_sitemap', $current_post_type ),
@@ -304,20 +320,20 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 			return $target_options;
 		}
 
-		$wds_redirects = array();
+		$wds_redirects      = array();
 		$wds_redirect_types = array();
 		foreach ( $redirects as $redirect ) {
 			$format = smartcrawl_get_array_value( $redirect, 'format' );
 			$origin = smartcrawl_get_array_value( $redirect, 'origin' );
-			$url = smartcrawl_get_array_value( $redirect, 'url' );
-			$type = smartcrawl_get_array_value( $redirect, 'type' );
+			$url    = smartcrawl_get_array_value( $redirect, 'url' );
+			$type   = smartcrawl_get_array_value( $redirect, 'type' );
 
-			// We are not supporting anything other than plain redirects at the moment
+			// We are not supporting anything other than plain redirects at the moment.
 			if ( 'plain' !== $format || ! $origin || ! $url || ! $type ) {
 				continue;
 			}
 
-			$wds_redirects[ home_url( $origin ) ] = home_url( $url );
+			$wds_redirects[ home_url( $origin ) ]      = home_url( $url );
 			$wds_redirect_types[ home_url( $origin ) ] = $type;
 		}
 		smartcrawl_put_array_value( $wds_redirects, $target_options, 'wds-redirections' );
@@ -329,7 +345,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 	public function handle_robots_noindex_value( $source_key, $source_value, $post_meta ) {
 		if ( intval( $source_value ) === 1 ) {
 			smartcrawl_put_array_value( true, $post_meta, '_wds_meta-robots-noindex' );
-		} else if ( intval( $source_value ) === 2 ) {
+		} elseif ( intval( $source_value ) === 2 ) {
 			smartcrawl_put_array_value( true, $post_meta, '_wds_meta-robots-index' );
 		}
 
@@ -341,9 +357,9 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 	}
 
 	public function import_taxonomy_meta() {
-		$mappings = $this->load_taxonomy_meta_mappings();
+		$mappings             = $this->load_taxonomy_meta_mappings();
 		$taxonomy_meta_option = get_option( 'wpseo_taxonomy_meta', array() );
-		$wds_meta = array();
+		$wds_meta             = array();
 
 		foreach ( $taxonomy_meta_option as $taxonomy => $taxonomy_meta ) {
 			foreach ( $taxonomy_meta as $term_id => $meta_values ) {
@@ -356,7 +372,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 						continue;
 					}
 
-					$processed_target_key = $this->pre_process_key( $target_key );
+					$processed_target_key   = $this->pre_process_key( $target_key );
 					$processed_target_value = $this->pre_process_value( $target_key, $meta_value );
 
 					if ( ! $processed_target_key || ! $processed_target_value ) {
@@ -381,9 +397,9 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 	}
 
 	public function import_post_meta() {
-		$mappings = $this->load_post_meta_mappings();
-		$batch_size = apply_filters( 'wds_post_meta_import_batch_size', 300 );
-		$all_posts = $this->get_posts_with_yoast_metas();
+		$mappings    = $this->load_post_meta_mappings();
+		$batch_size  = apply_filters( 'wds_post_meta_import_batch_size', 300 );
+		$all_posts   = $this->get_posts_with_yoast_metas();
 		$batch_posts = array_slice( $all_posts, 0, $batch_size );
 
 		foreach ( $batch_posts as $post_id ) {
@@ -397,7 +413,7 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 					continue;
 				}
 
-				$processed_target_key = $this->pre_process_key( $target_key );
+				$processed_target_key   = $this->pre_process_key( $target_key );
 				$processed_target_value = $this->pre_process_value( $target_key, $source_value, $post_id );
 
 				if ( ! $processed_target_key ) {
@@ -410,10 +426,12 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 			$this->add_post_meta( $post_id, $wds_meta );
 		}
 
-		$this->update_status( array(
-			'remaining_posts' => count( $this->get_posts_with_yoast_metas() ),
-			'completed_posts' => count( $this->get_posts_with_target_metas() ),
-		) );
+		$this->update_status(
+			array(
+				'remaining_posts' => count( $this->get_posts_with_yoast_metas() ),
+				'completed_posts' => count( $this->get_posts_with_target_metas() ),
+			)
+		);
 
 		return count( $all_posts ) === count( $batch_posts );
 	}
@@ -440,18 +458,18 @@ class Smartcrawl_Yoast_Importer extends Smartcrawl_Importer {
 	}
 
 	/**
-	 * @param $source_value
-	 * @param $target_options
-	 * @param $setting_key
-	 *
 	 * @return mixed
 	 */
 	private function add_pt_archive_setting( $source_value, $target_options, $setting_key ) {
 		foreach ( smartcrawl_get_archive_post_types() as $archive_post_type ) {
-			smartcrawl_put_array_value( $source_value, $target_options, array(
-				'wds_onpage_options',
-				sprintf( $setting_key, $archive_post_type ),
-			) );
+			smartcrawl_put_array_value(
+				$source_value,
+				$target_options,
+				array(
+					'wds_onpage_options',
+					sprintf( $setting_key, $archive_post_type ),
+				)
+			);
 		}
 
 		return $target_options;

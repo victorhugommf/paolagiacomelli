@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // hindi
-
-static $data = [
+static $data = array(
     'अंदर',
     'अत',
     'अदि',
@@ -228,7 +227,7 @@ static $data = [
     'होते',
     'होना',
     'होने',
-];
+);
 
 $result =& $data;
 unset($data);

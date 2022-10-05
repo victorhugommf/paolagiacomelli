@@ -2,30 +2,39 @@
 
 abstract class Smartcrawl_Service {
 
-
 	const INTERMEDIATE_CACHE_EXPIRY = 300;
+
 	const ERR_CACHE_EXPIRY = 120;
+
 	const SERVICE_UPTIME = 'uptime';
+
 	const SERVICE_SEO = 'seo';
+
 	const SERVICE_SITE = 'site';
+
 	const SERVICE_LIGHTHOUSE = 'lighthouse';
-	private $_errors = array();
+
+	private $errors = array();
 
 	/**
 	 * Service factory method
 	 * TODO: remove this method and implement get() static methods in individual classes
 	 *
-	 * @param string $type Requested service type
+	 * @param string $type Requested service type.
 	 *
 	 * @return Smartcrawl_Uptime_Service|Smartcrawl_Site_Service|Smartcrawl_Seo_Service|Smartcrawl_Lighthouse_Service Smartcrawl_Service Service instance
 	 */
 	public static function get( $type ) {
-		$type = ! empty( $type ) && in_array( $type, array(
-			self::SERVICE_SEO,
-			self::SERVICE_UPTIME,
-			self::SERVICE_SITE,
-			self::SERVICE_LIGHTHOUSE,
-		), true )
+		$type = ! empty( $type ) && in_array(
+			$type,
+			array(
+				self::SERVICE_SEO,
+				self::SERVICE_UPTIME,
+				self::SERVICE_SITE,
+				self::SERVICE_LIGHTHOUSE,
+			),
+			true
+		)
 			? $type
 			: self::SERVICE_SEO;
 		if ( self::SERVICE_UPTIME === $type ) {
@@ -44,15 +53,15 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Check if status code is within radix
 	 *
-	 * @param int $code Code to check
-	 * @param int $base Base to check
-	 * @param int $radix Optional increment
+	 * @param int $code  Code to check.
+	 * @param int $base  Base to check.
+	 * @param int $radix Optional increment.
 	 *
 	 * @return bool
 	 */
 	public static function is_code_within( $code, $base, $radix = 10 ) {
-		$code = (int) $code;
-		$base = (int) $base;
+		$code  = (int) $code;
+		$base  = (int) $base;
 		$radix = (int) $radix;
 		if ( ! $code || ! $base || ! $radix ) {
 			return false;
@@ -80,10 +89,15 @@ abstract class Smartcrawl_Service {
 		$can_access = false;
 		if ( ! $this->has_dashboard() ) {
 			$can_access = $this->can_install();
-		} elseif ( class_exists( 'WPMUDEV_Dashboard' ) && ! empty( WPMUDEV_Dashboard::$site ) && is_callable( array(
-				WPMUDEV_Dashboard::$site,
-				'allowed_user',
-			) )
+		} elseif (
+			class_exists( 'WPMUDEV_Dashboard' ) &&
+			! empty( WPMUDEV_Dashboard::$site ) &&
+			is_callable(
+				array(
+					WPMUDEV_Dashboard::$site,
+					'allowed_user',
+				)
+			)
 		) {
 			$can_access = WPMUDEV_Dashboard::$site->allowed_user();
 		}
@@ -109,7 +123,7 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Filter/action name getter
 	 *
-	 * @param string $filter Filter name to convert
+	 * @param string $filter Filter name to convert.
 	 *
 	 * @return string Full filter name
 	 */
@@ -125,16 +139,18 @@ abstract class Smartcrawl_Service {
 	}
 
 	/**
-	 * Check if we have WPMU DEV Dashboard plugin installed and activated
+	 * Check if we have WPMU DEV Dashboard plugin installed and activated.
+	 *
+	 * @since 3.2.1 Removed is_admin() check.
 	 *
 	 * @return bool
 	 */
 	public function is_dashboard_active() {
-		$installed = is_admin() ? class_exists( 'WPMUDEV_Dashboard' ) : true;
+		$active = class_exists( 'WPMUDEV_Dashboard' );
 
 		return (bool) apply_filters(
 			$this->get_filter( 'is_dahsboard_active' ),
-			$installed
+			$active
 		);
 	}
 
@@ -192,44 +208,33 @@ abstract class Smartcrawl_Service {
 	 * @return bool
 	 */
 	public function is_member() {
-		if (
-			$this->has_dashboard()
-			&& ( $this->membership_includes_smartcrawl() || $this->is_full_member() )
-		) {
+		if ( $this->has_dashboard() && $this->membership_includes_smartcrawl() ) {
 			return true;
 		}
 
 		return false;
 	}
 
-	private function is_full_member() {
-		if ( ! function_exists( 'is_wpmudev_member' ) ) {
-			return false;
-		}
-
-		return is_wpmudev_member();
-	}
-
+	/**
+	 * Check if current membership has access to SC.
+	 *
+	 * @since 3.2.1
+	 *
+	 * @return bool
+	 */
 	private function membership_includes_smartcrawl() {
-		if (
-			! method_exists( 'WPMUDEV_Dashboard_Api', 'get_membership_projects' )
-			|| ! method_exists( 'WPMUDEV_Dashboard_Api', 'get_membership_type' )
-		) {
-			return false;
+		// Check if SmartCrawl is available for current membership.
+		if ( class_exists( 'WPMUDEV_Dashboard' ) && isset( WPMUDEV_Dashboard::$upgrader ) && method_exists( WPMUDEV_Dashboard::$upgrader, 'user_can_install' ) ) {
+			return WPMUDEV_Dashboard::$upgrader->user_can_install( 167, true );
 		}
 
-		$smartcrawl_project_id = 167;
-		$type = WPMUDEV_Dashboard::$api->get_membership_type();
-		$projects = WPMUDEV_Dashboard::$api->get_membership_projects();
-
-		return ( 'unit' === $type && in_array( $smartcrawl_project_id, $projects, true ) )
-		       || ( 'single' === $type && $smartcrawl_project_id === $projects );
+		return false;
 	}
 
 	/**
 	 * Clears the value from cache
 	 *
-	 * @param string $key Key for the value to clear
+	 * @param string $key Key for the value to clear.
 	 *
 	 * @return bool
 	 */
@@ -245,7 +250,7 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Get the key used for caching
 	 *
-	 * @param string $key Key suffix
+	 * @param string $key Key suffix.
 	 *
 	 * @return mixed Full cache key as string, or (bool)false on failure
 	 */
@@ -260,18 +265,19 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Actually perform a request on behalf of the implementing service
 	 *
-	 * @param string $verb Action string
+	 * @param string $verb Action string.
 	 *
 	 * @return mixed Service response hash on success, (bool)false on failure
 	 */
 	public function request( $verb ) {
-		$response = $this->_remote_call( $verb );
+		$response = $this->remote_call( $verb );
 
 		return apply_filters(
-			$this->get_filter( "request-{$verb}" ),
+			$this->get_filter( "request-{$verb}" ), // phpcs:ignore
 			apply_filters(
 				$this->get_filter( 'request' ),
-				$response, $verb
+				$response,
+				$verb
 			)
 		);
 	}
@@ -279,11 +285,11 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Actually send out remote request
 	 *
-	 * @param string $verb Service endpoint to call
+	 * @param string $verb Service endpoint to call.
 	 *
 	 * @return mixed Service response hash on success, (bool)false on failure
 	 */
-	protected function _remote_call( $verb ) {
+	protected function remote_call( $verb ) {
 		if ( empty( $verb ) || ! in_array( $verb, $this->get_known_verbs(), true ) ) {
 			return false;
 		}
@@ -299,13 +305,13 @@ abstract class Smartcrawl_Service {
 			}
 		}
 
-		// Check to see if we have a valid error cache still
+		// Check to see if we have a valid error cache still.
 		$error = $this->get_cached_error( $verb );
-		if ( false !== $error && ! empty( $error ) ) {
+		if ( ! empty( $error ) ) {
 			Smartcrawl_Logger::debug( "Error cache still in effect for [{$verb}]" );
 			$errors = is_array( $error ) ? $error : array( $error );
 			foreach ( $errors as $err ) {
-				$this->_set_error( $err );
+				$this->set_error_message( $err );
 			}
 
 			return false;
@@ -327,13 +333,13 @@ abstract class Smartcrawl_Service {
 
 		Smartcrawl_Logger::debug( "Sending a remote request to [{$remote_url}] ({$verb})" );
 		$response = wp_remote_request( $remote_url, $request_arguments );
-		Smartcrawl_Logger::debug( "Received a response from [{$remote_url}] ({$verb})" . var_export( $response, true ) );
+		Smartcrawl_Logger::debug( "Received a response from [{$remote_url}] ({$verb})" . var_export( $response, true ) ); // phpcs:ignore
 		if ( is_wp_error( $response ) ) {
 			Smartcrawl_Logger::error( "We were not able to communicate with [{$remote_url}] ({$verb})." );
 			if ( is_callable( array( $response, 'get_error_messages' ) ) ) {
 				$msgs = $response->get_error_messages();
 				foreach ( $msgs as $msg ) {
-					$this->_set_error( $msg );
+					$this->set_error_message( $msg );
 				}
 				$this->set_cached_error( $verb, $msgs );
 			}
@@ -349,8 +355,8 @@ abstract class Smartcrawl_Service {
 			return false;
 		}
 
-		$body = wp_remote_retrieve_body( $response );
-		$result = $this->_postprocess_response( $body );
+		$body   = wp_remote_retrieve_body( $response );
+		$result = $this->postprocess_response( $body );
 
 		if ( $cacheable ) {
 			Smartcrawl_Logger::debug( "Setting cache for [{$verb}]" );
@@ -370,7 +376,7 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Determine if the action verb is able to be locally cached
 	 *
-	 * @param string $verb Action string
+	 * @param string $verb Action string.
 	 *
 	 * @return bool
 	 */
@@ -379,7 +385,7 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Get cached value corresponding to internal key
 	 *
-	 * @param string $key Key to check
+	 * @param string $key Key to check.
 	 *
 	 * @return mixed Cached value, or (bool)false on failure
 	 */
@@ -395,7 +401,7 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Special case error cache getter
 	 *
-	 * @param string $verb Verb to check cached errors for
+	 * @param string $verb Verb to check cached errors for.
 	 *
 	 * @return mixed Cached error or (bool) false
 	 */
@@ -410,17 +416,17 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Adds error message to the errors queue
 	 *
-	 * @param string $msg Error message
+	 * @param string $msg Error message.
 	 */
-	protected function _set_error( $msg ) {
+	protected function set_error_message( $msg ) {
 		Smartcrawl_Logger::error( $msg );
-		$this->_errors[] = $msg;
+		$this->errors[] = $msg;
 	}
 
 	/**
 	 * Get the full URL to perform the service request
 	 *
-	 * @param string $verb Action string
+	 * @param string $verb Action string.
 	 *
 	 * @return mixed Full URL as string or (bool)false on failure
 	 */
@@ -429,7 +435,7 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Spawn the arguments for WP HTTP API request call
 	 *
-	 * @param string $verb Action string
+	 * @param string $verb Action string.
 	 *
 	 * @return mixed Array of WP HTTP API arguments on success, or (bool)false on failure
 	 */
@@ -438,8 +444,8 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Special case error cache setter
 	 *
-	 * @param string $verb Verb to set error cache for
-	 * @param mixed $error Error to set
+	 * @param string $verb  Verb to set error cache for.
+	 * @param mixed  $error Error to set.
 	 *
 	 * @return bool
 	 */
@@ -454,9 +460,9 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Sets cached value to the corresponding key
 	 *
-	 * @param string $key Key for the value to set
-	 * @param mixed $value Value to set
-	 * @param int $expiry Optional expiry time, in secs (one of the class expiry constants)
+	 * @param string $key    Key for the value to set.
+	 * @param mixed  $value  Value to set.
+	 * @param int    $expiry Optional expiry time, in secs (one of the class expiry constants).
 	 *
 	 * @return bool
 	 */
@@ -472,7 +478,7 @@ abstract class Smartcrawl_Service {
 	/**
 	 * Get cache expiry, in seconds
 	 *
-	 * @param int $expiry Expiry time to approximate
+	 * @param int $expiry Expiry time to approximate.
 	 *
 	 * @return int Cache expiry time, in seconds
 	 */
@@ -491,7 +497,7 @@ abstract class Smartcrawl_Service {
 	 * Handles error response (non-200) from service
 	 *
 	 * @param object $response WP HTTP API response.
-	 * @param string $verb Request verb.
+	 * @param string $verb     Request verb.
 	 */
 	abstract public function handle_error_response( $response, $verb );
 
@@ -500,11 +506,11 @@ abstract class Smartcrawl_Service {
 	 *
 	 * Passthrough as default implementation
 	 *
-	 * @param string $body Response body
+	 * @param string $body Response body.
 	 *
 	 * @return mixed
 	 */
-	protected function _postprocess_response( $body ) {
+	protected function postprocess_response( $body ) {
 		return json_decode( $body, true );
 	}
 
@@ -514,7 +520,7 @@ abstract class Smartcrawl_Service {
 	 * @return array
 	 */
 	public function get_errors() {
-		return (array) $this->_errors;
+		return (array) $this->errors;
 	}
 
 	/**
@@ -523,19 +529,21 @@ abstract class Smartcrawl_Service {
 	 * @return bool
 	 */
 	public function has_errors() {
-		return ! empty( $this->_errors );
+		return ! empty( $this->errors );
 	}
 
 	/**
 	 * Silently Sets all errors
 	 *
-	 * @param array $errs Errors to set
+	 * @param array $errs Errors to set.
+	 *
+	 * @return void|bool
 	 */
-	protected function _set_all_errors( $errs ) {
+	protected function set_all_errors( $errs ) {
 		if ( ! is_array( $errs ) ) {
 			return false;
 		}
-		$this->_errors = $errs;
+		$this->errors = $errs;
 	}
 
 	protected function get_timeout() {

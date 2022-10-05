@@ -11,13 +11,16 @@ $options = empty( $options ) ? $_view['options'] : $options;
 	<?php $twitter_card_enabled = $options['twitter-card-enable']; ?>
 	<div class="sui-box-settings-col-2">
 		<?php
-		$this->_render( 'toggle-item', array(
-			'item_label'            => esc_html__( 'Enable Twitter Cards', 'wds' ),
-			'checked'               => $twitter_card_enabled,
-			'field_name'            => $_view['option_name'] . '[twitter-card-enable]',
-			'sub_settings_template' => 'social/social-twitter-cards-toggle-sub-settings',
-			'sub_settings_border'   => false,
-		) );
+		$this->render_view(
+			'toggle-item',
+			array(
+				'item_label'            => esc_html__( 'Enable Twitter Cards', 'wds' ),
+				'checked'               => $twitter_card_enabled,
+				'field_name'            => $_view['option_name'] . '[twitter-card-enable]',
+				'sub_settings_template' => 'social/social-twitter-cards-toggle-sub-settings',
+				'sub_settings_border'   => false,
+			)
+		);
 		?>
 	</div>
 </div>

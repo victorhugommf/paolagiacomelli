@@ -1,151 +1,183 @@
 <?php
-$active_tab = empty( $active_tab ) ? '' : $active_tab;
-$buddypress_active = defined( 'BP_VERSION' );
-$front_page = empty( $front_page ) ? null : $front_page;
-$front_page_notice = empty( $front_page_notice ) ? '' : $front_page_notice;
+$active_tab                = empty( $active_tab ) ? '' : $active_tab;
+$buddypress_active         = defined( 'BP_VERSION' );
+$front_page                = empty( $front_page ) ? null : $front_page;
+$front_page_notice         = empty( $front_page_notice ) ? '' : $front_page_notice;
 $show_static_home_settings = empty( $show_static_home_settings ) ? false : $show_static_home_settings;
-$onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
+$onpage_enabled            = Smartcrawl_Settings::get_setting( 'onpage' );
 ?>
 
-<?php $this->_render( 'before-page-container' ); ?>
+<?php $this->render_view( 'before-page-container' ); ?>
 
 <div id="container" class="<?php smartcrawl_wrap_class( 'wds-page-onpage' ); ?>">
-	<?php $this->_render( 'page-header', array(
-		'title'                 => esc_html__( 'Title & Meta', 'wds' ),
-		'documentation_chapter' => 'title-meta',
-		'extra_actions'         => 'onpage/onpage-header-actions',
-		'utm_campaign'          => 'smartcrawl_title-meta_docs',
-	) ); ?>
-
-	<?php $this->_render( 'floating-notices' ); ?>
-
 	<?php
-	$this->_render( 'modal', array(
-		'id'            => 'wds-supported-macros-modal',
-		'title'         => esc_html__( 'Supported Macros', 'wds' ),
-		'body_template' => 'onpage/onpage-macros-modal',
-	) );
+	$this->render_view(
+		'page-header',
+		array(
+			'title'                 => esc_html__( 'Title & Meta', 'wds' ),
+			'documentation_chapter' => 'title-meta',
+			'extra_actions'         => 'onpage/onpage-header-actions',
+			'utm_campaign'          => 'smartcrawl_title-meta_docs',
+		)
+	);
 	?>
 
-	<?php if ( ! $onpage_enabled ) {
-		$this->_render( 'onpage/onpage-disabled' );
-	} else { ?>
-		<div class="wds-vertical-tabs-container sui-row-with-sidenav" id="page-title-meta-tabs">
-			<?php $this->_render( 'onpage/onpage-sidenav', array(
-				'active_tab'                => $active_tab,
-				'show_static_home_settings' => $show_static_home_settings,
-			) );
+	<?php $this->render_view( 'floating-notices' ); ?>
 
-			$this->_render( 'vertical-tab', array(
-				'tab_id'       => 'tab_static_homepage',
-				'tab_name'     => esc_html__( 'Homepage', 'wds' ),
-				'is_active'    => 'tab_static_homepage' === $active_tab,
-				'button_text'  => false,
-				'tab_sections' => array(
-					array(
-						'section_description' => esc_html__( 'Customize your homepage title, description and meta options.', 'wds' ),
-						'section_type'        => 'static-homepage',
-						'section_template'    => 'onpage/onpage-static-homepage',
-						'section_args'        => array(
-							'front_page'        => $front_page,
-							'front_page_notice' => $front_page_notice,
+	<?php
+	$this->render_view(
+		'modal',
+		array(
+			'id'            => 'wds-supported-macros-modal',
+			'title'         => esc_html__( 'Supported Macros', 'wds' ),
+			'body_template' => 'onpage/onpage-macros-modal',
+		)
+	);
+	?>
+
+	<?php
+	if ( ! $onpage_enabled ) {
+		$this->render_view( 'onpage/onpage-disabled' );
+	} else {
+		?>
+		<div class="wds-vertical-tabs-container sui-row-with-sidenav" id="page-title-meta-tabs">
+			<?php
+			$this->render_view(
+				'onpage/onpage-sidenav',
+				array(
+					'active_tab'                => $active_tab,
+					'show_static_home_settings' => $show_static_home_settings,
+				)
+			);
+
+			$this->render_view(
+				'vertical-tab',
+				array(
+					'tab_id'       => 'tab_static_homepage',
+					'tab_name'     => esc_html__( 'Homepage', 'wds' ),
+					'is_active'    => 'tab_static_homepage' === $active_tab,
+					'button_text'  => false,
+					'tab_sections' => array(
+						array(
+							'section_description' => esc_html__( 'Customize your homepage title, description and meta options.', 'wds' ),
+							'section_type'        => 'static-homepage',
+							'section_template'    => 'onpage/onpage-static-homepage',
+							'section_args'        => array(
+								'front_page'        => $front_page,
+								'front_page_notice' => $front_page_notice,
+							),
 						),
 					),
-				),
-			) );
+				)
+			);
 			?>
 
 			<form action='<?php echo esc_attr( $_view['action_url'] ); ?>' method='post' class="wds-form">
 				<?php $this->settings_fields( $_view['option_name'] ); ?>
 
-				<input type="hidden"
-				       name='<?php echo esc_attr( $_view['option_name'] ); ?>[<?php echo esc_attr( $_view['slug'] ); ?>-setup]'
-				       value="1">
-
+				<input
+					type="hidden"
+					name='<?php echo esc_attr( $_view['option_name'] ); ?>[<?php echo esc_attr( $_view['slug'] ); ?>-setup]'
+					value="1"
+				>
 				<?php
 				/*
 				 * Homepage tab
 				 */
-				$this->_render( 'vertical-tab', array(
-					'tab_id'       => 'tab_homepage',
-					'tab_name'     => esc_html__( 'Homepage', 'wds' ),
-					'is_active'    => 'tab_homepage' === $active_tab,
-					'button_text'  => false,
-					'tab_sections' => array(
-						array(
-							'section_description' => esc_html__( 'Customize your homepage title, description and meta options.', 'wds' ),
-							'section_type'        => 'home',
-							'section_template'    => 'onpage/onpage-list-homepage',
-							'section_args'        => array(
-								'meta_robots_main_blog_archive' => $meta_robots_main_blog_archive,
+				$this->render_view(
+					'vertical-tab',
+					array(
+						'tab_id'       => 'tab_homepage',
+						'tab_name'     => esc_html__( 'Homepage', 'wds' ),
+						'is_active'    => 'tab_homepage' === $active_tab,
+						'button_text'  => false,
+						'tab_sections' => array(
+							array(
+								'section_description' => esc_html__( 'Customize your homepage title, description and meta options.', 'wds' ),
+								'section_type'        => 'home',
+								'section_template'    => 'onpage/onpage-list-homepage',
+								'section_args'        => array(
+									'meta_robots_main_blog_archive' => $meta_robots_main_blog_archive,
+								),
 							),
 						),
-					),
-				) );
+					)
+				);
 
 				/*
 				 * Post types tab
 				 */
 				$post_type_sections = array();
-				foreach ( get_post_types( array( 'public' => true ) ) as $post_type ) {
+				foreach ( get_post_types( array( 'public' => true ) ) as $post_type ) { // phpcs:ignore
 					if ( in_array( $post_type, array( 'revision', 'nav_menu_item' ), true ) ) {
 						continue;
 					}
 
-					$post_type_object = get_post_type_object( $post_type );
+					$wp_post_type_object = get_post_type_object( $post_type );
 
 					$post_type_sections[] = array(
-						'section_title'       => $post_type_object->labels->name,
-						'section_description' => sprintf( esc_html__( 'Customize your %s title, description and meta options.', 'wds' ), strtolower( $post_type_object->labels->singular_name ) ),
+						'section_title'       => $wp_post_type_object->labels->name,
+						'section_description' => sprintf( esc_html__( 'Customize your %s title, description and meta options.', 'wds' ), strtolower( $wp_post_type_object->labels->singular_name ) ),
 						'section_type'        => $post_type,
 						'section_template'    => 'onpage/onpage-section-post-type',
 						'section_args'        => array(
 							'post_type'        => $post_type,
-							'post_type_object' => $post_type_object,
+							'post_type_object' => $wp_post_type_object,
 							'post_type_robots' => ( ! empty( $post_robots[ $post_type ] ) ? $post_robots[ $post_type ] : array() ),
 						),
 					);
 				}
 
-				$this->_render( 'vertical-tab', array(
-					'tab_id'       => 'tab_post_types',
-					'tab_name'     => esc_html__( 'Post Types', 'wds' ),
-					'is_active'    => 'tab_post_types' === $active_tab,
-					'tab_sections' => $post_type_sections,
-				) );
+				$this->render_view(
+					'vertical-tab',
+					array(
+						'tab_id'       => 'tab_post_types',
+						'tab_name'     => esc_html__( 'Post Types', 'wds' ),
+						'is_active'    => 'tab_post_types' === $active_tab,
+						'tab_sections' => $post_type_sections,
+					)
+				);
 
 				/*
 				 * Other taxonomies
 				 */
 				$taxonomy_sections = array();
-				$taxonomies = array_merge(
+				$taxonomies        = array_merge(
 					array( 'post_tag', 'category' ),
-					get_taxonomies( array( '_builtin' => false, 'public' => true ) )
+					get_taxonomies(
+						array(
+							'_builtin' => false,
+							'public'   => true,
+						)
+					)
 				);
 				foreach ( $taxonomies as $taxonomy_name ) {
-					$taxonomy = get_taxonomy( $taxonomy_name );
-					$meta_robots_taxonomy_name = 'meta_robots_' . str_replace( '-', '_', $taxonomy->name );
-					$taxonomy_sections[] = array(
-						'section_title'       => $taxonomy->label,
-						'section_description' => sprintf( esc_html__( 'Customize the title, description and meta options for %s.', 'wds' ), strtolower( $taxonomy->label ) ),
-						'section_type'        => $taxonomy->name,
+					$wp_taxonomy               = get_taxonomy( $taxonomy_name );
+					$meta_robots_taxonomy_name = 'meta_robots_' . str_replace( '-', '_', $wp_taxonomy->name );
+					$taxonomy_sections[]       = array(
+						'section_title'       => $wp_taxonomy->label,
+						'section_description' => sprintf( esc_html__( 'Customize the title, description and meta options for %s.', 'wds' ), strtolower( $wp_taxonomy->label ) ),
+						'section_type'        => $wp_taxonomy->name,
 						'section_template'    => 'onpage/onpage-section-taxonomy',
 						'section_args'        => array(
-							'taxonomy'    => $taxonomy,
+							'taxonomy'    => $wp_taxonomy,
 							'meta_robots' => $$meta_robots_taxonomy_name,
 						),
 					);
 				}
 
-				$this->_render( 'vertical-tab', array(
-					'tab_id'       => 'tab_taxonomies',
-					'tab_name'     => esc_html__( 'Taxonomies', 'wds' ),
-					'is_active'    => 'tab_taxonomies' === $active_tab,
-					'tab_sections' => $taxonomy_sections,
-				) );
+				$this->render_view(
+					'vertical-tab',
+					array(
+						'tab_id'       => 'tab_taxonomies',
+						'tab_name'     => esc_html__( 'Taxonomies', 'wds' ),
+						'is_active'    => 'tab_taxonomies' === $active_tab,
+						'tab_sections' => $taxonomy_sections,
+					)
+				);
 
 				$archive_sections = array(
-					// Author archive
+					// Author archive.
 					array(
 						'section_title'          => esc_html__( 'Author Archive', 'wds' ),
 						'section_description'    => esc_html__( 'If you are the only author of your website content Google may see your author archives as duplicate content to your Blog Homepage. If this is the case we recommend disabling author archives.', 'wds' ),
@@ -157,7 +189,7 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 							'meta_robots_author' => $meta_robots_author,
 						),
 					),
-					// Date archive
+					// Date archive.
 					array(
 						'section_title'          => esc_html__( 'Date Archive', 'wds' ),
 						'section_description'    => esc_html__( 'Google may see your date archives as duplicate content to your Blog Homepage. For this reason we recommend disabling date archives.', 'wds' ),
@@ -169,7 +201,7 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 							'meta_robots_date' => $meta_robots_date,
 						),
 					),
-					// Search page
+					// Search page.
 					array(
 						'section_title'       => esc_html__( 'Search Page', 'wds' ),
 						'section_description' => esc_html__( 'Customize your search page title, description and meta options.', 'wds' ),
@@ -179,7 +211,7 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 							'meta_robots_search' => $meta_robots_search,
 						),
 					),
-					// 404 page
+					// 404 page.
 					array(
 						'section_title'       => esc_html__( '404 Page', 'wds' ),
 						'section_description' => esc_html__( 'Customize your 404 page title, description and meta options.', 'wds' ),
@@ -190,6 +222,8 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 				);
 
 				/**
+				 * Post types.
+				 *
 				 * @var $archive_post_types array
 				 */
 				foreach ( $archive_post_types as $archive_post_type => $archive_post_type_label ) {
@@ -213,12 +247,15 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 				/*
 				 * Archives
 				 */
-				$this->_render( 'vertical-tab', array(
-					'tab_id'       => 'tab_archives',
-					'tab_name'     => esc_html__( 'Archives', 'wds' ),
-					'is_active'    => 'tab_archives' === $active_tab,
-					'tab_sections' => $archive_sections,
-				) );
+				$this->render_view(
+					'vertical-tab',
+					array(
+						'tab_id'       => 'tab_archives',
+						'tab_name'     => esc_html__( 'Archives', 'wds' ),
+						'is_active'    => 'tab_archives' === $active_tab,
+						'tab_sections' => $archive_sections,
+					)
+				);
 
 				$buddypress_sections = array();
 
@@ -247,34 +284,40 @@ $onpage_enabled = Smartcrawl_Settings::get_setting( 'onpage' );
 				}
 
 				if ( $buddypress_sections ) {
-					$this->_render( 'vertical-tab', array(
-						'tab_id'       => 'tab_buddypress',
-						'tab_name'     => esc_html__( 'BuddyPress', 'wds' ),
-						'is_active'    => 'tab_buddypress' === $active_tab,
-						'tab_sections' => $buddypress_sections,
-					) );
+					$this->render_view(
+						'vertical-tab',
+						array(
+							'tab_id'       => 'tab_buddypress',
+							'tab_name'     => esc_html__( 'BuddyPress', 'wds' ),
+							'is_active'    => 'tab_buddypress' === $active_tab,
+							'tab_sections' => $buddypress_sections,
+						)
+					);
 				}
 				?>
 
 				<?php
-				$this->_render( 'vertical-tab', array(
-					'tab_id'       => 'tab_settings',
-					'tab_name'     => esc_html__( 'Settings', 'wds' ),
-					'is_active'    => 'tab_settings' === $active_tab,
-					'tab_sections' => array(
-						array(
-							'section_type'     => '',
-							'section_template' => 'onpage/onpage-section-settings',
-							'section_args'     => array(
-								'separators' => $separators,
+				$this->render_view(
+					'vertical-tab',
+					array(
+						'tab_id'       => 'tab_settings',
+						'tab_name'     => esc_html__( 'Settings', 'wds' ),
+						'is_active'    => 'tab_settings' === $active_tab,
+						'tab_sections' => array(
+							array(
+								'section_type'     => '',
+								'section_template' => 'onpage/onpage-section-settings',
+								'section_args'     => array(
+									'separators' => $separators,
+								),
 							),
 						),
-					),
-				) );
+					)
+				);
 				?>
 			</form>
 
 		</div><!-- end page-title-meta-tabs -->
 	<?php } ?>
-	<?php $this->_render( 'footer' ); ?>
+	<?php $this->render_view( 'footer' ); ?>
 </div><!-- end wds-page-onpage -->

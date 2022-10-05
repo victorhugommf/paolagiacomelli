@@ -1,28 +1,32 @@
 <?php
 
 class Smartcrawl_Buddypress_Group extends Smartcrawl_Entity {
+
 	/**
 	 * @var Smartcrawl_Buddypress_Api
 	 */
 	private $buddypress_api;
+
 	/**
 	 * @var BP_Groups_Group
 	 */
 	private $buddypress_group;
+
 	/**
 	 * @var string
 	 */
 	private $name;
+
 	/**
 	 * @var string
 	 */
 	private $description;
 
 	/**
-	 * @param $buddypress_group BP_Groups_Group|object
+	 * @param BP_Groups_Group|object $buddypress_group BP group.
 	 */
 	public function __construct( $buddypress_group ) {
-		$this->buddypress_api = new Smartcrawl_Buddypress_Api();
+		$this->buddypress_api   = new Smartcrawl_Buddypress_Api();
 		$this->buddypress_group = $buddypress_group;
 	}
 
@@ -47,7 +51,7 @@ class Smartcrawl_Buddypress_Group extends Smartcrawl_Entity {
 	}
 
 	protected function load_robots() {
-		$noindex = $this->get_noindex_setting( 'bp_groups' ) ? 'noindex' : 'index';
+		$noindex  = $this->get_noindex_setting( 'bp_groups' ) ? 'noindex' : 'index';
 		$nofollow = $this->get_nofollow_setting( 'bp_groups' ) ? 'nofollow' : 'follow';
 
 		return "{$noindex},{$nofollow}";

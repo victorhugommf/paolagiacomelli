@@ -26,10 +26,15 @@ class Smartcrawl_Lighthouse_Font_Size_Check extends Smartcrawl_Lighthouse_Check 
 		?>
 		<div class="wds-lh-section">
 			<strong><?php esc_html_e( 'Status', 'wds' ); ?></strong>
-			<?php Smartcrawl_Simple_Renderer::render( 'notice', array(
-				'class'   => 'sui-notice-success',
-				'message' => esc_html__( 'Document uses legible font sizes, nice work!', 'wds' ),
-			) ); ?>
+			<?php
+			Smartcrawl_Simple_Renderer::render(
+				'notice',
+				array(
+					'class'   => 'sui-notice-success',
+					'message' => esc_html__( 'Document uses legible font sizes, nice work!', 'wds' ),
+				)
+			);
+			?>
 		</div>
 		<?php
 		return ob_get_clean();
@@ -41,10 +46,15 @@ class Smartcrawl_Lighthouse_Font_Size_Check extends Smartcrawl_Lighthouse_Check 
 		?>
 		<div class="wds-lh-section">
 			<strong><?php esc_html_e( 'Status', 'wds' ); ?></strong>
-			<?php Smartcrawl_Simple_Renderer::render( 'notice', array(
-				'class'   => 'sui-notice-warning',
-				'message' => esc_html__( "Document doesn't use legible font sizes.", 'wds' ),
-			) ); ?>
+			<?php
+			Smartcrawl_Simple_Renderer::render(
+				'notice',
+				array(
+					'class'   => 'sui-notice-warning',
+					'message' => esc_html__( "Document doesn't use legible font sizes.", 'wds' ),
+				)
+			);
+			?>
 		</div>
 
 		<div class="wds-lh-section wds-lh-font-sizes-table">
@@ -60,42 +70,58 @@ class Smartcrawl_Lighthouse_Font_Size_Check extends Smartcrawl_Lighthouse_Check 
 		return ob_get_clean();
 	}
 
-	function get_id() {
+	/**
+	 * @return string
+	 */
+	public function get_id() {
 		return self::ID;
 	}
 
+	/**
+	 * @param $raw_details
+	 *
+	 * @return Smartcrawl_Lighthouse_Table
+	 */
 	public function parse_details( $raw_details ) {
-		$table = new Smartcrawl_Lighthouse_Table( array(
-			esc_html__( 'Selector', 'wds' ),
-			esc_html__( 'Font Size', 'wds' ),
-			esc_html__( '% of Page Text', 'wds' ),
-		), $this->get_report() );
+		$table = new Smartcrawl_Lighthouse_Table(
+			array(
+				esc_html__( 'Selector', 'wds' ),
+				esc_html__( 'Font Size', 'wds' ),
+				esc_html__( '% of Page Text', 'wds' ),
+			),
+			$this->get_report()
+		);
 
 		$items = smartcrawl_get_array_value( $raw_details, 'items' );
 		foreach ( $items as $item ) {
-			$table->add_row( array(
-				smartcrawl_get_array_value( $item, array( 'selector', 'snippet' ) ),
-				smartcrawl_get_array_value( $item, 'fontSize' ),
-				smartcrawl_get_array_value( $item, 'coverage' ),
-			) );
+			$table->add_row(
+				array(
+					smartcrawl_get_array_value( $item, array( 'selector', 'snippet' ) ),
+					smartcrawl_get_array_value( $item, 'fontSize' ),
+					smartcrawl_get_array_value( $item, 'coverage' ),
+				)
+			);
 		}
 
 		return $table;
 	}
 
+	/**
+	 * @return string
+	 */
 	private function format_copy_description() {
 		$parts = array(
 			__( 'Tested Device: ', 'wds' ) . $this->get_device_label(),
 			__( 'Audit Type: Responsive audits', 'wds' ),
-			"",
+			'',
 			__( "Failing Audit: Document doesn't use legible font sizes", 'wds' ),
-			"",
+			'',
 			__( "Status: Document doesn't use legible font sizes.", 'wds' ),
 			__( 'Lighthouse flags pages on which 60% or more of the text has a font size smaller than 12px.', 'wds' ),
-			"",
+			'',
 			__( 'Overview:', 'wds' ),
 			__( 'Many search engines rank pages based on how mobile-friendly they are. Font sizes smaller than 12px are often difficult to read on mobile devices and may require users to zoom in to display text at a comfortable reading size.', 'wds' ),
-			"",
+			'',
 			__( 'For more information please check the SEO Audits section in SmartCrawl plugin.', 'wds' ),
 		);
 		return implode( "\n", $parts );

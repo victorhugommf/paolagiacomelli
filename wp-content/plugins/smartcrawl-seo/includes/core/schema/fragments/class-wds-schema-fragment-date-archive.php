@@ -1,37 +1,62 @@
 <?php
 
 class Smartcrawl_Schema_Fragment_Date_Archive extends Smartcrawl_Schema_Fragment {
+	/**
+	 * @var
+	 */
 	private $year;
+	/**
+	 * @var
+	 */
 	private $month;
+	/**
+	 * @var
+	 */
 	private $posts;
 	/**
 	 * @var Smartcrawl_Schema_Utils
 	 */
 	private $utils;
+	/**
+	 * @var
+	 */
 	private $title;
+	/**
+	 * @var
+	 */
 	private $description;
 
+	/**
+	 * @param $year
+	 * @param $month
+	 * @param $posts
+	 * @param $title
+	 * @param $description
+	 */
 	public function __construct( $year, $month, $posts, $title, $description ) {
-		$this->year = $year;
-		$this->month = $month;
-		$this->posts = $posts;
-		$this->title = $title;
+		$this->year        = $year;
+		$this->month       = $month;
+		$this->posts       = $posts;
+		$this->title       = $title;
 		$this->description = $description;
-		$this->utils = Smartcrawl_Schema_Utils::get();
+		$this->utils       = Smartcrawl_Schema_Utils::get();
 	}
 
+	/**
+	 * @return array|mixed|Smartcrawl_Schema_Fragment_Archive
+	 */
 	protected function get_raw() {
-		$enabled = (bool) $this->utils->get_schema_option( 'schema_enable_date_archives' );
-		$requested_year = $this->year;
-		$requested_month = $this->month;
-		$date_callback = ! empty( $requested_year ) && empty( $requested_month )
+		$enabled          = (bool) $this->utils->get_schema_option( 'schema_enable_date_archives' );
+		$requested_year   = $this->year;
+		$requested_month  = $this->month;
+		$date_callback    = ! empty( $requested_year ) && empty( $requested_month )
 			? 'get_year_link'
 			: 'get_month_link';
 		$date_archive_url = $date_callback( $requested_year, $requested_month );
 
 		if ( $enabled ) {
 			return new Smartcrawl_Schema_Fragment_Archive(
-				"CollectionPage",
+				'CollectionPage',
 				$date_archive_url,
 				$this->posts,
 				$this->title,

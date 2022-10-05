@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // czech
-
-static $data = [
+static $data = array(
     'ačkoli',
     'ahoj',
     'ale',
@@ -259,7 +258,7 @@ static $data = [
     'zatímco',
     'ze',
     'že',
-];
+);
 
 $result =& $data;
 unset($data);

@@ -2,8 +2,11 @@
 $is_active = empty( $is_active ) ? false : $is_active;
 wp_enqueue_script( Smartcrawl_Controller_Assets::CONFIGS_JS );
 ?>
-<div class="wds-vertical-tab-section sui-box tab_configs <?php echo $is_active ? '' : 'hidden'; ?>"
-     id="tab_configs">
+<div
+	class="wds-vertical-tab-section sui-box tab_configs
+	<?php echo $is_active ? '' : 'hidden'; ?>"
+	id="tab_configs"
+>
 	<div id="wds-config-components" class="wds-configs-container">
 		<div class="sui-box">
 			<div class="sui-box-header">

@@ -1,5 +1,5 @@
 <?php
-$option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
+$option_name      = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
 $dashboard_device = Smartcrawl_Lighthouse_Options::dashboard_widget_device();
 ?>
 <div class="sui-box-settings-row">
@@ -13,31 +13,35 @@ $dashboard_device = Smartcrawl_Lighthouse_Options::dashboard_widget_device();
 	</div>
 
 	<div class="sui-box-settings-col-2">
-		<?php $this->_render( 'side-tabs', array(
-			'id'    => 'wds-lighthouse-dashboard-widget-device',
-			'name'  => "{$option_name}[lighthouse-dashboard-widget-device]",
-			'value' => $dashboard_device,
-			'tabs'  => array(
-				array(
-					'label' => esc_html__( 'Desktop', 'wds' ),
-					'value' => 'desktop',
+		<?php
+		$this->render_view(
+			'side-tabs',
+			array(
+				'id'    => 'wds-lighthouse-dashboard-widget-device',
+				'name'  => "{$option_name}[lighthouse-dashboard-widget-device]",
+				'value' => $dashboard_device,
+				'tabs'  => array(
+					array(
+						'label' => esc_html__( 'Desktop', 'wds' ),
+						'value' => 'desktop',
+					),
+					array(
+						'label' => esc_html__( 'Mobile', 'wds' ),
+						'value' => 'mobile',
+					),
 				),
-				array(
-					'label' => esc_html__( 'Mobile', 'wds' ),
-					'value' => 'mobile',
-				),
-			),
-		) );
+			)
+		);
 		?>
 	</div>
 </div>
 
 <div class="sui-box-footer">
 	<button class="sui-button sui-button-blue">
-        <span class="sui-loading-text">
-            <span class="sui-icon-save" aria-hidden="true"></span>
-            <?php esc_html_e( 'Save Settings', 'wds' ); ?>
-        </span>
+		<span class="sui-loading-text">
+			<span class="sui-icon-save" aria-hidden="true"></span>
+			<?php esc_html_e( 'Save Settings', 'wds' ); ?>
+		</span>
 		<span class="sui-icon-loader sui-loading" aria-hidden="true"></span>
 	</button>
 </div>

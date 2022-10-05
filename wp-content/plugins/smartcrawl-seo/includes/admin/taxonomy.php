@@ -1,20 +1,21 @@
 <?php
 
 class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
-	/**
-	 * Static instance
-	 *
-	 * @var self
-	 */
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
 
 	protected function init() {
 		$taxonomy = smartcrawl_get_array_value( $_GET, 'taxonomy' ); // phpcs:ignore -- Can't add nonce to the request
 		if ( is_admin() && ! empty( $taxonomy ) ) {
-			add_action( sanitize_key( $taxonomy ) . '_edit_form', array(
-				&$this,
-				'term_additions_form',
-			), 10, 2 );
+			add_action(
+				sanitize_key( $taxonomy ) . '_edit_form',
+				array(
+					&$this,
+					'term_additions_form',
+				),
+				10,
+				2
+			);
 		}
 
 		add_action( 'edit_term', array( &$this, 'update_term' ), 10, 3 );
@@ -22,9 +23,9 @@ class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
 	}
 
 	public function json_create_preview() {
-		$data = $this->get_request_data();
+		$data    = $this->get_request_data();
 		$term_id = (int) smartcrawl_get_array_value( $data, 'term_id' );
-		$result = array( 'success' => false );
+		$result  = array( 'success' => false );
 
 		if ( empty( $term_id ) ) {
 			wp_send_json( $result );
@@ -33,26 +34,18 @@ class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
 		}
 
 		$result['success'] = true;
-		$result['markup'] = Smartcrawl_Simple_Renderer::load( 'term/term-google-preview', array(
-			'term' => get_term( $term_id ),
-		) );
+		$result['markup']  = Smartcrawl_Simple_Renderer::load(
+			'term/term-google-preview',
+			array(
+				'term' => get_term( $term_id ),
+			)
+		);
 
 		wp_send_json( $result );
 	}
 
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-metabox-nonce' ) ? stripslashes_deep( $_POST ) : array();
-	}
-
-	/**
-	 * Static instance getter
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-metabox-nonce' ) ? stripslashes_deep( $_POST ) : array(); // phpcs:ignore
 	}
 
 	public function term_additions_form( $term, $taxonomy ) {
@@ -62,7 +55,7 @@ class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
 		}
 
 		$smartcrawl_options = Smartcrawl_Settings::get_options();
-		$tax_meta = get_option( 'wds_taxonomy_meta' );
+		$tax_meta           = get_option( 'wds_taxonomy_meta' );
 
 		if ( isset( $tax_meta[ $taxonomy ][ $term->term_id ] ) ) {
 			$tax_meta = $tax_meta[ $taxonomy ][ $term->term_id ];
@@ -70,7 +63,7 @@ class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
 
 		$taxonomy_labels = $taxonomy_object->labels;
 
-		$global_noindex = ! empty( $smartcrawl_options[ 'meta_robots-noindex-' . $term->taxonomy ] )
+		$global_noindex  = ! empty( $smartcrawl_options[ 'meta_robots-noindex-' . $term->taxonomy ] )
 			? $smartcrawl_options[ 'meta_robots-noindex-' . $term->taxonomy ]
 			: false;
 		$global_nofollow = ! empty( $smartcrawl_options[ 'meta_robots-nofollow-' . $term->taxonomy ] )
@@ -81,14 +74,17 @@ class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
 		wp_enqueue_script( Smartcrawl_Controller_Assets::TERM_FORM_JS );
 		wp_enqueue_media();
 
-		Smartcrawl_Simple_Renderer::render( 'term/term-form', array(
-			'taxonomy_object' => $taxonomy_object,
-			'taxonomy_labels' => $taxonomy_labels,
-			'term'            => $term,
-			'global_noindex'  => $global_noindex,
-			'global_nofollow' => $global_nofollow,
-			'tax_meta'        => $tax_meta,
-		) );
+		Smartcrawl_Simple_Renderer::render(
+			'term/term-form',
+			array(
+				'taxonomy_object' => $taxonomy_object,
+				'taxonomy_labels' => $taxonomy_labels,
+				'term'            => $term,
+				'global_noindex'  => $global_noindex,
+				'global_nofollow' => $global_nofollow,
+				'tax_meta'        => $tax_meta,
+			)
+		);
 	}
 
 	public function update_term( $term_id, $tt_id, $taxonomy ) {
@@ -99,39 +95,34 @@ class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
 
 		$smartcrawl_options = Smartcrawl_Settings::get_options();
 
-		$tax_meta = get_option( 'wds_taxonomy_meta' );
-		$post_data = isset( $_POST['_wpnonce'] ) && wp_verify_nonce( $_POST['_wpnonce'], 'update-tag_' . $term_id )
+		$tax_meta  = get_option( 'wds_taxonomy_meta' );
+		$post_data = isset( $_POST['_wpnonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wpnonce'] ), 'update-tag_' . $term_id ) // phpcs:ignore
 			? stripslashes_deep( $_POST )
 			: array();
 
 		foreach ( array( 'title', 'desc', 'bctitle', 'canonical' ) as $key ) {
-			$value = isset( $post_data["wds_{$key}"] )
-				? $post_data["wds_{$key}"]
-				: '';
+			$value = isset( $post_data[ 'wds_' . $key ] ) ? $post_data[ 'wds_' . $key ] : '';
 			if ( 'canonical' === $key ) {
 				$value = esc_url_raw( $value );
 			} else {
 				$value = smartcrawl_sanitize_preserve_macros( $value );
 			}
-			$tax_meta[ $taxonomy ][ $term_id ]["wds_{$key}"] = $value;
+			$tax_meta[ $taxonomy ][ $term_id ][ 'wds_' . $key ] = $value;
 		}
 
 		foreach ( array( 'noindex', 'nofollow' ) as $key ) {
-			$global = ! empty( $smartcrawl_options["meta_robots-{$key}-{$taxonomy}"] ) ? (bool) $smartcrawl_options["meta_robots-{$key}-{$taxonomy}"] : false;
+			$global = ! empty( $smartcrawl_options[ 'meta_robots-' . $key . '-' . $taxonomy ] ) && (bool) $smartcrawl_options[ 'meta_robots-' . $key . '-' . $taxonomy ];
 
 			if ( ! $global ) {
-				$tax_meta[ $taxonomy ][ $term_id ][ 'wds_' . $key ] = isset( $post_data["wds_{$key}"] )
-					? (bool) $post_data["wds_{$key}"]
-					: false;
+				$tax_meta[ $taxonomy ][ $term_id ][ 'wds_' . $key ] = isset( $post_data[ 'wds_' . $key ] ) && (bool) $post_data[ 'wds_' . $key ];
 			} else {
-				$tax_meta[ $taxonomy ][ $term_id ]["wds_override_{$key}"] = isset( $post_data["wds_override_{$key}"] )
-					? (bool) $post_data["wds_override_{$key}"]
-					: false;
+				$tax_meta[ $taxonomy ][ $term_id ][ 'wds_override_' . $key ] = isset( $post_data[ 'wds_override_' . $key ] ) && (bool) $post_data[ 'wds_override_' . $key ];
 			}
 		}
 
 		if ( ! empty( $post_data['wds-opengraph'] ) ) {
 			$data = is_array( $post_data['wds-opengraph'] ) ? stripslashes_deep( $post_data['wds-opengraph'] ) : array();
+
 			$tax_meta[ $taxonomy ][ $term_id ]['opengraph'] = array();
 			if ( ! empty( $data['title'] ) ) {
 				$tax_meta[ $taxonomy ][ $term_id ]['opengraph']['title'] = smartcrawl_sanitize_preserve_macros( $data['title'] );
@@ -150,6 +141,7 @@ class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
 
 		if ( ! empty( $post_data['wds-twitter'] ) ) {
 			$data = is_array( $post_data['wds-twitter'] ) ? stripslashes_deep( $post_data['wds-twitter'] ) : array();
+
 			$tax_meta[ $taxonomy ][ $term_id ]['twitter'] = array();
 			if ( ! empty( $data['title'] ) ) {
 				$tax_meta[ $taxonomy ][ $term_id ]['twitter']['title'] = smartcrawl_sanitize_preserve_macros( $data['title'] );
@@ -169,10 +161,10 @@ class Smartcrawl_Taxonomy extends Smartcrawl_Base_Controller {
 		update_option( 'wds_taxonomy_meta', $tax_meta );
 
 		if ( function_exists( 'w3tc_flush_all' ) ) {
-			// Use W3TC API v0.9.5+
+			// Use W3TC API v0.9.5+.
 			w3tc_flush_all();
 		} elseif ( defined( 'W3TC_DIR' ) && is_readable( W3TC_DIR . '/lib/W3/ObjectCache.php' ) ) {
-			// Old (very old) API
+			// Old (very old) API.
 			require_once W3TC_DIR . '/lib/W3/ObjectCache.php';
 			$w3_objectcache = &W3_ObjectCache::instance();
 

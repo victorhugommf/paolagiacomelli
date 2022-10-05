@@ -10,6 +10,7 @@
  * @method boolean is_shop()
  */
 class Smartcrawl_Woocommerce_Api {
+
 	public function __call( $name, $arguments ) {
 		if ( function_exists( $name ) ) {
 			return call_user_func_array( $name, $arguments );

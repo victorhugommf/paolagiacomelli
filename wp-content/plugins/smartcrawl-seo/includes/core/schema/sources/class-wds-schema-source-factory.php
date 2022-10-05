@@ -1,12 +1,25 @@
 <?php
 
 class Smartcrawl_Schema_Source_Factory {
+	/**
+	 * @var
+	 */
 	private $post;
 
+	/**
+	 * @param $post
+	 */
 	public function __construct( $post ) {
 		$this->post = $post;
 	}
 
+	/**
+	 * @param $source
+	 * @param $value
+	 * @param $type
+	 *
+	 * @return Smartcrawl_Schema_Source_Author|Smartcrawl_Schema_Source_Media|Smartcrawl_Schema_Source_Options|Smartcrawl_Schema_Source_Post|Smartcrawl_Schema_Source_Post_Meta|Smartcrawl_Schema_Source_Schema_Settings|Smartcrawl_Schema_Source_SEO_Meta|Smartcrawl_Schema_Source_Site_Settings|Smartcrawl_Schema_Source_Text|Smartcrawl_Schema_Source_Woocommerce
+	 */
 	public function create( $source, $value, $type ) {
 		switch ( $source ) {
 			case Smartcrawl_Schema_Source_Author::ID:
@@ -44,6 +57,12 @@ class Smartcrawl_Schema_Source_Factory {
 		}
 	}
 
+	/**
+	 * @param $source
+	 * @param $value
+	 *
+	 * @return Smartcrawl_Schema_Source_Author|Smartcrawl_Schema_Source_Post|Smartcrawl_Schema_Source_Post_Meta|Smartcrawl_Schema_Source_Text|Smartcrawl_Schema_Source_Woocommerce
+	 */
 	private function create_post_dependent_source( $source, $value ) {
 		if ( ! $this->post ) {
 			return $this->create_default_source();
@@ -67,6 +86,9 @@ class Smartcrawl_Schema_Source_Factory {
 		}
 	}
 
+	/**
+	 * @return Smartcrawl_Schema_Source_Text
+	 */
 	protected function create_default_source() {
 		return new Smartcrawl_Schema_Source_Text( '' );
 	}

@@ -18,14 +18,21 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 	 */
 	private $media_schema_data_controller;
 
+	/**
+	 * @param $post
+	 */
 	public function __construct( $post ) {
-		$this->post = $post;
-		$this->utils = Smartcrawl_Schema_Utils::get();
+		$this->post                         = $post;
+		$this->utils                        = Smartcrawl_Schema_Utils::get();
 		$this->media_schema_data_controller = Smartcrawl_Controller_Media_Schema_Data::get();
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function get_raw() {
 		$wp_post = $this->post->get_wp_post();
+
 		if ( $this->is_audio_enabled() || $this->is_video_enabled() ) {
 			$this->media_schema_data_controller->maybe_refresh_wp_embeds_cache( $wp_post );
 			$cache = $this->media_schema_data_controller->get_cache( $wp_post->ID );
@@ -40,9 +47,14 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		return $this->schema;
 	}
 
+	/**
+	 * @param $cache
+	 *
+	 * @return void
+	 */
 	private function add_oembed_schema( $cache ) {
 		$enable_audio = $this->is_audio_enabled();
-		$audio_data = smartcrawl_get_array_value( $cache, 'audio' );
+		$audio_data   = smartcrawl_get_array_value( $cache, 'audio' );
 		if ( $enable_audio && ! empty( $audio_data ) && is_array( $audio_data ) ) {
 			foreach ( $audio_data as $audio_datum ) {
 				$this->add_schema(
@@ -52,11 +64,11 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		}
 
 		$enable_youtube = (bool) $this->utils->get_schema_option( 'schema_enable_yt_api' );
-		$youtube_data = smartcrawl_get_array_value( $cache, 'youtube' );
-		$youtube_data = empty( $youtube_data ) ? array() : $youtube_data;
+		$youtube_data   = smartcrawl_get_array_value( $cache, 'youtube' );
+		$youtube_data   = empty( $youtube_data ) ? array() : $youtube_data;
 
 		$enable_video = $this->is_video_enabled();
-		$video_data = smartcrawl_get_array_value( $cache, 'video' );
+		$video_data   = smartcrawl_get_array_value( $cache, 'video' );
 		if ( $enable_video && ! empty( $video_data ) && is_array( $video_data ) ) {
 			foreach ( $video_data as $video_id => $video_datum ) {
 				if ( $enable_youtube && array_key_exists( $video_id, $youtube_data ) ) {
@@ -72,59 +84,89 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		}
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @return array
+	 */
 	private function get_audio_schema( $data ) {
-		return $this->media_data_to_schema( array(
-			'title'         => "name",
-			'url'           => "url",
-			'description'   => "description",
-			'thumbnail_url' => "thumbnailUrl",
-		), $data, Smartcrawl_Schema_Type_Constants::TYPE_AUDIO_OBJECT );
+		return $this->media_data_to_schema(
+			array(
+				'title'         => 'name',
+				'url'           => 'url',
+				'description'   => 'description',
+				'thumbnail_url' => 'thumbnailUrl',
+			),
+			$data,
+			Smartcrawl_Schema_Type_Constants::TYPE_AUDIO_OBJECT
+		);
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @return mixed
+	 */
 	private function get_video_schema( $data ) {
-		$schema = $this->media_data_to_schema( array(
-			'title'            => "name",
-			'url'              => "url",
-			'description'      => "description",
-			'upload_date'      => "uploadDate",
-			'thumbnail_url'    => array( "thumbnail", "url" ),
-			'thumbnail_width'  => array( "thumbnail", "width" ),
-			'thumbnail_height' => array( "thumbnail", "height" ),
-		), $data, Smartcrawl_Schema_Type_Constants::TYPE_VIDEO_OBJECT );
+		$schema = $this->media_data_to_schema(
+			array(
+				'title'            => 'name',
+				'url'              => 'url',
+				'description'      => 'description',
+				'upload_date'      => 'uploadDate',
+				'thumbnail_url'    => array( 'thumbnail', 'url' ),
+				'thumbnail_width'  => array( 'thumbnail', 'width' ),
+				'thumbnail_height' => array( 'thumbnail', 'height' ),
+			),
+			$data,
+			Smartcrawl_Schema_Type_Constants::TYPE_VIDEO_OBJECT
+		);
 
 		$duration = $this->get_duration( $data );
 		if ( $duration ) {
 			$schema['duration'] = $duration;
 		}
 
-		$schema = $this->add_embed_url_property( $schema, $data );
-
-		return $schema;
+		return $this->add_embed_url_property( $schema, $data );
 	}
 
+	/**
+	 * @param $data
+	 * @param $embed_data
+	 *
+	 * @return mixed
+	 */
 	private function get_youtube_schema( $data, $embed_data ) {
-		$schema = $this->media_data_to_schema( array(
-			'title'                => "name",
-			'url'                  => "url",
-			'description'          => "description",
-			'publishedAt'          => "uploadDate",
-			'duration'             => "duration",
-			'defaultAudioLanguage' => "inLanguage",
-			'definition'           => "videoQuality",
-		), $data, Smartcrawl_Schema_Type_Constants::TYPE_VIDEO_OBJECT );
+		$schema = $this->media_data_to_schema(
+			array(
+				'title'                => 'name',
+				'url'                  => 'url',
+				'description'          => 'description',
+				'publishedAt'          => 'uploadDate',
+				'duration'             => 'duration',
+				'defaultAudioLanguage' => 'inLanguage',
+				'definition'           => 'videoQuality',
+			),
+			$data,
+			Smartcrawl_Schema_Type_Constants::TYPE_VIDEO_OBJECT
+		);
 
 		$schema = $this->add_youtube_thumbnail_data( $data, $schema );
 
 		$tags = smartcrawl_get_array_value( $data, 'tags' );
 		if ( $tags && is_array( $tags ) ) {
-			$schema["keywords"] = join( ',', $tags );
+			$schema['keywords'] = join( ',', $tags );
 		}
 
-		$schema = $this->add_embed_url_property( $schema, $embed_data );
-
-		return $schema;
+		return $this->add_embed_url_property( $schema, $embed_data );
 	}
 
+	/**
+	 * @param $schema
+	 * @param $embed_data
+	 *
+	 * @return mixed
+	 */
 	private function add_embed_url_property( $schema, $embed_data ) {
 		if ( isset( $embed_data['html'] ) ) {
 			$src_attribute = Smartcrawl_Html::find_attributes( 'iframe', 'src', $embed_data['html'] );
@@ -136,13 +178,23 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		return $schema;
 	}
 
+	/**
+	 * @param $seconds
+	 *
+	 * @return string
+	 */
 	private function seconds_to_duration( $seconds ) {
-		$mins = (int) gmdate( "i", $seconds );
-		$secs = (int) gmdate( "s", $seconds );
+		$mins = (int) gmdate( 'i', $seconds );
+		$secs = (int) gmdate( 's', $seconds );
 
 		return "PT{$mins}M{$secs}S";
 	}
 
+	/**
+	 * @param $data
+	 *
+	 * @return string
+	 */
 	private function get_duration( $data ) {
 		$seconds = smartcrawl_get_array_value( $data, 'duration' );
 		if ( ! $seconds ) {
@@ -152,9 +204,16 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		return $this->seconds_to_duration( $seconds );
 	}
 
+	/**
+	 * @param $mapping
+	 * @param $data
+	 * @param $type
+	 *
+	 * @return array
+	 */
 	private function media_data_to_schema( $mapping, $data, $type ) {
 		$schema = array(
-			"@type" => $type,
+			'@type' => $type,
 		);
 		foreach ( $mapping as $source_key => $target_key ) {
 			$source_value = smartcrawl_get_array_value( $data, $source_key );
@@ -163,43 +222,57 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 			}
 		}
 		if ( ! empty( $schema['author'] ) ) {
-			$schema['author'] = array( "@type" => Smartcrawl_Schema_Type_Constants::TYPE_PERSON ) + $schema['author'];
+			$schema['author'] = array( '@type' => Smartcrawl_Schema_Type_Constants::TYPE_PERSON ) + $schema['author'];
 		}
 		if ( ! empty( $schema['publisher'] ) ) {
-			$schema['publisher'] = array( "@type" => Smartcrawl_Schema_Type_Constants::TYPE_ORGANIZATION ) + $schema['publisher'];
+			$schema['publisher'] = array( '@type' => Smartcrawl_Schema_Type_Constants::TYPE_ORGANIZATION ) + $schema['publisher'];
 		}
 		if ( ! empty( $schema['thumbnail'] ) ) {
-			$schema['thumbnail'] = array( "@type" => Smartcrawl_Schema_Type_Constants::TYPE_IMAGE ) + $schema['thumbnail'];
+			$schema['thumbnail']    = array( '@type' => Smartcrawl_Schema_Type_Constants::TYPE_IMAGE ) + $schema['thumbnail'];
 			$schema['thumbnailUrl'] = $schema['thumbnail']['url'];
 		}
 
 		return $schema;
 	}
 
+	/**
+	 * @param       $data
+	 * @param array $schema
+	 *
+	 * @return array
+	 */
 	private function add_youtube_thumbnail_data( $data, array $schema ) {
-		$thumbnails = smartcrawl_get_array_value( $data, 'thumbnails' );
+		$thumbnails            = smartcrawl_get_array_value( $data, 'thumbnails' );
 		$thumbnail_url_default = '';
+
 		foreach ( $thumbnails as $thumbnail_size => $thumbnail ) {
-			$thumbnail_url = smartcrawl_get_array_value( $thumbnail, 'url' );
-			$schema["thumbnail"][] = array(
-				"@type"  => Smartcrawl_Schema_Type_Constants::TYPE_IMAGE,
-				"url"    => $thumbnail_url,
-				"width"  => smartcrawl_get_array_value( $thumbnail, 'width' ),
-				"height" => smartcrawl_get_array_value( $thumbnail, 'height' ),
+			$thumbnail_url         = smartcrawl_get_array_value( $thumbnail, 'url' );
+			$schema['thumbnail'][] = array(
+				'@type'  => Smartcrawl_Schema_Type_Constants::TYPE_IMAGE,
+				'url'    => $thumbnail_url,
+				'width'  => smartcrawl_get_array_value( $thumbnail, 'width' ),
+				'height' => smartcrawl_get_array_value( $thumbnail, 'height' ),
 			);
 
-			if ( $thumbnail_size === 'default' ) {
+			if ( 'default' === $thumbnail_size ) {
 				$thumbnail_url_default = $thumbnail_url;
 			}
 		}
 		if ( $thumbnail_url_default ) {
 			$schema['thumbnailUrl'] = $thumbnail_url_default;
 		}
+
 		return $schema;
 	}
 
+	/**
+	 * @param $post
+	 *
+	 * @return void
+	 */
 	private function add_attachment_schema( $post ) {
 		$src_attributes = Smartcrawl_Html::find_attributes( 'video, audio', 'src', $post->post_content );
+
 		foreach ( $src_attributes as $html_element => $src_url ) {
 			$attachment_id = attachment_url_to_postid( $src_url );
 			if ( ! $attachment_id ) {
@@ -222,11 +295,17 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		}
 	}
 
+	/**
+	 * @param $attachment
+	 * @param $video_element_html
+	 *
+	 * @return array
+	 */
 	private function get_video_attachment_schema( $attachment, $video_element_html ) {
-		$attachment_url = wp_get_attachment_url( $attachment->ID );
+		$attachment_url    = wp_get_attachment_url( $attachment->ID );
 		$attachment_schema = $this->get_attachment_schema( Smartcrawl_Schema_Type_Constants::TYPE_VIDEO_OBJECT, $attachment, $attachment_url );
 
-		// Video poster image
+		// Video poster image.
 		$poster_image_url = $this->get_video_poster_attribute( $video_element_html );
 		if ( $poster_image_url ) {
 			$attachment_schema['thumbnailUrl'] = $poster_image_url;
@@ -235,8 +314,14 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		return $attachment_schema;
 	}
 
+	/**
+	 * @param $video_element_html
+	 *
+	 * @return mixed|string|null
+	 */
 	private function get_video_poster_attribute( $video_element_html ) {
 		$poster_values = Smartcrawl_Html::find_attributes( 'video', 'poster', $video_element_html );
+
 		if ( count( $poster_values ) > 0 ) {
 			return array_shift( $poster_values );
 		}
@@ -244,6 +329,11 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		return '';
 	}
 
+	/**
+	 * @param $attachment
+	 *
+	 * @return array
+	 */
 	private function get_audio_attachment_schema( $attachment ) {
 		return $this->get_attachment_schema(
 			Smartcrawl_Schema_Type_Constants::TYPE_AUDIO_OBJECT,
@@ -291,6 +381,11 @@ class Smartcrawl_Schema_Fragment_Media extends Smartcrawl_Schema_Fragment {
 		);
 	}
 
+	/**
+	 * @param $schema
+	 *
+	 * @return void
+	 */
 	private function add_schema( $schema ) {
 		$this->schema[] = $schema;
 	}

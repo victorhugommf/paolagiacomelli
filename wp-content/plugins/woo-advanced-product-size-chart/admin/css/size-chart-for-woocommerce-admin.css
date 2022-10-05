@@ -3,7 +3,6 @@
  * included in this file.
  */
 #subscribemeaecfree{margin-right:8px}
-*{box-sizing: border-box;}
 #size-chart-meta-fields input[type="text"],#size-chart-meta-fields input[type="password"],#size-chart-meta-fields input[type="checkbox"],#size-chart-meta-fields input[type="color"],#size-chart-meta-fields input[type="date"],#size-chart-meta-fields input[type="datetime"],#size-chart-meta-fields input[type="datetime-local"],#size-chart-meta-fields input[type="email"],#size-chart-meta-fields input[type="month"],#size-chart-meta-fields input[type="number"],#size-chart-meta-fields input[type="search"],#size-chart-meta-fields input[type="radio"],#size-chart-meta-fields input[type="tel"],#size-chart-meta-fields input[type="time"],#size-chart-meta-fields input[type="url"],#size-chart-meta-fields input[type="week"],#size-chart-meta-fields select,textarea{border:1px solid #ddd;-webkit-box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.07);box-shadow:inset 0 1px 2px rgba(0, 0, 0, 0.07);background-color:#fff;color:#32373c;outline:none;-webkit-transition:0.05s border-color ease-in-out;transition:0.05s border-color ease-in-out;width:99%!important}
 .field-title h4{margin-bottom:0}
 
@@ -23,8 +22,8 @@ table#size-chart tr td{font-size:14px}
 table#size-chart tr th,table#size-chart tr td{text-align:center;word-wrap:break-word}
 .chart-image img{width:100%}
 .chart-content-image img{height:auto;max-width:100%}
-.chart-table{clear:both;margin-top:15px;float:left}
-.chart-table table{border-collapse:collapse;border-spacing:0;border-width:1px 0 0 1px;margin:0 0 1.75em;table-layout:fixed;width:100%;border:1px solid #d1d1d1}
+.chart-table{clear:both;float:left}
+.chart-table table{border-collapse:collapse;border-spacing:0;border-width:1px 0 0 1px;margin:0;table-layout:fixed;width:100%;border:1px solid #d1d1d1}
 
 .chart-table th,td{padding:0.4375em}
 
@@ -72,15 +71,16 @@ div#size-chart-setting-fields legend{background-color:#e7e7e7;border:1px solid #
 .md-size-chart-modal{display: none;}
 .md-size-chart-hide{-webkit-animation: cssAnimation 0.4s forwards; animation: cssAnimation 0.4s forwards;}
 .md-size-chart-show{display:block;}
-.md-size-chart-modal-content{margin-top:25px;position:fixed;z-index:199999;top:0;right:0;bottom:0;left:0;-webkit-overflow-scrolling:touch;padding:80px}
+.md-size-chart-modal-content{margin:0;position:fixed;z-index:199999;top:0;right:0;bottom:0;left:0;padding:50px}
 div#md-size-chart-modal .remodal-close{font-weight:600}
 div#md-size-chart-modal .remodal-close:hover,div#md-size-chart-modal .remodal-close:focus{color:#fff;background-color:#d85050;border-color:#d85050}
-.md-size-chart-modal-body{-webkit-box-sizing:border-box;box-sizing:border-box;width:100%;-webkit-transform:translate3d(0, 0, 0);transform:translate3d(0, 0, 0);color:#2b2e38;background:#fff;position:relative;outline:none;-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;-ms-text-size-adjust:100%;text-size-adjust:100%;-webkit-animation-name:animatetop;-webkit-animation-duration:0.4s;animation-name:animatetop;animation-duration:0.4s;margin:0 auto;z-index:111111;overflow:auto;max-height:100%;border-radius:10px;height:100%;}
+.md-size-chart-modal-body{-webkit-box-sizing:border-box;box-sizing:border-box;width:100%;-webkit-transform:translate3d(0, 0, 0);transform:translate3d(0, 0, 0);color:#2b2e38;background:#fff;position:relative;outline:none;-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;-ms-text-size-adjust:100%;text-size-adjust:100%;-webkit-animation-name:animatetop;-webkit-animation-duration:0.4s;animation-name:animatetop;animation-duration:0.4s;margin:0 auto;z-index:111111;overflow:hidden;max-height:100%;border-radius:5px;height:100%;padding-bottom: 90px;}
 .md-size-chart-hide .md-size-chart-modal-body{-webkit-animation:animateend ease 0.5s forwards;-webkit-animation-duration:0.4s;animation:animateend ease 0.5s forwards;animation-duration:0.4s;}
 div.md-size-chart-overlay{position:fixed;z-index:10000;top:-5000px;right:-5000px;bottom:-5000px;left:-5000px;background-color:rgba(0, 0, 0, 0.9);-webkit-animation-name:animatetop;-webkit-animation-duration:0.4s;animation-name:animatetop;animation-duration:0.4s;}
 .md-size-chart-hide .md-size-chart-overlay{-webkit-animation:animateend ease 0.5s forwards;-webkit-animation-duration:0.4s;animation:animateend ease 0.5s forwards;animation-duration:0.4s;}
-.chart-container{padding: 20px;} 
-div#md-size-chart-modal .chart-table{float:none;display:inline-block}
+.chart-container{padding: 20px;height: 100%;overflow-y: auto;} 
+.md-size-chart-subtitle{font-size: 16px;}
+div#md-size-chart-modal .chart-table{float:none;display:inline-block;margin-top: 15px;}
 div#md-size-chart-modal .chart-image{clear:both;margin-top:15px;float:left}
 div#md-size-chart-modal .chart-content{clear:both;display:inline-block;width:100%}
 
@@ -102,15 +102,69 @@ div#size-chart-meta-fields .field-item span.select2.select2-container input{heig
 div#size-chart-meta-fields option:disabled{color:red;background:#f1f1f1}
 /* div#size-chart-meta-fields .field-item span.select2.select2-container{width:inherit!important;} */
 
+.multiple_action_wrap{background: #f3f2f2; border-radius: 5px; padding:20px;border: 1px solid #b9b9b9;}
+
 /* Close button */
+.md-modal-title{font-size: 20px;line-height: 26px;padding: 12px 20px;}
 .md-size-chart-close {display: block;width: 100%;border-bottom: 1px solid lightgrey;height: 50px;position: relative;}
 p.md-size-chart-label {font-size: 20px;font-weight: 700;text-align: center;margin: 0;}
-.remodal-close{display:block;overflow:visible;width:50px;height:50px;margin:0;padding:0;cursor:pointer;-webkit-transition:color 0.2s, background-color 0.2s;transition:color 0.2s, background-color 0.2s;text-decoration:none;color:#95979c;border:0;outline:0;background:transparent;position: absolute;right: 0;}
+.remodal-close{display:block;overflow:visible;width:50px;height:50px;margin:0;padding:0;cursor:pointer;-webkit-transition:color 0.2s, background-color 0.2s;transition:color 0.2s, background-color 0.2s;text-decoration:none;color:#95979c;border:0;outline:0;background:transparent;position: absolute;right: 0;top:0;}
 .remodal-close:hover,.remodal-close:focus{color:#2b2e38}
 .remodal-close::before{font-family:Arial, "Helvetica CY", "Nimbus Sans L", sans-serif!important;font-size:30px;line-height:50px;position:absolute;top:0;left:0;display:block;width:48px;content:"\00d7";text-align:center}
 .about-wrap h1.size-chart-about{font-size:2.1em}
 
-@media only screen and (min-width:641px){.md-size-chart-modal-body{max-width:800px}}
+/*Size Chart Table CSS*/
+#size-chart-meta-fields table.inputtable{border: none; box-shadow: none;}
+#size-chart-meta-fields table.inputtable tr:first-child th, #size-chart-meta-fields table.inputtable tr td:last-child{background-color: transparent;border-collapse: collapse;border: 0!important;white-space: nowrap;}
+#size-chart-meta-fields table.inputtable input{ background-color: transparent;border: none;box-shadow: none;}
+#size-chart-meta-fields .multiple_action_wrap input[type="color"] {appearance: none; -moz-appearance: none; -webkit-appearance: none;background: none; border: 0; cursor: pointer; height: auto; padding: 0; width: 25% !important;margin: 0;}
+/* .scfw_color_picker{ border: 1px solid; border-radius: 5px; display: flex;flex-wrap: nowrap;cursor: pointer;background: #fff;width: 50%;}
+.scfw_color_picker p{width: 75%;padding: 9px 0 8px 10px;margin: 0;font-size: 12px;border-left: 1px solid #000;} */
+.iris-picker.iris-border{position: absolute; z-index: 2;}
+#size-chart-meta-fields .scfw_color_picker .wp-picker-input-wrap input{width: 4rem !important;}
+::-webkit-color-swatch-wrapper {padding: 0;}
+::-webkit-color-swatch{border: 0;border-top-left-radius: 5px;border-bottom-left-radius: 5px;}
+::-moz-color-swatch,
+::-moz-focus-inner{border: 0;}
+table.multiple_action_wrap tr td{width: 25%;}
+table.inputtable a.icon-button {border-radius: 5px;width: 20px;height: 20px;line-height: 18px;font-size: 18px;}
+
+.field-default-icon-wrap {display: flex;flex-wrap: wrap;}
+.field-default-icon-wrap input[type="radio"]{display: none;}
+.field-default-icon-wrap input[type="radio"]:checked + span {border: 2px solid #333;}
+.field-default-icon-wrap label span.dashicons{margin-top: 10px;padding: 8px;display: flex;border: 2px solid #ddd;border-radius: 5px;margin-right: 10px;width: 30px;height: 30px;align-items: center;justify-content: center;line-height: normal;}
+.field-default-icon-wrap span.dashicons{font-size: 28px;width: 60px;height: 60px;}
+.field-default-icon-wrap span.dashicons-none {font-size: 16px;}
+.field-default-icon-wrap .dashicons img {width: 100%;display: block;}
+.field-default-icon-wrap label span.dashicons:hover {border: 2px solid #333;}
+
+/* Woocoomerce spinner custom code start */
+.blockUI.blockOverlay::before {height: 1em;width: 1em;display: block;position: absolute;top: 50%;left: 50%;margin-left: -0.5em;margin-top: -0.5em;content: "";-webkit-animation: spin 1s ease-in-out infinite;animation: spin 1s ease-in-out infinite;background: url(../images/loader.svg) center center;background-size: cover;line-height: 1;text-align: center;font-size: 2em;color: rgba(0,0,0,.75);}
+@-webkit-keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg)
+    }
+}
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg)
+    }
+}
+/* Woocoomerce spinner custom code end */
+
+@media only screen and (min-width:641px){
+    .md-size-chart-modal-body.small{
+        max-width:600px;
+    }
+    .md-size-chart-modal-body.medium, .md-size-chart-modal-body{
+        max-width:800px;
+    }
+    .md-size-chart-modal-body.large{
+        max-width:1000px;
+    }
+}
 @media only screen and (max-width:640px){div#md-size-chart-modal .chart-table{overflow:scroll;width:100%}.chart-content-list{width:100%;box-sizing:border-box}div#md-size-chart-modal .chart-table table{width:100%;table-layout:auto;margin-bottom:0;white-space:nowrap}}
 @media only screen and (max-width:500px){table#size-chart tr th{font-size:11px!important}table#size-chart tr td{font-size:10px!important}.chart-content-image{float:none}}
 

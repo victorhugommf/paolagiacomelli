@@ -6,8 +6,8 @@ Tags: seo optimization, seo, sitemap, google search console, pagerank, keywords,
 Author URI: https://wpmudev.com/
 Author: WPMU DEV
 Requires at least: 5.2
-Tested up to: 6.0.1
-Stable tag: 3.0.1
+Tested up to: 6.0
+Stable tag: 3.2.1
 
 SEO checker, content analysis & SEO optimizer. Rank higher on search engines with 301 redirects, XML sitemaps & one-click setup.
 
@@ -135,6 +135,26 @@ SmartCrawl works with any normal WP content and page builders shouldn’t be an 
 4. Use OpenGraph and Twitter Cards to optimize social sharing.
 
 == Changelog ==
+
+= 3.2.1 ( 2022-09-29 ) =
+
+- Improvement: Membership checks.
+- Fix: CSS is visible on preview when an Elementor template is used.
+- Fix: Shared UI conflict.
+
+= 3.2.0 ( 2022-09-05 ) =
+
+- Improvement: Remove redundant priority and frequency data from sitemap
+- Improvement: Remove redundant last modified timestamp from the sitemap index
+- Improvement: Better sitemap compatibility with bbPress
+- Fix: Unable to uninstall SmartCrawl plugin.
+
+= 3.1.0 ( 2022-08-18 ) =
+
+- Improvement: Code improvements.
+- Improvement: Upgrade Shared UI.
+- Fix: Unable to enable Media indexing.
+- Fix: Schema types cannot have more than 10 in Schema of the same type.
 
 = 3.0.1 ( 2022-07-14 ) =
 

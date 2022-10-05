@@ -75,13 +75,15 @@ class Cartflows_Ca_Email_Schedule {
 				}
 			}
 
+			$email_data = apply_filters( 'woo_ca_recovery_email_data', $email_data, $preview_email );
+
 			$other_fields = unserialize( $email_data->other_fields );
 
 			$from_email_name    = get_option( 'wcf_ca_from_name' );
 			$reply_name_preview = get_option( 'wcf_ca_reply_email' );
 			$from_email_preview = get_option( 'wcf_ca_from_email' );
 
-			$user_first_name = ucfirst( $other_fields['wcf_first_name'] );
+			$user_first_name = ! empty( $other_fields['wcf_first_name'] ) ? ucfirst( $other_fields['wcf_first_name'] ) : ucfirst( $other_fields['wcf_shipping_first_name'] );
 			$user_first_name = $user_first_name ? $user_first_name : apply_filters( 'woo_ca_default_first_name', __( 'there', 'woo-cart-abandonment-recovery' ) );
 			$user_last_name  = ucfirst( $other_fields['wcf_last_name'] );
 			$user_full_name  = trim( $user_first_name . ' ' . $user_last_name );

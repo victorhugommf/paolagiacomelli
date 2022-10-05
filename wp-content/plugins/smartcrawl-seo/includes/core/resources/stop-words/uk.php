@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // ukrainian
-
-static $data = [
+static $data = array(
     'a',
     'б',
     'в',
@@ -388,7 +387,7 @@ static $data = [
     'дев\'ятнадцять',
     'чотирнадцятий',
     'дев\'ятнадцятий',
-];
+);
 
 $result =& $data;
 unset($data);

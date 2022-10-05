@@ -166,7 +166,7 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             $post_status = get_post_meta( $post->ID, 'post_status', true );
             if ( $this->get_plugin_post_type_name() === $post->post_type && isset( $post_status ) && 'default' === $post_status ) {
                 // Add inline style.
-                wp_add_inline_style( 'wp-jquery-ui-dialog', "#delete-action, .bulkactions, #duplicate-action, #misc-publishing-actions, #minor-publishing-actions{display:none;}" );
+                wp_add_inline_style( 'wp-jquery-ui-dialog', "#delete-action, #duplicate-action, #misc-publishing-actions, #minor-publishing-actions{display:none;}" );
             }
         }
         
@@ -189,6 +189,75 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             false
         );
         $screen = get_current_screen();
+        $chart_table_style = array(
+            'default-style' => array(
+            'header_bg_color'   => '#000',
+            'even_row_bg_color' => '#ebe9eb',
+            'odd_row_bg_color'  => '#fff',
+            'text_color'        => '#fff',
+            'even_text_color'   => '#000',
+            'odd_text_color'    => '#000',
+            'border_color'      => '#d1d1d1',
+            'border_hb_style'   => 'solid',
+            'border_hw'         => 1,
+            'border_vb_style'   => 'solid',
+            'border_vw'         => 1,
+        ),
+            'minimalistic'  => array(
+            'header_bg_color'   => '#fff',
+            'even_row_bg_color' => '#fff',
+            'odd_row_bg_color'  => '#fff',
+            'text_color'        => '#000',
+            'even_text_color'   => '#000',
+            'odd_text_color'    => '#000',
+            'border_color'      => '#d1d1d1',
+            'border_hb_style'   => 'solid',
+            'border_hw'         => 1,
+            'border_vb_style'   => 'solid',
+            'border_vw'         => 1,
+        ),
+            'classic'       => array(
+            'header_bg_color'   => '#000',
+            'even_row_bg_color' => '#fff',
+            'odd_row_bg_color'  => '#fff',
+            'text_color'        => '#fff',
+            'even_text_color'   => '#000',
+            'odd_text_color'    => '#000',
+            'border_color'      => '#d1d1d1',
+            'border_hb_style'   => 'solid',
+            'border_hw'         => 1,
+            'border_vb_style'   => 'solid',
+            'border_vw'         => 1,
+        ),
+            'modern'        => array(
+            'header_bg_color'   => '#ebe9eb',
+            'even_row_bg_color' => '#ebe9eb',
+            'odd_row_bg_color'  => '#fff',
+            'text_color'        => '#000',
+            'even_text_color'   => '#000',
+            'odd_text_color'    => '#000',
+            'border_color'      => 'transparent',
+            'border_hb_style'   => 'none',
+            'border_hw'         => 0,
+            'border_vb_style'   => 'none',
+            'border_vw'         => 0,
+        ),
+        );
+        if ( scfw_fs()->is__premium_only() & scfw_fs()->can_use_premium_code() ) {
+            $chart_table_style['custom-style'] = array(
+                'header_bg_color'   => scfw_size_chart_get_table_head_color(),
+                'even_row_bg_color' => scfw_size_chart_get_table_row_even_color(),
+                'odd_row_bg_color'  => scfw_size_chart_get_table_row_odd_color(),
+                'text_color'        => scfw_size_chart_get_table_head_font_color(),
+                'even_text_color'   => '#000',
+                'odd_text_color'    => '#000',
+                'border_color'      => '#d1d1d1',
+                'border_hb_style'   => 'solid',
+                'border_hw'         => 1,
+                'border_vb_style'   => 'solid',
+                'border_vw'         => 1,
+            );
+        }
         // Localize script.
         $size_chart_localize_script_args = array(
             'size_chart_admin_url'             => admin_url( 'admin-ajax.php' ),
@@ -200,6 +269,7 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             'size_chart_plugin_dash_name'      => $this->get_plugin_dash_name(),
             'size_chart_plugin_name'           => $this->get_plugin_name(),
             'size_chart_no_product_assigned'   => __( 'No product assigned', 'size-chart-for-woocommerce' ),
+            'size_chart_chart_table_style'     => $chart_table_style,
         );
         if ( scfw_fs()->is_plan( 'free', true ) ) {
             $size_chart_localize_script_args['size_chart_plugin_menu_url'] = 'edit.php?post_type=' . $this->get_plugin_post_type_name();
@@ -207,6 +277,7 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
         wp_localize_script( $this->get_plugin_dash_name(), 'sizeChartScriptObject', $size_chart_localize_script_args );
         // Enqueue scripts.
         wp_enqueue_script( 'jquery-ui-dialog' );
+        wp_enqueue_script( 'jquery-blockui' );
         wp_enqueue_script( $this->get_plugin_dash_name() . '-jquery-editable-js' );
         wp_enqueue_script( $this->get_plugin_dash_name() );
         wp_enqueue_script(
@@ -239,18 +310,17 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             }
         }
         
-        
-        if ( $this->get_plugin_post_type_name() === $typenow && 'edit.php' === $hook_suffix ) {
-            $default_size_chart_ids = scfw_size_chart_get_default_post_ids();
-            
-            if ( isset( $default_size_chart_ids ) && !empty($default_size_chart_ids) && array_filter( $default_size_chart_ids ) ) {
-                $default_size_chart_ids_jquery = implode( ',', $default_size_chart_ids );
-                // Add inline script.
-                wp_add_inline_script( $this->get_plugin_dash_name(), 'window.onload = function() {jQuery.each([ ' . $default_size_chart_ids_jquery . ' ], function( index, value ) {jQuery("input#cb-select-"+value).remove();});};' );
-            }
-        
-        }
-    
+        // if ( $this->get_plugin_post_type_name() === $typenow && 'edit.php' === $hook_suffix ) {
+        // 	$default_size_chart_ids = scfw_size_chart_get_default_post_ids();
+        // 	if ( isset( $default_size_chart_ids ) && ! empty( $default_size_chart_ids ) && array_filter( $default_size_chart_ids ) ) {
+        // 		$default_size_chart_ids_jquery = implode( ',', $default_size_chart_ids );
+        // 		// Add inline script.
+        // 		wp_add_inline_script(
+        // 			$this->get_plugin_dash_name(),
+        // 			'window.onload = function() {jQuery.each([ ' . $default_size_chart_ids_jquery . ' ], function( index, value ) {jQuery("input#cb-select-"+value).remove();});};'
+        // 		);
+        // 	}
+        // }
     }
     
     /**
@@ -301,9 +371,8 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
     public function scfw_size_chart_pro_welcome_screen_and_default_posts_callback()
     {
         /**
-         * Default Template.
-         * Created default size chart posts.
-         * Add option for check default size chart.
+         * Remove Default Template.
+         * Remove option for check default size chart.
          */
         $default_size_chart_option = get_option( 'default_size_chart' );
         
@@ -429,6 +498,16 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             'size-chart-get-started-page',
             array( $this, 'scfw_size_chart_get_started_page' )
         );
+        if ( scfw_fs()->is__premium_only() && scfw_fs()->can_use_premium_code() ) {
+            add_submenu_page(
+                'dots_store',
+                __( 'Import / Export', 'size-chart-for-woocommerce' ),
+                __( 'Import / Export', 'size-chart-for-woocommerce' ),
+                $cs_capability,
+                'size-chart-import-export',
+                array( $this, 'scfw_size_chart_import_export_page' )
+            );
+        }
         $settings = add_submenu_page(
             'edit.php?post_type=size-chart',
             __( 'Settings', 'size-chart-for-woocommerce' ),
@@ -457,6 +536,14 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
         }
     }
     
+    public function scfw_size_chart_import_export_page()
+    {
+        $file_dir_path = 'partials/size-chart-import-export-page.php';
+        if ( file_exists( plugin_dir_path( __FILE__ ) . $file_dir_path ) ) {
+            require_once plugin_dir_path( __FILE__ ) . $file_dir_path;
+        }
+    }
+    
     /**
      * Size chart settings and redirection.
      *
@@ -473,10 +560,12 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             // Sanitize user input. (Free)
             $size_chart_tab_label = filter_input( INPUT_POST, 'size-chart-tab-label', FILTER_SANITIZE_STRING );
             $size_chart_popup_label = filter_input( INPUT_POST, 'size-chart-popup-label', FILTER_SANITIZE_STRING );
+            $size_chart_popup_type = filter_input( INPUT_POST, 'size-chart-popup-type', FILTER_SANITIZE_STRING );
             $size_chart_sub_title_text = filter_input( INPUT_POST, 'size-chart-sub-title-text', FILTER_SANITIZE_STRING );
             // Assign the user input data in size chart settings object.
             $this->size_chart_settings['size-chart-tab-label'] = $size_chart_tab_label;
             $this->size_chart_settings['size-chart-popup-label'] = $size_chart_popup_label;
+            $this->size_chart_settings['size-chart-popup-type'] = ( $size_chart_popup_type ? $size_chart_popup_type : 'text' );
             $this->size_chart_settings['size-chart-sub-title-text'] = $size_chart_sub_title_text;
             $size_chart_settings_json_encode = wp_json_encode( $this->size_chart_settings );
             // Update size chart settings option.
@@ -504,6 +593,7 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
         remove_submenu_page( 'index.php', 'size-chart-about' );
         remove_submenu_page( 'dots_store', 'size-chart-information' );
         remove_submenu_page( 'dots_store', 'size-chart-get-started-page' );
+        remove_submenu_page( 'dots_store', 'size-chart-import-export' );
     }
     
     /**
@@ -571,6 +661,8 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             $chart_sub_title = filter_input( INPUT_POST, 'size-chart-sub-title', FILTER_SANITIZE_STRING );
             $chart_tab_label = filter_input( INPUT_POST, 'chart-tab-label', FILTER_SANITIZE_STRING );
             $chart_popup_label = filter_input( INPUT_POST, 'chart-popup-label', FILTER_SANITIZE_STRING );
+            $chart_popup_type = filter_input( INPUT_POST, 'chart-popup-type', FILTER_SANITIZE_STRING );
+            $chart_popup_icon = filter_input( INPUT_POST, 'chart-popup-icon', FILTER_SANITIZE_STRING );
             $chart_img = filter_input( INPUT_POST, 'primary-chart-image', FILTER_SANITIZE_STRING );
             $chart_position = filter_input( INPUT_POST, 'position', FILTER_SANITIZE_STRING );
             $chart_table = filter_input(
@@ -580,6 +672,7 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
                 FILTER_FLAG_NO_ENCODE_QUOTES
             );
             $table_style = filter_input( INPUT_POST, 'table-style', FILTER_SANITIZE_STRING );
+            $chart_popup_note = filter_input( INPUT_POST, 'chart-popup-note', FILTER_SANITIZE_STRING );
             // Sanitize the user input array values.
             $args = array(
                 'chart-categories' => array(
@@ -610,11 +703,63 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             $post_chart_attributes = filter_input_array( INPUT_POST, $args );
             $chart_attributes = ( isset( $post_chart_attributes['chart-attributes'] ) && array_filter( $post_chart_attributes['chart-attributes'] ) ? $post_chart_attributes['chart-attributes'] : array() );
             $chart_attributes = wp_json_encode( $chart_attributes );
+            // Sanitize Color Data
+            
+            if ( scfw_fs()->is__premium_only() & scfw_fs()->can_use_premium_code() ) {
+                $scfw_header_bg_color = filter_input( INPUT_POST, 'scfw_header_bg_color', FILTER_SANITIZE_STRING );
+                $scfw_even_row_bg_color = filter_input( INPUT_POST, 'scfw_even_row_bg_color', FILTER_SANITIZE_STRING );
+                $scfw_odd_row_bg_color = filter_input( INPUT_POST, 'scfw_odd_row_bg_color', FILTER_SANITIZE_STRING );
+                $scfw_text_color = filter_input( INPUT_POST, 'scfw_text_color', FILTER_SANITIZE_STRING );
+                $scfw_even_text_color = filter_input( INPUT_POST, 'scfw_even_text_color', FILTER_SANITIZE_STRING );
+                $scfw_odd_text_color = filter_input( INPUT_POST, 'scfw_odd_text_color', FILTER_SANITIZE_STRING );
+            } else {
+                $scfw_header_bg_color = '';
+                $scfw_even_row_bg_color = '';
+                $scfw_odd_row_bg_color = '';
+                $scfw_text_color = '';
+                $scfw_even_text_color = '';
+                $scfw_odd_text_color = '';
+            }
+            
+            //Sanitize Border Data
+            
+            if ( scfw_fs()->is__premium_only() & scfw_fs()->can_use_premium_code() ) {
+                $scfw_border_hb_style = filter_input( INPUT_POST, 'scfw_border_hb_style', FILTER_SANITIZE_STRING );
+                $scfw_border_hw = filter_input( INPUT_POST, 'scfw_border_hw', FILTER_SANITIZE_STRING );
+                $scfw_border_vb_style = filter_input( INPUT_POST, 'scfw_border_vb_style', FILTER_SANITIZE_STRING );
+                $scfw_border_vw = filter_input( INPUT_POST, 'scfw_border_vw', FILTER_SANITIZE_STRING );
+                $scfw_border_color = filter_input( INPUT_POST, 'scfw_border_color', FILTER_SANITIZE_STRING );
+            } else {
+                $scfw_border_hb_style = '';
+                $scfw_border_hw = '';
+                $scfw_border_vb_style = '';
+                $scfw_border_vw = '';
+                $scfw_border_color = '';
+            }
+            
+            //Sanitize chart country
+            
+            if ( scfw_fs()->is__premium_only() & scfw_fs()->can_use_premium_code() ) {
+                $args = array(
+                    'chart-country' => array(
+                    'filter' => FILTER_SANITIZE_STRING,
+                    'flags'  => FILTER_REQUIRE_ARRAY,
+                ),
+                );
+                $post_chart_country = filter_input_array( INPUT_POST, $args );
+                $chart_country = ( isset( $post_chart_country['chart-country'] ) && array_filter( $post_chart_country['chart-country'] ) ? $post_chart_country['chart-country'] : array() );
+                // $chart_country      = wp_json_encode( $chart_country );
+            } else {
+                $chart_country = array();
+            }
+            
             // Save the data in post meta.
             update_post_meta( $post_id, 'label', $chart_label );
             update_post_meta( $post_id, 'size-chart-sub-title', $chart_sub_title );
             update_post_meta( $post_id, 'chart-tab-label', $chart_tab_label );
             update_post_meta( $post_id, 'chart-popup-label', $chart_popup_label );
+            update_post_meta( $post_id, 'chart-popup-type', $chart_popup_type );
+            update_post_meta( $post_id, 'chart-popup-icon', $chart_popup_icon );
             update_post_meta( $post_id, 'primary-chart-image', $chart_img );
             update_post_meta( $post_id, 'position', $chart_position );
             update_post_meta( $post_id, 'chart-categories', $chart_categories );
@@ -622,6 +767,19 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             update_post_meta( $post_id, 'chart-attributes', $chart_attributes );
             update_post_meta( $post_id, 'chart-table', $chart_table );
             update_post_meta( $post_id, 'table-style', $table_style );
+            update_post_meta( $post_id, 'chart-popup-note', $chart_popup_note );
+            update_post_meta( $post_id, 'scfw_header_bg_color', $scfw_header_bg_color );
+            update_post_meta( $post_id, 'scfw_even_row_bg_color', $scfw_even_row_bg_color );
+            update_post_meta( $post_id, 'scfw_odd_row_bg_color', $scfw_odd_row_bg_color );
+            update_post_meta( $post_id, 'scfw_text_color', $scfw_text_color );
+            update_post_meta( $post_id, 'scfw_even_text_color', $scfw_even_text_color );
+            update_post_meta( $post_id, 'scfw_odd_text_color', $scfw_odd_text_color );
+            update_post_meta( $post_id, 'scfw_border_hb_style', $scfw_border_hb_style );
+            update_post_meta( $post_id, 'scfw_border_hw', $scfw_border_hw );
+            update_post_meta( $post_id, 'scfw_border_vb_style', $scfw_border_vb_style );
+            update_post_meta( $post_id, 'scfw_border_vw', $scfw_border_vw );
+            update_post_meta( $post_id, 'scfw_border_color', $scfw_border_color );
+            update_post_meta( $post_id, 'chart_country', $chart_country );
         }
         
         // Save the meta when the chart post is saved.
@@ -708,6 +866,15 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
                 'side',
                 'default'
             );
+            // Meta box to List of assign tag.
+            add_meta_box(
+                'chart-assign-attributes',
+                __( 'Assign Attributes', 'size-chart-for-woocommerce' ),
+                array( $this, 'scfw_size_chart_assign_attributes_callback' ),
+                $this->get_plugin_post_type_name(),
+                'side',
+                'default'
+            );
             // Meta box to List of assign Product
             add_meta_box(
                 'chart-assign-product',
@@ -761,13 +928,26 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
     }
     
     /**
-     *  Meta Box content to assign category list.
+     *  Meta Box content to assign tag list.
      *
      * @since      1.0.0
      */
     public function scfw_size_chart_assign_tag_callback()
     {
         $file_dir_path = 'partials/size-chart-assign-tag.php';
+        if ( file_exists( plugin_dir_path( __FILE__ ) . $file_dir_path ) ) {
+            require_once plugin_dir_path( __FILE__ ) . $file_dir_path;
+        }
+    }
+    
+    /**
+     *  Meta Box content to assign product attributes list.
+     *
+     * @since      2.4.0
+     */
+    public function scfw_size_chart_assign_attributes_callback()
+    {
+        $file_dir_path = 'partials/size-chart-assign-attributes.php';
         if ( file_exists( plugin_dir_path( __FILE__ ) . $file_dir_path ) ) {
             require_once plugin_dir_path( __FILE__ ) . $file_dir_path;
         }
@@ -838,25 +1018,55 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
         
         // Sanitize user input.
         $chart_id = filter_input( INPUT_GET, 'chartID', FILTER_SANITIZE_NUMBER_INT );
+        $table_style = filter_input( INPUT_GET, 'popup_style', FILTER_SANITIZE_STRING );
+        
+        if ( scfw_fs()->is__premium_only() && scfw_fs()->can_use_premium_code() ) {
+            $filter = array(
+                'data'         => array(
+                'filter' => array( FILTER_VALIDATE_INT, FILTER_SANITIZE_STRING ),
+                'flags'  => FILTER_REQUIRE_ARRAY,
+            ),
+                'chart_color'  => array(
+                'filter' => array( FILTER_VALIDATE_INT, FILTER_SANITIZE_STRING ),
+                'flags'  => FILTER_REQUIRE_ARRAY,
+            ),
+                'chart_border' => array(
+                'filter' => array( FILTER_VALIDATE_INT, FILTER_SANITIZE_STRING ),
+                'flags'  => FILTER_REQUIRE_ARRAY,
+            ),
+            );
+            $data = filter_input_array( INPUT_GET, $filter );
+            $data = ( !empty($data) ? $data['data'] : array() );
+            $chart_color = filter_input_array( INPUT_GET, $filter );
+            $chart_color = ( !empty($chart_color) ? $chart_color['chart_color'] : array() );
+            $chart_border = filter_input_array( INPUT_GET, $filter );
+            $chart_border = ( !empty($chart_border) ? $chart_border['chart_border'] : array() );
+        }
+        
         
         if ( isset( $chart_id ) && !empty($chart_id) ) {
             $chart_label = scfw_size_chart_get_label_by_chart_id( $chart_id );
             
             if ( isset( $chart_label ) && !empty($chart_label) ) {
-                $result['css'] = scfw_size_chart_get_inline_styles_by_post_id( $chart_id );
+                
+                if ( scfw_fs()->is__premium_only() && scfw_fs()->can_use_premium_code() ) {
+                    // $table_style = scfw_size_chart_get_chart_table_style_by_chart_id( $post_id );
+                    
+                    if ( 'advance-style' !== $table_style ) {
+                        $result['css'] = scfw_size_chart_get_inline_styles_by_post_id( $chart_id, $table_style );
+                    } else {
+                        $result['css'] = "table#size-chart.advance-style tr th {background: {$chart_color['scfw_header_bg_color']};color: {$chart_color['scfw_text_color']};} \n                            #size-chart.advance-style tr:nth-child(even) {background: {$chart_color['scfw_odd_row_bg_color']};color: {$chart_color['scfw_odd_text_color']};}\n                            #size-chart.advance-style td:nth-child(even) {background: transparent;}\n\n                            #size-chart.advance-style tr:nth-child(odd) {background: {$chart_color['scfw_even_row_bg_color']};color: {$chart_color['scfw_even_text_color']};}\n                            #size-chart.advance-style td:nth-child(odd) {background: transparent;}\n\n                            table#size-chart.advance-style tr td, #size-chart.advance-style tr th { \n                                border-top:{$chart_border['scfw_border_hw']}px {$chart_border['scfw_border_hb_style']} {$chart_border['scfw_border_color']};\n                                border-bottom:{$chart_border['scfw_border_hw']}px {$chart_border['scfw_border_hb_style']} {$chart_border['scfw_border_color']};\n                                border-left:{$chart_border['scfw_border_vw']}px {$chart_border['scfw_border_vb_style']} {$chart_border['scfw_border_color']};\n                                border-right:{$chart_border['scfw_border_vw']}px {$chart_border['scfw_border_vb_style']} {$chart_border['scfw_border_color']};\n                            }\n\n                            .button-wrapper #chart-button, .button-wrapper .md-size-chart-btn {color: {$size_chart_title_color}}";
+                    }
+                
+                } else {
+                    $result['css'] = scfw_size_chart_get_inline_styles_by_post_id( $chart_id, $table_style );
+                }
+                
                 ob_start();
-                ?>
-				<div class="chart-container" id="size-chart-id-<?php 
-                echo  esc_attr( $chart_id ) ;
-                ?>">
-					<?php 
                 $file_dir_path = 'includes/common-files/size-chart-contents.php';
                 if ( file_exists( plugin_dir_path( dirname( __FILE__ ) ) . $file_dir_path ) ) {
                     require_once plugin_dir_path( dirname( __FILE__ ) ) . $file_dir_path;
                 }
-                ?>
-				</div>
-				<?php 
                 $result['html'] = ob_get_clean();
                 $result['success'] = 1;
                 $result['msg'] = esc_html__( 'Successfully...', 'size-chart-for-woocommerce' );
@@ -894,12 +1104,9 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
             <!-- Modal content -->
             <div class="md-size-chart-modal-content">
                 <div class="md-size-chart-overlay"></div>
-                <div class="md-size-chart-modal-body">
-				<div class="md-size-chart-close" id="md-poup">
-                    	<button data-remodal-action="close"  class="remodal-close" aria-label="<?php 
-        esc_attr_e( 'Close', 'size-chart-for-woocommerce' );
-        ?>"></button>
-				</div>
+                <div class="md-size-chart-modal-body <?php 
+        echo  esc_attr( scfw_size_chart_get_size() ) ;
+        ?>" id="md-poup">
                 </div>
             </div>
         </div>
@@ -917,7 +1124,7 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
     {
         $new_columns = ( is_array( $columns ) ? $columns : array() );
         unset( $new_columns['date'] );
-        // $new_columns['size-chart-type'] 	= __( 'Size Chart Type', 'size-chart-for-woocommerce' );
+        $new_columns['size-chart-type'] = __( 'Size Chart Type', 'size-chart-for-woocommerce' );
         // $new_columns['action']          = __( 'Action', 'size-chart-for-woocommerce' );
         $new_columns['product_assign'] = __( 'Product assign', 'size-chart-for-woocommerce' );
         $new_columns['category_assign'] = __( 'Category assign', 'size-chart-for-woocommerce' );
@@ -1102,17 +1309,29 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
     public function scfw_size_chart_remove_row_actions_callback( $actions )
     {
         global  $post ;
-        $post_status = get_post_meta( $post->ID, 'post_status', true );
         
-        if ( $this->get_plugin_post_type_name() === $post->post_type && isset( $post_status ) && 'default' === $post_status ) {
-            unset( $actions );
-            $actions = array();
-        } else {
+        if ( $this->get_plugin_post_type_name() === $post->post_type ) {
+            $post_status = get_post_meta( $post->ID, 'post_status', true );
+            
+            if ( isset( $post_status ) && 'default' === $post_status ) {
+                unset( $actions['inline hide-if-no-js'] );
+                // $actions = array();
+            }
+            
+            $actions['previewing'] = sprintf( '<a id="%s" href="javascript:void(0);" class="preview_chart" rel="permalink">%s</a>', esc_attr( $post->ID ), esc_attr__( 'Preview', 'size-chart-for-woocommerce' ) );
             $actions['clone'] = sprintf( '<a href="%s" rel="permalink">%s</a>', esc_url( wp_nonce_url( add_query_arg( array(
                 'action' => 'size_chart_duplicate_post',
                 'post'   => $post->ID,
             ), admin_url( 'admin.php' ) ), 'scfw_size_chart_duplicate_post_callback' ) ), esc_attr__( 'Clone', 'size-chart-for-woocommerce' ) );
-            $actions['previewing'] = sprintf( '<a id="%s" href="javascript:void(0);" class="preview_chart" rel="permalink">%s</a>', esc_attr( $post->ID ), esc_attr__( 'Preview', 'size-chart-for-woocommerce' ) );
+            $trash_post_status = get_post_status( $post->ID );
+            
+            if ( isset( $trash_post_status ) && 'trash' === $trash_post_status ) {
+                unset( $actions['inline hide-if-no-js'] );
+                unset( $actions['previewing'] );
+                unset( $actions['clone'] );
+                // $actions = array();
+            }
+        
         }
         
         return apply_filters( 'size_chart_add_row_actions', $actions );
@@ -1917,6 +2136,18 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
         ),
         ),
         );
+        if ( scfw_fs()->is__premium_only() && scfw_fs()->can_use_premium_code() ) {
+            $size_chart_menus = $size_chart_menus + array(
+                'size-chart-import-export' => array(
+                'menu_title' => __( 'Import / Export', 'size-chart-for-woocommerce' ),
+                'menu_slug'  => 'size-chart-import-export',
+                'menu_url'   => esc_url( $this->scfw_get_size_chart_menu_url( 'admin.php', array(
+                'page' => 'size-chart-import-export',
+            ) ) ),
+                'class'      => $this->scfw_get_menu_active_class( 'size-chart-import-export', $current_page ),
+            ),
+            );
+        }
         
         if ( 'size-chart-post.php' === $typenow . '-' . $pagenow ) {
             $pos = 1;
@@ -2069,6 +2300,68 @@ class SCFW_Size_Chart_For_Woocommerce_Admin
         
         echo  wp_json_encode( $result ) ;
         wp_die();
+    }
+    
+    public function scfw_size_chart_export_data_callback()
+    {
+        check_ajax_referer( 'size_chart_for_wooocmmerce_nonoce', 'security' );
+        $chart_id = filter_input( INPUT_POST, 'chartID', FILTER_SANITIZE_NUMBER_INT );
+        $json_data = get_post_meta( $chart_id, 'chart-table', true );
+        $file_name = 'scfw_chart_data_export_' . time() . '.json';
+        $path_data = wp_upload_dir();
+        $save_path = $path_data['basedir'] . '/size-chart-for-woocommerce/';
+        $download_path = $path_data['baseurl'] . '/size-chart-for-woocommerce/';
+        //Create new directory for plugin JSON files store
+        if ( !file_exists( $save_path ) ) {
+            mkdir( $save_path, 0777, true );
+        }
+        //Remove all previous files
+        $files = glob( "{$save_path}/*.json" );
+        foreach ( $files as $csv_file ) {
+            unlink( $csv_file );
+        }
+        //Save new data to JSON file
+        file_put_contents( $save_path . $file_name, $json_data );
+        return wp_send_json_success( array(
+            'message'       => esc_html__( 'Data has been Exported!', 'size-chart-for-woocommerce' ),
+            'download_path' => $download_path . $file_name,
+        ) );
+    }
+    
+    public function scfw_size_chart_import_data_callback()
+    {
+        check_ajax_referer( 'size_chart_for_wooocmmerce_nonoce', 'security' );
+        $file_import_file_args = array(
+            'import_file' => array(
+            'filter' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+            'flags'  => FILTER_FORCE_ARRAY,
+        ),
+        );
+        $attached_import_files_arr = filter_var_array( $_FILES, $file_import_file_args );
+        $chart_id = filter_input( INPUT_POST, 'chartID', FILTER_SANITIZE_NUMBER_INT );
+        $import_file = $attached_import_files_arr['import_file']['tmp_name'];
+        if ( empty($import_file) ) {
+            wp_send_json_error( array(
+                'message' => esc_html__( 'Please upload a file to import', 'size-chart-for-woocommerce' ),
+            ) );
+        }
+        $attached_import_files__arr_explode = explode( '.', $attached_import_files_arr['import_file']['name'] );
+        $extension = end( $attached_import_files__arr_explode );
+        if ( $extension !== 'json' ) {
+            wp_send_json_error( array(
+                'message' => esc_html__( 'Please upload a valid .json file', 'size-chart-for-woocommerce' ),
+            ) );
+        }
+        WP_Filesystem();
+        global  $wp_filesystem ;
+        $file_data = $wp_filesystem->get_contents( $import_file );
+        if ( !empty($file_data) ) {
+            update_post_meta( $chart_id, 'chart-table', $file_data );
+        }
+        return wp_send_json_success( array(
+            'chart_data' => $file_data,
+            'message'    => esc_html__( 'Data has been Imported! Reload page in moment.', 'size-chart-for-woocommerce' ),
+        ) );
     }
 
 }

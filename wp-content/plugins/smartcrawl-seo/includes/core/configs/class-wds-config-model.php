@@ -1,21 +1,21 @@
 <?php
 
 class Smartcrawl_Config_Model {
-	private $id = null;
-	private $hub_id = null;
-	private $name = '';
+	private $id          = null;
+	private $hub_id      = null;
+	private $name        = '';
 	private $description = '';
-	private $configs = array();
-	private $strings = array();
-	private $editable = true;
-	private $removable = true;
-	private $official = false;
-	private $timestamp = 0;
+	private $configs     = array();
+	private $strings     = array();
+	private $editable    = true;
+	private $removable   = true;
+	private $official    = false;
+	private $timestamp   = 0;
 
 	public static function create_from_plugin_snapshot( $name = '', $description = '' ) {
-		$configs = Smartcrawl_Export::load()->get_all();
+		$configs  = Smartcrawl_Export::load()->get_all();
 		$instance = new self();
-		$strings = $instance->prepare_strings();
+		$strings  = $instance->prepare_strings();
 		return $instance
 			->set_id( uniqid() )
 			->set_name( $name )
@@ -27,7 +27,7 @@ class Smartcrawl_Config_Model {
 
 	public static function create_from_hub_data( $hub_config_data ) {
 		$hub_config_json = smartcrawl_get_array_value( $hub_config_data, 'config' );
-		$hub_id = smartcrawl_get_array_value( $hub_config_data, 'id' );
+		$hub_id          = smartcrawl_get_array_value( $hub_config_data, 'id' );
 		if ( ! $hub_config_json || ! $hub_id ) {
 			return null;
 		}
@@ -96,7 +96,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	private function prepare_schema_string() {
-		$social = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
+		$social          = Smartcrawl_Settings::get_component_options( Smartcrawl_Settings::COMP_SOCIAL );
 		$schema_disabled = ! empty( $social['disable-schema'] );
 		return $schema_disabled
 			? esc_html__( 'Inactive', 'wds' )
@@ -104,19 +104,22 @@ class Smartcrawl_Config_Model {
 	}
 
 	private function prepare_social_string() {
-		$options = Smartcrawl_Settings::get_options();
+		$options       = Smartcrawl_Settings::get_options();
 		$social_active = (bool) smartcrawl_get_array_value( $options, 'social' );
 		if ( ! $social_active ) {
 			return $this->get_status_string( $social_active );
 		}
 
-		$og_active = (bool) smartcrawl_get_array_value( $options, 'og-enable' );
+		$og_active      = (bool) smartcrawl_get_array_value( $options, 'og-enable' );
 		$twitter_active = (bool) smartcrawl_get_array_value( $options, 'twitter-card-enable' );
 
-		return join( "\n", array(
-			esc_attr__( 'OpenGraph Support - ', 'wds' ) . $this->get_status_string( $og_active ),
-			esc_attr__( 'Twitter Cards - ', 'wds' ) . $this->get_status_string( $twitter_active ),
-		) );
+		return join(
+			"\n",
+			array(
+				esc_attr__( 'OpenGraph Support - ', 'wds' ) . $this->get_status_string( $og_active ),
+				esc_attr__( 'Twitter Cards - ', 'wds' ) . $this->get_status_string( $twitter_active ),
+			)
+		);
 	}
 
 	private function prepare_sitemap_string() {
@@ -127,23 +130,26 @@ class Smartcrawl_Config_Model {
 
 	private function prepare_advanced_string() {
 		$autolinks_active = Smartcrawl_Settings::get_setting( 'autolinks' );
-		$redirects_table = Smartcrawl_Redirects_Database_Table::get();
-		$redirects_count = $redirects_table->get_count();
+		$redirects_table  = Smartcrawl_Redirects_Database_Table::get();
+		$redirects_count  = $redirects_table->get_count();
 
-		$options = Smartcrawl_Settings::get_options();
-		$moz_access_id = smartcrawl_get_array_value( $options, 'access-id' );
+		$options        = Smartcrawl_Settings::get_options();
+		$moz_access_id  = smartcrawl_get_array_value( $options, 'access-id' );
 		$moz_secret_key = smartcrawl_get_array_value( $options, 'secret-key' );
-		$moz_active = $moz_access_id && $moz_secret_key;
+		$moz_active     = $moz_access_id && $moz_secret_key;
 
 		$robots_controller = Smartcrawl_Controller_Robots::get();
-		$robots_active = $robots_controller->robots_active();
+		$robots_active     = $robots_controller->robots_active();
 
-		return join( "\n", array(
-			esc_attr__( 'Automatic Links - ', 'wds' ) . $this->get_status_string( $autolinks_active ),
-			esc_attr__( 'URL Redirection - ', 'wds' ) . $this->get_status_string( $redirects_count ),
-			esc_attr__( 'Moz - ', 'wds' ) . $this->get_status_string( $moz_active ),
-			esc_attr__( 'Robots.txt Editor - ', 'wds' ) . $this->get_status_string( $robots_active ),
-		) );
+		return join(
+			"\n",
+			array(
+				esc_attr__( 'Automatic Links - ', 'wds' ) . $this->get_status_string( $autolinks_active ),
+				esc_attr__( 'URL Redirection - ', 'wds' ) . $this->get_status_string( $redirects_count ),
+				esc_attr__( 'Moz - ', 'wds' ) . $this->get_status_string( $moz_active ),
+				esc_attr__( 'Robots.txt Editor - ', 'wds' ) . $this->get_status_string( $robots_active ),
+			)
+		);
 	}
 
 	private function get_status_string( $active ) {
@@ -153,20 +159,23 @@ class Smartcrawl_Config_Model {
 	}
 
 	private function prepare_settings_strings() {
-		$options = Smartcrawl_Settings::get_options();
-		$seo_analysis_enabled = (bool) smartcrawl_get_array_value( $options, 'analysis-seo' );
+		$options                      = Smartcrawl_Settings::get_options();
+		$seo_analysis_enabled         = (bool) smartcrawl_get_array_value( $options, 'analysis-seo' );
 		$readability_analysis_enabled = (bool) smartcrawl_get_array_value( $options, 'analysis-readability' );
-		$keep_settings_on_uninstall = (bool) smartcrawl_get_array_value( $options, 'keep_settings_on_uninstall' );
-		$keep_data_on_uninstall = (bool) smartcrawl_get_array_value( $options, 'keep_data_on_uninstall' );
-		$high_contrast = (bool) smartcrawl_get_array_value( $options, 'high-contrast' );
+		$keep_settings_on_uninstall   = (bool) smartcrawl_get_array_value( $options, 'keep_settings_on_uninstall' );
+		$keep_data_on_uninstall       = (bool) smartcrawl_get_array_value( $options, 'keep_data_on_uninstall' );
+		$high_contrast                = (bool) smartcrawl_get_array_value( $options, 'high-contrast' );
 
-		return join( "\n", array(
-			esc_attr__( 'In-Post Page Analysis - ', 'wds' ) . $this->get_status_string( $seo_analysis_enabled ),
-			esc_attr__( 'In-Post Readability Analysis - ', 'wds' ) . $this->get_status_string( $readability_analysis_enabled ),
-			esc_attr__( 'Preserve settings on uninstall - ', 'wds' ) . $this->get_status_string( $keep_settings_on_uninstall ),
-			esc_attr__( 'Keep data on uninstall - ', 'wds' ) . $this->get_status_string( $keep_data_on_uninstall ),
-			esc_attr__( 'High Contrast Mode - ', 'wds' ) . $this->get_status_string( $high_contrast ),
-		) );
+		return join(
+			"\n",
+			array(
+				esc_attr__( 'In-Post Page Analysis - ', 'wds' ) . $this->get_status_string( $seo_analysis_enabled ),
+				esc_attr__( 'In-Post Readability Analysis - ', 'wds' ) . $this->get_status_string( $readability_analysis_enabled ),
+				esc_attr__( 'Preserve settings on uninstall - ', 'wds' ) . $this->get_status_string( $keep_settings_on_uninstall ),
+				esc_attr__( 'Keep data on uninstall - ', 'wds' ) . $this->get_status_string( $keep_data_on_uninstall ),
+				esc_attr__( 'High Contrast Mode - ', 'wds' ) . $this->get_status_string( $high_contrast ),
+			)
+		);
 	}
 
 	private function prepare_lighthouse_reporting_status() {
@@ -175,13 +184,13 @@ class Smartcrawl_Config_Model {
 		}
 
 		$recipients = Smartcrawl_Lighthouse_Options::email_recipients();
-		$frequency = smartcrawl_get_array_value(
+		$frequency  = smartcrawl_get_array_value(
 			Smartcrawl_Controller_Cron::get()->get_frequencies(),
 			Smartcrawl_Lighthouse_Options::reporting_frequency()
 		);
 
 		return sprintf(
-			esc_html__( 'Active and sending %s to %d recipients', 'wds' ),
+			esc_html__( 'Active and sending %1$s to %2$d recipients', 'wds' ),
 			$frequency,
 			count( $recipients )
 		);
@@ -195,7 +204,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	/**
-	 * @param null $id
+	 * @param string $id ID.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -204,19 +213,22 @@ class Smartcrawl_Config_Model {
 		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function refresh_id() {
 		return $this->set_id( uniqid() );
 	}
 
 	/**
-	 * @return null
+	 * @return string|null
 	 */
 	public function get_hub_id() {
 		return $this->hub_id;
 	}
 
 	/**
-	 * @param null $hub_id
+	 * @param int $hub_id Hub ID.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -233,7 +245,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	/**
-	 * @param string $name
+	 * @param string $name Name.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -250,7 +262,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	/**
-	 * @param string $description
+	 * @param string $description Description.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -267,7 +279,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	/**
-	 * @param array $configs
+	 * @param array $configs Configs.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -301,7 +313,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	/**
-	 * @param bool $editable
+	 * @param bool $editable Is editable.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -318,7 +330,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	/**
-	 * @param bool $removable
+	 * @param bool $removable Is removable.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -335,7 +347,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	/**
-	 * @param bool $official
+	 * @param bool $official Is official.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */
@@ -352,7 +364,7 @@ class Smartcrawl_Config_Model {
 	}
 
 	/**
-	 * @param int $timestamp
+	 * @param int $timestamp Timestamp.
 	 *
 	 * @return Smartcrawl_Config_Model
 	 */

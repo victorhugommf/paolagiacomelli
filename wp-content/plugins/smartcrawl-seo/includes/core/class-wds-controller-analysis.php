@@ -12,28 +12,11 @@
  */
 class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 
+	use Smartcrawl_Singleton;
+
 	const DATA_ANALYSIS = 'analysis';
+
 	const DATA_READABILITY = 'readability';
-
-	/**
-	 * Singleton instance
-	 *
-	 * @var Smartcrawl_Controller_Analysis
-	 */
-	private static $_instance;
-
-	/**
-	 * Obtain instance without booting up
-	 *
-	 * @return Smartcrawl_Controller_Analysis instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
 
 	/**
 	 * Bind listening actions
@@ -57,10 +40,13 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 
 		add_action( 'post_submitbox_misc_actions', array( $this, 'add_postbox_fields' ) );
 		add_action( 'wds-editor-metabox-seo-analysis', array( $this, 'add_seo_analysis_metabox_content' ) );
-		add_action( 'wds-editor-metabox-readability-analysis', array(
-			$this,
-			'add_readability_analysis_metabox_content',
-		) );
+		add_action(
+			'wds-editor-metabox-readability-analysis',
+			array(
+				$this,
+				'add_readability_analysis_metabox_content',
+			)
+		);
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'inject_script_dependencies' ) );
 
@@ -83,10 +69,13 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 		remove_action( 'admin_enqueue_scripts', array( $this, 'inject_script_dependencies' ) );
 		remove_action( 'post_submitbox_misc_actions', array( $this, 'add_postbox_fields' ) );
 		remove_action( 'wds-editor-metabox-seo-analysis', array( $this, 'add_seo_analysis_metabox_content' ) );
-		remove_action( 'wds-editor-metabox-readability-analysis', array(
-			$this,
-			'add_readability_analysis_metabox_content',
-		) );
+		remove_action(
+			'wds-editor-metabox-readability-analysis',
+			array(
+				$this,
+				'add_readability_analysis_metabox_content',
+			)
+		);
 
 		return true;
 	}
@@ -146,7 +135,7 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 					? '[0-' . (int) $char . ']?'
 					: '0?';
 			}
-			$rx = substr( $rx, 0, strlen( $rx ) - 1 ); // Strip last question mark.
+			$rx             = substr( $rx, 0, strlen( $rx ) - 1 ); // Strip last question mark.
 			$meta_queries[] = array(
 				'key'     => Smartcrawl_Model_Analysis::META_KEY_ANALYSIS,
 				'value'   => '[[:punct:]]percentage[[:punct:]];i:' . $rx . ';',
@@ -157,7 +146,7 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 		// Set readability meta query.
 		if ( isset( $data['wds_readability_threshold'] ) ) {
 			// Filter by just readable/not readable.
-			$readable = ! empty( $data['wds_readability_threshold'] ) ? 1 : 0;
+			$readable       = ! empty( $data['wds_readability_threshold'] ) ? 1 : 0;
 			$meta_queries[] = array(
 				'key'     => Smartcrawl_Model_Analysis::META_KEY_READABILITY,
 				'value'   => '[[:punct:]]is_readable[[:punct:]];b:' . (int) $readable . ';',
@@ -206,7 +195,7 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 	}
 
 	public function add_quick_edit_focus_keyword_field( $column ) {
-		if ( $column === 'seo' ) {
+		if ( 'seo' === $column ) {
 			Smartcrawl_Simple_Renderer::render( 'post-list/quick-edit-seo-analysis', array() );
 		}
 	}
@@ -232,8 +221,8 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 	/**
 	 * Adds custom columns analysis data
 	 *
-	 * @param string $cid Column ID.
-	 * @param int $post_id Post ID.
+	 * @param string $cid     Column ID.
+	 * @param int    $post_id Post ID.
 	 *
 	 * @return bool
 	 */
@@ -263,53 +252,59 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 	 * @return array List of column markups
 	 */
 	public function get_post_analysis_result_markup( $post_id ) {
-		$model = new Smartcrawl_Model_Analysis( $post_id );
+		$model  = new Smartcrawl_Model_Analysis( $post_id );
 		$result = array(
 			'seo'         => '',
 			'readability' => '',
 		);
-		$na = '<div class="wds-analysis wds-status-invalid"><span>' . esc_html( __( 'N/A', 'wds' ) ) . '</span></div>';
+		$na     = '<div class="wds-analysis wds-status-invalid"><span>' . esc_html( __( 'N/A', 'wds' ) ) . '</span></div>';
 
 		if ( ! $model->has_post_data( Smartcrawl_Model_Analysis::DATA_ANALYSIS ) ) {
 			$result['seo'] = $na;
 		} else {
-			$data = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_ANALYSIS );
-			$focus_keywords = smartcrawl_get_value( 'focus-keywords', $post_id );
+			$data                     = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_ANALYSIS );
+			$focus_keywords           = smartcrawl_get_value( 'focus-keywords', $post_id );
 			$focus_keywords_available = ! empty( $focus_keywords );
 			if ( ! $focus_keywords_available ) {
-				$result['seo'] = Smartcrawl_Simple_Renderer::load( 'post-list/post-seo-analysis-errors', array(
-					'focus_missing' => true,
-					'status_class'  => 'wds-status-invalid',
-					'errors'        => array(
-						'focus-keyword-missing' => esc_html__( 'You need to add focus keywords to see recommendations for this article.', 'wds' ),
-					),
-				) );
+				$result['seo'] = Smartcrawl_Simple_Renderer::load(
+					'post-list/post-seo-analysis-errors',
+					array(
+						'focus_missing' => true,
+						'status_class'  => 'wds-status-invalid',
+						'errors'        => array(
+							'focus-keyword-missing' => esc_html__( 'You need to add focus keywords to see recommendations for this article.', 'wds' ),
+						),
+					)
+				);
 			} elseif ( empty( $data['errors'] ) ) {
 				$result['seo'] = Smartcrawl_Simple_Renderer::load( 'post-list/post-seo-analysis-good' );
 			} else {
-				$result['seo'] = Smartcrawl_Simple_Renderer::load( 'post-list/post-seo-analysis-errors', array(
-					'errors' => $data['errors'],
-				) );
+				$result['seo'] = Smartcrawl_Simple_Renderer::load(
+					'post-list/post-seo-analysis-errors',
+					array(
+						'errors' => $data['errors'],
+					)
+				);
 			}
 		}
 
 		if ( ! $model->has_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY ) ) {
 			$result['readability'] = $na;
 		} else {
-			$data = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY );
-			$readability_score = intval( ceil( smartcrawl_get_array_value( $data, 'score' ) ) );
-			$readability_ignored = Smartcrawl_Checks::is_readability_ignored( $post_id );
-			$readability_state = $model->get_kincaid_readability_state( $readability_score, $readability_ignored );
-			$readability_class = sprintf(
+			$data                  = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY );
+			$readability_score     = intval( ceil( smartcrawl_get_array_value( $data, 'score' ) ) );
+			$readability_ignored   = Smartcrawl_Checks::is_readability_ignored( $post_id );
+			$readability_state     = $model->get_kincaid_readability_state( $readability_score, $readability_ignored );
+			$readability_class     = sprintf(
 				'wds-status-%s',
 				$readability_state
 			);
-			$readability_level = $model->get_readability_level( false );
-			$tag = smartcrawl_get_array_value(
+			$readability_level     = $model->get_readability_level( false );
+			$tag                   = smartcrawl_get_array_value(
 				$model->get_readability_levels_map(),
 				array( $readability_level, 'tag' )
 			);
-			$tag = empty( $tag )
+			$tag                   = empty( $tag )
 				? esc_html__( 'N/A', 'wds' )
 				: $tag;
 			$result['readability'] = '<div class="wds-analysis ' . $readability_class . '" title="' . $readability_score . '">' . esc_html( $tag ) . '</div>';
@@ -386,9 +381,9 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 			return;
 		}
 
-		$is_dirty = (boolean) smartcrawl_get_array_value( $data, 'is_dirty' );
-		$post_id = (int) smartcrawl_get_array_value( $data, 'post_id' );
-		$post = get_post( $post_id );
+		$is_dirty = (bool) smartcrawl_get_array_value( $data, 'is_dirty' );
+		$post_id  = (int) smartcrawl_get_array_value( $data, 'post_id' );
+		$post     = get_post( $post_id );
 		/**
 		 * If there is_dirty flag is set i.e. are unsaved changes in the editor then we
 		 * will fetch the latest post revision and analyze that.
@@ -426,35 +421,38 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 			return false;
 		}
 
-		// If no analysis data is available, run analysis first
+		// If no analysis data is available, run analysis first.
 		$this->maybe_analyze_post( $post->ID );
 
-		$model = new Smartcrawl_Model_Analysis( $post->ID );
+		$model    = new Smartcrawl_Model_Analysis( $post->ID );
 		$seo_data = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_ANALYSIS );
-		$errors = smartcrawl_get_array_value( $seo_data, 'errors' );
-		$checks = smartcrawl_get_array_value( $seo_data, 'checks' );
+		$errors   = smartcrawl_get_array_value( $seo_data, 'errors' );
+		$checks   = smartcrawl_get_array_value( $seo_data, 'checks' );
 		if ( empty( $checks ) ) {
-			// For older versions that didn't cache checks
+			// For older versions that didn't cache checks.
 			$result = Smartcrawl_Checks::apply( $post->ID );
 			$checks = $result->get_applied_checks();
 		}
-		$smartcrawl_post = Smartcrawl_Post_Cache::get()->get_post( $post->ID );
-		$focus_keywords = $smartcrawl_post
+		$smartcrawl_post          = Smartcrawl_Post_Cache::get()->get_post( $post->ID );
+		$focus_keywords           = $smartcrawl_post
 			? $smartcrawl_post->get_focus_keywords()
 			: array();
 		$focus_keywords_available = ! empty( $focus_keywords );
 
-		Smartcrawl_Simple_Renderer::render( 'metabox/analysis-seo-analysis', array(
-			'checks'                   => $checks,
-			'error_count'              => count( $errors ),
-			'focus_keywords_available' => $focus_keywords_available,
-		) );
+		Smartcrawl_Simple_Renderer::render(
+			'metabox/analysis-seo-analysis',
+			array(
+				'checks'                   => $checks,
+				'error_count'              => count( $errors ),
+				'focus_keywords_available' => $focus_keywords_available,
+			)
+		);
 
 		return true;
 	}
 
 	/**
-	 * Injects readability analysis metabox content
+	 * Injects readability analysis metabox content.
 	 *
 	 * @param WP_Post $post Post instance.
 	 *
@@ -465,18 +463,21 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 			return false;
 		}
 
-		// If no analysis data is available, run analysis first
+		// If no analysis data is available, run analysis first.
 		$this->maybe_analyze_post( $post->ID );
 
-		$model = new Smartcrawl_Model_Analysis( $post->ID );
-		$readability_data = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY );
+		$model               = new Smartcrawl_Model_Analysis( $post->ID );
+		$readability_data    = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY );
 		$readability_ignored = Smartcrawl_Checks::is_readability_ignored( $post->ID );
 
-		Smartcrawl_Simple_Renderer::render( 'metabox/analysis-readability', array(
-			'model'               => $model,
-			'readability_data'    => $readability_data,
-			'readability_ignored' => $readability_ignored,
-		) );
+		Smartcrawl_Simple_Renderer::render(
+			'metabox/analysis-readability',
+			array(
+				'model'               => $model,
+				'readability_data'    => $readability_data,
+				'readability_ignored' => $readability_ignored,
+			)
+		);
 
 		return true;
 	}
@@ -557,16 +558,16 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 	 * @return void
 	 */
 	public function add_postbox_fields( $post ) {
-		$model = new Smartcrawl_Model_Analysis( $post->ID );
-		$smartcrawl_post = Smartcrawl_Post_Cache::get()->get_post( $post->ID );
-		$focus_keywords = $smartcrawl_post
+		$model                    = new Smartcrawl_Model_Analysis( $post->ID );
+		$smartcrawl_post          = Smartcrawl_Post_Cache::get()->get_post( $post->ID );
+		$focus_keywords           = $smartcrawl_post
 			? $smartcrawl_post->get_focus_keywords()
 			: array();
 		$focus_keywords_available = ! empty( $focus_keywords );
 
 		if ( in_array( get_post_status( $post ), array( 'draft', 'auto-draft' ), true ) ) {
-			$result = Smartcrawl_Checks::apply( $post->ID );
-			$checks = $result->get_applied_checks();
+			$result     = Smartcrawl_Checks::apply( $post->ID );
+			$checks     = $result->get_applied_checks();
 			$has_errors = false;
 			foreach ( $checks as $title => $chk ) {
 				if ( empty( $chk['status'] ) && empty( $chk['ignored'] ) ) {
@@ -575,31 +576,31 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 				}
 			}
 		} else {
-			$seo_data = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_ANALYSIS );
+			$seo_data   = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_ANALYSIS );
 			$has_errors = ! empty( $seo_data['errors'] );
 		}
 
 		if ( ! $focus_keywords_available ) {
 			$seo_class = 'wds-status-invalid';
-			$seo_text = __( 'No Focus Keyword', 'wds' );
+			$seo_text  = __( 'No Focus Keyword', 'wds' );
 		} elseif ( $has_errors ) {
 			$seo_class = 'wds-status-warning';
-			$seo_text = __( 'Needs Improvement', 'wds' );
+			$seo_text  = __( 'Needs Improvement', 'wds' );
 		} else {
 			$seo_class = 'wds-status-success';
-			$seo_text = __( 'Good', 'wds' );
+			$seo_text  = __( 'Good', 'wds' );
 		}
 
-		$readability_data = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY );
-		$readability_score = smartcrawl_get_array_value( $readability_data, 'score' );
-		$readability_score = intval( ceil( $readability_score ) );
+		$readability_data    = $model->get_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY );
+		$readability_score   = smartcrawl_get_array_value( $readability_data, 'score' );
+		$readability_score   = intval( ceil( $readability_score ) );
 		$readability_ignored = Smartcrawl_Checks::is_readability_ignored( $post->ID );
-		$readability_state = $model->get_kincaid_readability_state( $readability_score, $readability_ignored );
-		$readability_class = sprintf(
+		$readability_state   = $model->get_kincaid_readability_state( $readability_score, $readability_ignored );
+		$readability_class   = sprintf(
 			'wds-status-%s',
 			$readability_state
 		);
-		$readability_text = $model->get_readability_level();
+		$readability_text    = $model->get_readability_level();
 
 		?>
 		<div class="wds-post-box-fields">
@@ -638,12 +639,14 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 		$this->maybe_analyze_post( (int) $data['post_id'] );
 		$model = new Smartcrawl_Model_Analysis( (int) $data['post_id'] );
 
-		wp_send_json_success( array(
-			'analysis'              => $model->get_post_data( Smartcrawl_Model_Analysis::DATA_ANALYSIS ),
-			'readability'           => $model->get_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY ),
-			'readability_threshold' => $model->get_readability_threshold(),
-			'readable'              => $model->is_readable(),
-		) );
+		wp_send_json_success(
+			array(
+				'analysis'              => $model->get_post_data( Smartcrawl_Model_Analysis::DATA_ANALYSIS ),
+				'readability'           => $model->get_post_data( Smartcrawl_Model_Analysis::DATA_READABILITY ),
+				'readability_threshold' => $model->get_readability_threshold(),
+				'readable'              => $model->is_readable(),
+			)
+		);
 	}
 
 	/**
@@ -686,6 +689,6 @@ class Smartcrawl_Controller_Analysis extends Smartcrawl_Base_Controller {
 	}
 
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-metabox-nonce' ) ? stripslashes_deep( $_POST ) : array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-metabox-nonce' ) ? stripslashes_deep( $_POST ) : array(); // phpcs:ignore
 	}
 }

@@ -2,10 +2,15 @@
 
 class Smartcrawl_Check_Focus_Stopwords extends Smartcrawl_Check_Post_Abstract {
 
-	private $_state;
+	/**
+	 * State.
+	 *
+	 * @var bool
+	 */
+	private $state;
 
 	public function get_status_msg() {
-		return false === $this->_state
+		return false === $this->state
 			? __( 'There are stop words in focus keywords', 'wds' )
 			: __( 'Focus to the point', 'wds' );
 	}
@@ -22,27 +27,29 @@ class Smartcrawl_Check_Focus_Stopwords extends Smartcrawl_Check_Post_Abstract {
 			break;
 		}
 
-		$this->_state = $state;
+		$this->state = $state;
 
-		return ! ! $this->_state;
+		return ! ! $this->state;
 	}
 
 	public function get_recommendation() {
 		$focus = $this->get_raw_focus();
-		$keyphrase = __( 'keywords', 'wds' );
+
 		if ( count( $focus ) > 1 ) {
-			$keyphrase = __( 'keywords or key phrases', 'wds' );
+			$key_phrase = __( 'keywords or key phrases', 'wds' );
 		} else {
-			$subj = end( $focus );
-			$keyphrase = false === strpos( $subj, ' ' )
+			$subj       = end( $focus );
+			$key_phrase = false === strpos( $subj, ' ' )
 				? __( 'keywords', 'wds' )
 				: __( 'key phrase', 'wds' );
 		}
-		$message = $this->_state
+		$message = $this->state
+			// translators: %s keywords or key phrase.
 			? __( 'You kept the focus %s of your article to the point, way to go!', 'wds' )
+			// translators: %s keywords or key phrase.
 			: __( 'Your focus %s contains some words that might be considered insignificant in a search query.', 'wds' );
 
-		return sprintf( $message, $keyphrase );
+		return sprintf( $message, $key_phrase );
 	}
 
 	public function get_more_info() {

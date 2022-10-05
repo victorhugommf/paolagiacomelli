@@ -1,5 +1,5 @@
 <?php
-$post = empty( $post ) ? null : $post;
+$post = empty( $post ) ? null : $post; // phpcs:ignore
 if ( ! $post ) {
 	return;
 }
@@ -12,22 +12,28 @@ $twitter = smartcrawl_get_value( 'twitter', $post->ID );
 if ( ! is_array( $twitter ) ) {
 	$twitter = array();
 }
-$twitter = wp_parse_args( $twitter, array(
-	'title'       => false,
-	'description' => false,
-	'images'      => false,
-	'disabled'    => false,
-) );
+$twitter = wp_parse_args(
+	$twitter,
+	array(
+		'title'       => false,
+		'description' => false,
+		'images'      => false,
+		'disabled'    => false,
+	)
+);
 
-$this->_render( 'metabox/metabox-social-meta-tags', array(
-	'main_title'              => __( 'Twitter', 'wds' ),
-	'main_description'        => __( 'These details will be used in Twitter cards.', 'wds' ),
-	'field_name'              => 'wds-twitter',
-	'disabled'                => (bool) smartcrawl_get_array_value( $twitter, 'disabled' ),
-	'current_title'           => $twitter['title'],
-	'title_placeholder'       => $smartcrawl_post->get_twitter_title(),
-	'current_description'     => $twitter['description'],
-	'description_placeholder' => $smartcrawl_post->get_twitter_description(),
-	'images'                  => $twitter['images'],
-	'single_image'            => true,
-) );
+$this->render_view(
+	'metabox/metabox-social-meta-tags',
+	array(
+		'main_title'              => __( 'Twitter', 'wds' ),
+		'main_description'        => __( 'These details will be used in Twitter cards.', 'wds' ),
+		'field_name'              => 'wds-twitter',
+		'disabled'                => (bool) smartcrawl_get_array_value( $twitter, 'disabled' ),
+		'current_title'           => $twitter['title'],
+		'title_placeholder'       => $smartcrawl_post->get_twitter_title(),
+		'current_description'     => $twitter['description'],
+		'description_placeholder' => $smartcrawl_post->get_twitter_description(),
+		'images'                  => $twitter['images'],
+		'single_image'            => true,
+	)
+);

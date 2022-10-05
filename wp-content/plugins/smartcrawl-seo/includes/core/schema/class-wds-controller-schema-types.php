@@ -1,32 +1,25 @@
 <?php
 
 class Smartcrawl_Controller_Schema_Types extends Smartcrawl_Base_Controller {
+
+	use Smartcrawl_Singleton;
+
 	const SCHEMA_TYPES_OPTION_ID = 'wds-schema-types';
+
 	const SCHEMA_TYPE_OPTION_PREFIX = 'wds-schema-type-';
-	/**
-	 * Static instance
-	 *
-	 * @var self
-	 */
-	private static $_instance;
 
 	/**
-	 * Static instance getter
+	 * @return void
 	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 	protected function init() {
 		add_action( 'init', array( $this, 'save_settings' ) );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function save_settings() {
-		$types_json = smartcrawl_get_array_value( $_POST, self::SCHEMA_TYPES_OPTION_ID );
+		$types_json = smartcrawl_get_array_value( $_POST, self::SCHEMA_TYPES_OPTION_ID ); // phpcs:ignore
 		if ( ! $types_json ) {
 			return;
 		}
@@ -36,8 +29,11 @@ class Smartcrawl_Controller_Schema_Types extends Smartcrawl_Base_Controller {
 		$this->save_schema_types( $types );
 	}
 
+	/**
+	 * @return array
+	 */
 	public function get_schema_types() {
-		$types = array();
+		$types     = array();
 		$type_keys = get_option( self::SCHEMA_TYPES_OPTION_ID, array() );
 		foreach ( $type_keys as $type_key ) {
 			$type_option = get_option( $this->type_key_to_option_id( $type_key ) );
@@ -50,6 +46,9 @@ class Smartcrawl_Controller_Schema_Types extends Smartcrawl_Base_Controller {
 		return $types;
 	}
 
+	/**
+	 * @return void
+	 */
 	private function flush_old_schema_types() {
 		$types = get_option( self::SCHEMA_TYPES_OPTION_ID, array() );
 		foreach ( $types as $type_key ) {
@@ -57,10 +56,16 @@ class Smartcrawl_Controller_Schema_Types extends Smartcrawl_Base_Controller {
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	private function type_key_to_option_id( $type_key ) {
 		return self::SCHEMA_TYPE_OPTION_PREFIX . $type_key;
 	}
 
+	/**
+	 * @return void
+	 */
 	private function save_schema_types( $types ) {
 		update_option( self::SCHEMA_TYPES_OPTION_ID, array_keys( $types ), false );
 		foreach ( $types as $type_key => $schema ) {

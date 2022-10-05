@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // swedish
-
-static $data = [
+static $data = array(
     'och',
     'det',
     'att',
@@ -117,7 +116,7 @@ static $data = [
     'ert',
     'era',
     'vilkas',
-];
+);
 
 $result =& $data;
 unset($data);

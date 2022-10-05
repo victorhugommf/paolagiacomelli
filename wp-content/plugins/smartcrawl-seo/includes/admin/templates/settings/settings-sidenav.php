@@ -1,10 +1,10 @@
 <?php
 $show_data_settings = empty( $show_data_settings ) ? false : $show_data_settings;
-$active_tab = empty( $active_tab ) ? '' : $active_tab;
-$configs_available = empty( $configs_available ) ? false : $configs_available;
-$import_available = empty( $import_available ) ? false : $import_available;
+$active_tab         = empty( $active_tab ) ? '' : $active_tab;
+$configs_available  = empty( $configs_available ) ? false : $configs_available;
+$import_available   = empty( $import_available ) ? false : $import_available;
 
-$tabs = array_merge(
+$tab_items = array_merge(
 	array(
 		array(
 			'id'   => 'tab_general_settings',
@@ -43,7 +43,10 @@ $tabs = array_merge(
 	)
 );
 
-$this->_render( 'vertical-tabs-side-nav', array(
-	'active_tab' => $active_tab,
-	'tabs'       => $tabs,
-) );
+$this->render_view(
+	'vertical-tabs-side-nav',
+	array(
+		'active_tab' => $active_tab,
+		'tabs'       => $tab_items,
+	)
+);

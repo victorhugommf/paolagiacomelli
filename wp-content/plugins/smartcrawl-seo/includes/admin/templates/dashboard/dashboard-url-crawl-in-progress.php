@@ -7,12 +7,18 @@ $progress = empty( $progress ) ? 0 : $progress;
 </p>
 
 <?php
-$this->_render( 'progress-bar', array(
-	'progress'       => $progress,
-	'progress_state' => esc_html__( 'Crawl in progress...', 'wds' ),
-) );
+$this->render_view(
+	'progress-bar',
+	array(
+		'progress'       => $progress,
+		'progress_state' => esc_html__( 'Crawl in progress...', 'wds' ),
+	)
+);
 
-$this->_render( 'progress-notice', array(
-	'message' => 'You can always come back later. SmartCrawl will send you an email to %s with the results of the crawl.',
-) );
+$this->render_view(
+	'progress-notice',
+	array(
+		'message' => 'You can always come back later. SmartCrawl will send you an email to %s with the results of the crawl.',
+	)
+);
 ?>

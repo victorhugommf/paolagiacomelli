@@ -1,6 +1,13 @@
 <?php
+/**
+ * Class Smartcrawl_Buddypress_Api
+ *
+ * @package SmartCrawl
+ */
 
 /**
+ * Class Smartcrawl_Buddypress_Api
+ *
  * @method object buddypress()
  * @method string bp_current_component()
  * @method BP_Groups_Group groups_get_current_group()
@@ -14,6 +21,15 @@
  * @method array groups_get_groups( array $args )
  */
 class Smartcrawl_Buddypress_Api {
+
+	/**
+	 * Magic method to get function.
+	 *
+	 * @param string $name      Name of function.
+	 * @param array  $arguments Arguments.
+	 *
+	 * @return mixed|null
+	 */
 	public function __call( $name, $arguments ) {
 		if ( function_exists( $name ) ) {
 			return call_user_func_array( $name, $arguments );

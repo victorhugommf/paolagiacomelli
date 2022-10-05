@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // portuguese
-
-static $data = [
+static $data = array(
     'de',
     'a',
     'o',
@@ -206,7 +205,7 @@ static $data = [
     'teria',
     'teríamos',
     'teriam',
-];
+);
 
 $result =& $data;
 unset($data);

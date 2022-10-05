@@ -1,18 +1,12 @@
 <?php
 
 class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
+
 	private $service;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	public function __construct() {
+	protected function __construct() {
 		$this->service = new Smartcrawl_Configs_Service();
 
 		parent::__construct();
@@ -37,7 +31,7 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 			wp_send_json_error();
 		}
 		$collection = Smartcrawl_Config_Collection::get();
-		$config = $collection->get_by_id( $config_id );
+		$config     = $collection->get_by_id( $config_id );
 		if ( ! $config ) {
 			wp_send_json_error();
 		}
@@ -58,9 +52,11 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 				wp_send_json_error();
 			}
 		}
-		wp_send_json_success( array(
-			'configs' => $collection->get_deflated_configs(),
-		) );
+		wp_send_json_success(
+			array(
+				'configs' => $collection->get_deflated_configs(),
+			)
+		);
 	}
 
 	public function create_new_config() {
@@ -69,7 +65,7 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 			wp_send_json_error();
 		}
 
-		$name = sanitize_text_field( smartcrawl_get_array_value( $data, 'name' ) );
+		$name        = sanitize_text_field( smartcrawl_get_array_value( $data, 'name' ) );
 		$description = sanitize_text_field( smartcrawl_get_array_value( $data, 'description' ) );
 		if ( empty( $name ) ) {
 			wp_send_json_error();
@@ -87,10 +83,12 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 		$collection = Smartcrawl_Config_Collection::get();
 		$collection->add( $config );
 		$collection->save();
-		wp_send_json_success( array(
-			'config_id' => $config->get_id(),
-			'configs'   => $collection->get_deflated_configs(),
-		) );
+		wp_send_json_success(
+			array(
+				'config_id' => $config->get_id(),
+				'configs'   => $collection->get_deflated_configs(),
+			)
+		);
 	}
 
 	public function update_config() {
@@ -99,15 +97,15 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 			wp_send_json_error();
 		}
 
-		$config_id = smartcrawl_get_array_value( $data, 'config_id' );
-		$name = smartcrawl_get_array_value( $data, 'name' );
+		$config_id   = smartcrawl_get_array_value( $data, 'config_id' );
+		$name        = smartcrawl_get_array_value( $data, 'name' );
 		$description = smartcrawl_get_array_value( $data, 'description' );
 		if ( ! $config_id || ! $name ) {
 			wp_send_json_error();
 		}
 
 		$collection = Smartcrawl_Config_Collection::get();
-		$config = $collection->get_by_id( $config_id );
+		$config     = $collection->get_by_id( $config_id );
 		if ( ! $config ) {
 			wp_send_json_error();
 		}
@@ -127,9 +125,11 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 			}
 		}
 		$collection->save();
-		wp_send_json_success( array(
-			'configs' => $collection->get_deflated_configs(),
-		) );
+		wp_send_json_success(
+			array(
+				'configs' => $collection->get_deflated_configs(),
+			)
+		);
 	}
 
 	public function delete_config() {
@@ -144,7 +144,7 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 		}
 
 		$collection = Smartcrawl_Config_Collection::get();
-		$config = $collection->get_by_id( $config_id );
+		$config     = $collection->get_by_id( $config_id );
 		if ( ! $config ) {
 			wp_send_json_error();
 		}
@@ -156,9 +156,11 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 		}
 		$collection->remove( $config );
 		$collection->save();
-		wp_send_json_success( array(
-			'configs' => $collection->get_deflated_configs(),
-		) );
+		wp_send_json_success(
+			array(
+				'configs' => $collection->get_deflated_configs(),
+			)
+		);
 	}
 
 	public function upload_config() {
@@ -167,7 +169,7 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 			wp_send_json_error();
 		}
 
-		$config_json = file_get_contents( $_FILES['file']['tmp_name'] );
+		$config_json = file_get_contents( $_FILES['file']['tmp_name'] ); // phpcs:ignore
 		if ( ! $config_json ) {
 			wp_send_json_error();
 		}
@@ -189,20 +191,22 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 		}
 		$collection->add( $config );
 		$collection->save();
-		wp_send_json_success( array(
-			'config_id' => $config->get_id(),
-			'configs'   => $collection->get_deflated_configs(),
-		) );
+		wp_send_json_success(
+			array(
+				'config_id' => $config->get_id(),
+				'configs'   => $collection->get_deflated_configs(),
+			)
+		);
 	}
 
 	private function get_request_data() {
-		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-configs-nonce' ) ? stripslashes_deep( $_POST ) : array();
+		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-configs-nonce' ) ? stripslashes_deep( $_POST ) : array(); // phpcs:ignore
 	}
 
 	private function apply_basic_config() {
-		// Reset everything else so defaults can be applied
+		// Reset everything else so defaults can be applied.
 		foreach ( Smartcrawl_Settings::get_all_components() as $component ) {
-			if ( $component !== Smartcrawl_Settings::COMP_HEALTH ) {
+			if ( Smartcrawl_Settings::COMP_HEALTH !== $component ) {
 				Smartcrawl_Settings::delete_component_options( $component );
 			}
 		}
@@ -214,8 +218,7 @@ class Smartcrawl_Controller_Configs extends Smartcrawl_Base_Controller {
 		if ( $is_basic_config ) {
 			$this->apply_basic_config();
 		} else {
-			Smartcrawl_Import::load( json_encode( $configs ) )
-			                 ->save();
+			Smartcrawl_Import::load( wp_json_encode( $configs ) )->save();
 		}
 
 		Smartcrawl_Controller_Onboard::get()->mark_onboarding_done();

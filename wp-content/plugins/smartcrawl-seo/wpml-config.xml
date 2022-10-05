@@ -8,7 +8,6 @@
         <custom-field action="copy-once">_wds_meta-robots-adv</custom-field>
         <custom-field action="copy-once">_wds_meta-robots-nofollow</custom-field>
         <custom-field action="copy-once">_wds_meta-robots-noindex</custom-field>
-        <custom-field action="copy-once">_wds_sitemap-priority</custom-field>
         <custom-field action="ignore">_wds_redirect</custom-field>
         <custom-field action="ignore">_wds_canonical</custom-field>
     </custom-fields>

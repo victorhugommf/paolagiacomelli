@@ -7,23 +7,23 @@ class Smartcrawl_Check_Metadesc_Length extends Smartcrawl_Check_Post_Abstract {
 	 *
 	 * @var int
 	 */
-	private $_length;
+	private $length;
 
 	/**
 	 * Holds check state
 	 *
 	 * @var int
 	 */
-	private $_state;
+	private $state;
 
 	public function get_status_msg() {
-		if ( ! is_numeric( $this->_state ) ) {
+		if ( ! is_numeric( $this->state ) ) {
 			return __( 'Your meta description is a good length', 'wds' );
 		}
 
-		return 0 === $this->_state
+		return 0 === $this->state
 			? __( "You haven't specified a meta description yet", 'wds' )
-			: ( $this->_state > 0
+			: ( $this->state > 0
 				? sprintf( __( 'Your meta description is greater than %d characters', 'wds' ), $this->get_max() )
 				: sprintf( __( 'Your meta description is less than %d characters', 'wds' ), $this->get_min() )
 			);
@@ -44,41 +44,41 @@ class Smartcrawl_Check_Metadesc_Length extends Smartcrawl_Check_Post_Abstract {
 			$subject = $this->get_markup();
 		} else {
 			$smartcrawl_post = Smartcrawl_Post_Cache::get()->get_post( $post->ID );
-			$subject = $smartcrawl_post
+			$subject         = $smartcrawl_post
 				? $smartcrawl_post->get_meta_description()
 				: '';
 		}
 
-		$this->_state = $this->is_within_char_length( $subject, $this->get_min(), $this->get_max() );
-		$this->_length = Smartcrawl_String_Utils::len( $subject );
+		$this->state  = $this->is_within_char_length( $subject, $this->get_min(), $this->get_max() );
+		$this->length = Smartcrawl_String_Utils::len( $subject );
 
-		return ! is_numeric( $this->_state );
+		return ! is_numeric( $this->state );
 	}
 
 	public function apply_html() {
 		$subjects = Smartcrawl_Html::find_attributes( 'meta[name="description"]', 'content', $this->get_markup() );
 		if ( empty( $subjects ) ) {
-			$this->_length = 0;
-			$this->_state = 0;
+			$this->length = 0;
+			$this->state  = 0;
 
 			return false;
 		}
 
-		$subject = reset( $subjects );
-		$this->_state = $this->is_within_char_length( $subject, $this->get_min(), $this->get_max() );
-		$this->_length = Smartcrawl_String_Utils::len( $subject );
+		$subject      = reset( $subjects );
+		$this->state  = $this->is_within_char_length( $subject, $this->get_min(), $this->get_max() );
+		$this->length = Smartcrawl_String_Utils::len( $subject );
 
-		return ! is_numeric( $this->_state );
+		return ! is_numeric( $this->state );
 	}
 
 	public function get_recommendation() {
-		if ( ! is_numeric( $this->_state ) ) {
+		if ( ! is_numeric( $this->state ) ) {
 			return __( 'Your SEO description is a good length. Having an SEO description that is either too long or too short can harm your chances of ranking highly for this article.', 'wds' );
 		}
 
-		return 0 === $this->_state
+		return 0 === $this->state
 			? __( "Because you haven't specified a meta description (or excerpt), search engines will automatically generate one using your content. While this is OK, you should create your own meta description making sure it contains your focus keywords.", 'wds' )
-			: ( $this->_state > 0
+			: ( $this->state > 0
 				? __( "Your SEO description (or excerpt) is currently too long. Search engines generally don't like long descriptions and after a certain length the value of extra keywords drops significantly.", 'wds' )
 				: __( 'Your SEO description (or excerpt) is currently too short which means it has less of a chance ranking for your chosen focus keywords.', 'wds' )
 			);

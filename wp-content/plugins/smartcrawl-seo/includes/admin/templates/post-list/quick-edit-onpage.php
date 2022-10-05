@@ -17,9 +17,11 @@
 		</label>
 	</div>
 </fieldset>
-<input type="hidden"
-       value="<?php echo esc_attr( wp_create_nonce( 'wds-metabox-nonce' ) ); ?>"
-       name="_wds_nonce"/>
+<input
+	type="hidden"
+	value="<?php echo esc_attr( wp_create_nonce( 'wds-metabox-nonce' ) ); ?>"
+	name="_wds_nonce"
+/>
 <style>
 	.inline-edit-col .title.metadesc {
 		display: block;

@@ -1,9 +1,14 @@
 <?php
 
 class Smartcrawl_News_Sitemap extends Smartcrawl_Sitemap {
+	/**
+	 * @return void
+	 */
 	public function add_rewrites() {
 		/**
-		 * @var $wp \WP
+		 * WP.
+		 *
+		 * @var $wp WP
 		 */
 		global $wp;
 
@@ -16,42 +21,58 @@ class Smartcrawl_News_Sitemap extends Smartcrawl_Sitemap {
 		add_rewrite_rule( '^news-([^/]+?)-sitemap([0-9]+)?\.xml(\.gz)?$', 'index.php?wds_news_sitemap=1&wds_news_sitemap_type=$matches[1]&wds_news_sitemap_page=$matches[2]&wds_news_sitemap_gzip=$matches[3]', 'top' );
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function is_enabled() {
 		return parent::is_enabled()
-		       && Smartcrawl_Sitemap_Utils::get_sitemap_option( 'enable-news-sitemap' );
+			&& Smartcrawl_Sitemap_Utils::get_sitemap_option( 'enable-news-sitemap' );
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function can_handle_request() {
-		return (boolean) get_query_var( 'wds_news_sitemap' );
+		return (bool) get_query_var( 'wds_news_sitemap' );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function do_fallback() {
 		$this->do_404();
 	}
 
+	/**
+	 * @return string
+	 */
 	private function cache_type( $type ) {
 		return "news-{$type}";
 	}
 
+	/**
+	 * @return void
+	 */
 	public function serve() {
 		$sitemap_type = $this->get_sitemap_type_var();
 		$sitemap_page = $this->get_sitemap_page_var();
 
 		$sitemap_cache = Smartcrawl_Sitemap_Cache::get();
-		$cached = $sitemap_cache->get_cached(
+		$cached        = $sitemap_cache->get_cached(
 			$this->cache_type( $sitemap_type ),
 			$sitemap_page
 		);
-		$gzip = $this->is_gzip_request();
+		$gzip          = $this->is_gzip_request();
 
 		if ( ! empty( $cached ) ) {
 			$this->output_xml( $cached, $gzip );
+
 			return;
 		}
 
 		do_action( 'wds_before_news_sitemap_rebuild' );
 
-		if ( $sitemap_type === self::SITEMAP_TYPE_INDEX ) {
+		if ( self::SITEMAP_TYPE_INDEX === $sitemap_type ) {
 			$xml = $this->build_index();
 		} else {
 			$xml = $this->build_partial_sitemap( $sitemap_type, $sitemap_page );
@@ -65,6 +86,9 @@ class Smartcrawl_News_Sitemap extends Smartcrawl_Sitemap {
 		$this->output_xml( $xml, $gzip );
 	}
 
+	/**
+	 * @return false|string
+	 */
 	private function build_partial_sitemap( $type, $page ) {
 		$items = array();
 		foreach ( $this->get_queries() as $query ) {
@@ -86,10 +110,16 @@ class Smartcrawl_News_Sitemap extends Smartcrawl_Sitemap {
 		return $this->build_xml( $items );
 	}
 
+	/**
+	 * @return void
+	 */
 	private function post_process() {
 		do_action( 'wds_news_sitemap_created' );
 	}
 
+	/**
+	 * @return string
+	 */
 	private function build_index() {
 		$index_items = array();
 
@@ -105,19 +135,32 @@ class Smartcrawl_News_Sitemap extends Smartcrawl_Sitemap {
 		return $this->build_index_xml( $index_items );
 	}
 
+	/**
+	 * @return string
+	 */
 	private function get_sitemap_type_var() {
 		return (string) get_query_var( 'wds_news_sitemap_type' );
 	}
 
+	/**
+	 * @return int
+	 */
 	private function get_sitemap_page_var() {
 		return (int) get_query_var( 'wds_news_sitemap_page' );
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function is_gzip_request() {
 		$query_var = get_query_var( 'wds_news_sitemap_gzip' );
+
 		return ! empty( $query_var );
 	}
 
+	/**
+	 * @return Smartcrawl_Sitemap_News_Query[]
+	 */
 	private function get_queries() {
 		return array(
 			new Smartcrawl_Sitemap_News_Query(),
@@ -125,24 +168,26 @@ class Smartcrawl_News_Sitemap extends Smartcrawl_Sitemap {
 	}
 
 	/**
-	 * @param $items Smartcrawl_Sitemap_News_Item[]
-	 *
 	 * @return string
 	 */
 	public function build_xml( $items ) {
-		return Smartcrawl_Simple_Renderer::load( 'sitemap/sitemap-news-xml', array(
-			'news_items' => $items,
-		) );
+		return Smartcrawl_Simple_Renderer::load(
+			'sitemap/sitemap-news-xml',
+			array(
+				'news_items' => $items,
+			)
+		);
 	}
 
 	/**
-	 * @param $index_items Smartcrawl_Sitemap_Index_Item[]
-	 *
 	 * @return string
 	 */
 	private function build_index_xml( $index_items ) {
-		return Smartcrawl_Simple_Renderer::load( 'sitemap/sitemap-index-xml', array(
-			'index_items' => $index_items,
-		) );
+		return Smartcrawl_Simple_Renderer::load(
+			'sitemap/sitemap-index-xml',
+			array(
+				'index_items' => $index_items,
+			)
+		);
 	}
 }

@@ -15,9 +15,9 @@ class Smartcrawl_Core_Request {
 			return new WP_Error( __CLASS__, 'Unknown post ID' );
 		}
 
-		$post_parent = wp_is_post_revision( $post_id );
+		$post_parent      = wp_is_post_revision( $post_id );
 		$is_post_revision = ! empty( $post_parent );
-		$permalink = $is_post_revision
+		$permalink        = $is_post_revision
 			? get_permalink( $post_parent )
 			: get_permalink( $post_id );
 		if ( empty( $permalink ) ) {
@@ -40,17 +40,19 @@ class Smartcrawl_Core_Request {
 
 		// Let's copy over the current cookies to apply to the request.
 		$cookies = array();
-		$source = ! empty( $_COOKIE )
+		$source  = ! empty( $_COOKIE )
 			? $_COOKIE
 			: array();
 		foreach ( $source as $cname => $cvalue ) {
 			if ( ! preg_match( '/^(wp-|wordpress_)/', $cname ) ) {
 				continue;
 			} // Only WP cookies, pl0x.
-			$cookies[] = new WP_Http_Cookie( array(
-				'name'  => $cname,
-				'value' => $cvalue,
-			) );
+			$cookies[] = new WP_Http_Cookie(
+				array(
+					'name'  => $cname,
+					'value' => $cvalue,
+				)
+			);
 		}
 
 		// Post password cookie.
@@ -61,11 +63,13 @@ class Smartcrawl_Core_Request {
 			if ( ! class_exists( 'PasswordHash' ) ) {
 				require_once ABSPATH . WPINC . '/class-phpass.php';
 			}
-			$hasher = new PasswordHash( 8, true );
-			$cookies[] = new WP_Http_Cookie( array(
-				'name'  => 'wp-postpass_' . COOKIEHASH,
-				'value' => $hasher->HashPassword( $post->post_password ),
-			) );
+			$hasher    = new PasswordHash( 8, true );
+			$cookies[] = new WP_Http_Cookie(
+				array(
+					'name'  => 'wp-postpass_' . COOKIEHASH,
+					'value' => $hasher->HashPassword( $post->post_password ),
+				)
+			);
 		}
 
 		if ( ! empty( $cookies ) ) {
@@ -88,7 +92,7 @@ class Smartcrawl_Core_Request {
 		$bits = Smartcrawl_Html::find( 'body', $content );
 
 		return apply_filters(
-			'wds-analysis-content',
+			'wds-analysis-content', // phpcs:ignore
 			(string) trim( join( "\n", $bits ) ),
 			$post_id
 		);

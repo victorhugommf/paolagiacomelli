@@ -1,6 +1,6 @@
-<?php
+<?php // phpcs:disable
 $whitelabel = ! empty( $whitelabel );
-$template = empty( $template ) ? '' : $template;
+$template   = empty( $template ) ? '' : $template;
 if ( ! in_array( $template, array( 'sitemapIndexBody', 'sitemapBody', 'newsSitemapBody' ) ) ) {
 	return;
 }
@@ -167,16 +167,16 @@ if ( ! in_array( $template, array( 'sitemapIndexBody', 'sitemapBody', 'newsSitem
 
 	<xsl:template name="sitemapHeader" match="/">
 		<div class="header">
-            <span>Powered by
-                <a target="_blank" href="https://wpmudev.com/project/smartcrawl-wordpress-seo/">SmartCrawl</a>
-            </span>
+			<span>Powered by
+				<a target="_blank" href="https://wpmudev.com/project/smartcrawl-wordpress-seo/">SmartCrawl</a>
+			</span>
 		</div>
 	</xsl:template>
 
 	<xsl:template name="sitemapFooter" match="/">
 		<p class="footer">
 			This is an XML Sitemap, meant for consumption by search engines. For more info visit <a
-					href="http://sitemaps.org">sitemaps.org</a>.
+				href="http://sitemaps.org">sitemaps.org</a>.
 		</p>
 	</xsl:template>
 
@@ -222,7 +222,7 @@ if ( ! in_array( $template, array( 'sitemapIndexBody', 'sitemapBody', 'newsSitem
 						</td>
 						<td>
 							<xsl:value-of
-									select="concat(substring(news:news/news:publication_date,0,11),concat(' ', substring(news:news/news:publication_date,12,5)))"/>
+								select="concat(substring(news:news/news:publication_date,0,11),concat(' ', substring(news:news/news:publication_date,12,5)))"/>
 						</td>
 					</tr>
 				</xsl:for-each>
@@ -245,9 +245,7 @@ if ( ! in_array( $template, array( 'sitemapIndexBody', 'sitemapBody', 'newsSitem
 				</caption>
 				<thead>
 				<tr>
-					<th width="75%" valign="bottom">URL</th>
-					<th width="5%" valign="bottom">Priority</th>
-					<th width="5%" valign="bottom">Frequency</th>
+					<th width="85%" valign="bottom">URL</th>
 					<th width="5%" valign="bottom">Images</th>
 					<th width="10%" valign="bottom">Last Modified</th>
 				</tr>
@@ -270,17 +268,11 @@ if ( ! in_array( $template, array( 'sitemapIndexBody', 'sitemapBody', 'newsSitem
 							</a>
 						</td>
 						<td>
-							<xsl:value-of select="concat(sitemap:priority*100,'%')"/>
-						</td>
-						<td>
-							<xsl:value-of select="sitemap:changefreq"/>
-						</td>
-						<td>
 							<xsl:value-of select="count(image:image)"/>
 						</td>
 						<td>
 							<xsl:value-of
-									select="concat(substring(sitemap:lastmod,0,11),concat(' ', substring(sitemap:lastmod,12,5)))"/>
+								select="concat(substring(sitemap:lastmod,0,11),concat(' ', substring(sitemap:lastmod,12,5)))"/>
 						</td>
 					</tr>
 				</xsl:for-each>
@@ -303,8 +295,7 @@ if ( ! in_array( $template, array( 'sitemapIndexBody', 'sitemapBody', 'newsSitem
 				</caption>
 				<thead>
 				<tr>
-					<th width="75%" valign="bottom">Sitemap</th>
-					<th width="10%" valign="bottom">Last Modified</th>
+					<th width="100%" valign="bottom">Sitemap</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -324,10 +315,6 @@ if ( ! in_array( $template, array( 'sitemapIndexBody', 'sitemapBody', 'newsSitem
 								<xsl:value-of select="sitemap:loc"/>
 							</a>
 						</td>
-						<td>
-							<xsl:value-of
-									select="concat(substring(sitemap:lastmod,0,11),concat(' ', substring(sitemap:lastmod,12,5)))"/>
-						</td>
 					</tr>
 				</xsl:for-each>
 				</tbody>
@@ -341,7 +328,7 @@ if ( ! in_array( $template, array( 'sitemapIndexBody', 'sitemapBody', 'newsSitem
 		<head>
 			<xsl:call-template name="sitemapHead"/>
 
-			<?php if ( $whitelabel ): ?>
+			<?php if ( $whitelabel ) : ?>
 				<style>
 					.header {
 						display: none;

@@ -1,7 +1,9 @@
 <?php
 
 class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
-	private static $_instance;
+
+	use Smartcrawl_Singleton;
+
 	/**
 	 * @var Smartcrawl_Sitemap_Posts_Query
 	 */
@@ -23,32 +25,33 @@ class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
 	 */
 	private $extras_query;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
-	public function __construct() {
+	protected function __construct() {
 		parent::__construct();
 
-		$this->posts_query = new Smartcrawl_Sitemap_Posts_Query();
-		$this->terms_query = new Smartcrawl_Sitemap_Terms_Query();
+		$this->posts_query      = new Smartcrawl_Sitemap_Posts_Query();
+		$this->terms_query      = new Smartcrawl_Sitemap_Terms_Query();
 		$this->bp_profile_query = new Smartcrawl_Sitemap_BP_Profile_Query();
-		$this->bp_groups_query = new Smartcrawl_Sitemap_BP_Groups_Query();
-		$this->extras_query = new Smartcrawl_Sitemap_Extras_Query();
+		$this->bp_groups_query  = new Smartcrawl_Sitemap_BP_Groups_Query();
+		$this->extras_query     = new Smartcrawl_Sitemap_Extras_Query();
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function should_run() {
 		return ! Smartcrawl_Sitemap_Utils::override_native();
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function init() {
-		add_action( 'init', array( $this, 'hook' ), 15 ); // Give native sitemaps a chance to initialize properly
+		add_action( 'init', array( $this, 'hook' ), 15 ); // Give native sitemaps a chance to initialize properly.
 	}
 
+	/**
+	 * @return void
+	 */
 	public function hook() {
 		if ( ! Smartcrawl_Sitemap_Utils::native_sitemap_available() ) {
 			return;
@@ -67,6 +70,11 @@ class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
 		$this->register_providers();
 	}
 
+	/**
+	 * @param $post_types
+	 *
+	 * @return array
+	 */
 	public function filter_post_types( $post_types ) {
 		return array_filter(
 			$post_types,
@@ -75,6 +83,12 @@ class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
 		);
 	}
 
+	/**
+	 * @param $query_args
+	 * @param $post_type
+	 *
+	 * @return mixed
+	 */
 	public function exclude_post_ids( $query_args, $post_type ) {
 		$query_args['post__not_in'] = array_merge(
 			$this->posts_query->get_ignore_ids( $post_type ),
@@ -84,26 +98,39 @@ class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
 		return $query_args;
 	}
 
+	/**
+	 * @param $types
+	 *
+	 * @return int[]|WP_Post[]
+	 */
 	private function get_redirected_and_noindex_post_ids( $types ) {
-		return get_posts( array(
-			'fields'     => 'ids',
-			'post_type'  => $types,
-			'meta_query' => array(
-				'relation' => 'OR',
-				array(
-					'key'     => '_wds_redirect',
-					'value'   => '',
-					'compare' => '!=',
+		return get_posts(
+			array(
+				'fields'     => 'ids',
+				'post_type'  => $types,
+				'meta_query' => array(
+					'relation' => 'OR',
+					array(
+						'key'     => '_wds_redirect',
+						'value'   => '',
+						'compare' => '!=',
+					),
+					array(
+						'key'     => '_wds_meta-robots-noindex',
+						'value'   => 1,
+						'compare' => '=',
+					),
 				),
-				array(
-					'key'     => '_wds_meta-robots-noindex',
-					'value'   => 1,
-					'compare' => '=',
-				),
-			),
-		) );
+			)
+		);
 	}
 
+	/**
+	 * @param $sitemap_entry
+	 * @param $post
+	 *
+	 * @return mixed
+	 */
 	public function replace_post_url_with_canonical( $sitemap_entry, $post ) {
 		$canonical = smartcrawl_get_value( 'canonical', $post->ID );
 		if ( $canonical ) {
@@ -113,6 +140,11 @@ class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
 		return $sitemap_entry;
 	}
 
+	/**
+	 * @param $taxonomies
+	 *
+	 * @return array
+	 */
 	public function filter_taxonomies( $taxonomies ) {
 		return array_filter(
 			$taxonomies,
@@ -121,6 +153,12 @@ class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
 		);
 	}
 
+	/**
+	 * @param $args
+	 * @param $taxonomy
+	 *
+	 * @return mixed
+	 */
 	public function exclude_term_ids( $args, $taxonomy ) {
 		$ignored_ids = $this->terms_query->get_ignored_ids( $taxonomy );
 
@@ -133,7 +171,7 @@ class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
 
 	/**
 	 * @param $sitemap_entry
-	 * @param $term WP_Term|int
+	 * @param $term     WP_Term|int
 	 * @param $taxonomy string
 	 *
 	 * @return array
@@ -151,6 +189,9 @@ class Smartcrawl_Controller_Sitemap_Native extends Smartcrawl_Base_Controller {
 		return $sitemap_entry;
 	}
 
+	/**
+	 * @return void
+	 */
 	public function register_providers() {
 		if ( $this->bp_profile_query->can_handle_type( 'bp_profile' ) ) {
 			wp_register_sitemap_provider(

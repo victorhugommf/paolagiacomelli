@@ -11,13 +11,21 @@
 class Smartcrawl_Model_IO {
 
 	const OPTIONS = 'options';
+
 	const IGNORES = 'ignores';
+
 	const EXTRA_URLS = 'extra_urls';
+
 	const POSTMETA = 'postmeta';
+
 	const TAXMETA = 'taxmeta';
+
 	const REDIRECTS = 'redirects';
+
 	const REDIRECT_TYPES = 'redirect_types'; // Deprecated. For configs coming from old versions.
+
 	const IGNORE_URLS = 'ignore_urls';
+
 	const IGNORE_POST_IDS = 'ignore_post_ids';
 
 	/**
@@ -25,71 +33,73 @@ class Smartcrawl_Model_IO {
 	 *
 	 * @var array
 	 */
-	private $_options = array();
+	private $options = array();
 
 	/**
 	 * Intermediate staging area
 	 *
 	 * @var array
 	 */
-	private $_ignores = array();
+	private $ignores = array();
 
 	/**
 	 * Intermediate staging area
 	 *
 	 * @var array
 	 */
-	private $_extra_urls = array();
+	private $extra_urls = array();
 
 	/**
 	 * Intermediate staging area
 	 *
 	 * @var array
 	 */
-	private $_postmeta = array();
+	private $postmeta = array();
 
 	/**
 	 * Intermediate staging area
 	 *
 	 * @var array
 	 */
-	private $_taxmeta = array();
+	private $taxmeta = array();
 
 	/**
 	 * Intermediate staging area
 	 *
 	 * @var array
 	 */
-	private $_redirects = array();
+	private $redirects = array();
 
 	/**
 	 * Intermediate staging area
 	 *
 	 * @var array
 	 */
-	private $_redirect_types = array();
+	private $redirect_types = array();
 
 	/**
 	 * Intermediate staging area
 	 *
 	 * @var array
 	 */
-	private $_ignore_urls = array();
+	private $ignore_urls = array();
 
 	/**
 	 * Intermediate staging area
 	 *
 	 * @var array
 	 */
-	private $_ignore_post_ids = array();
+	private $ignore_post_ids = array();
+
 	private $version = '';
+
 	private $url = '';
 
 	/**
 	 * Sets the property value
 	 *
-	 * @param string $what IO section to set.
-	 * @param array $value Value to set.
+	 * @param string $what  IO section to set.
+	 * @param array  $value Value to set.
 	 *
 	 * @return bool Status
 	 */
@@ -97,10 +107,10 @@ class Smartcrawl_Model_IO {
 		if ( ! in_array( $what, $this->get_sections(), true ) ) {
 			return false;
 		}
-		$prop = "_{$what}";
-		$this->$prop = $value;
 
-		return ! ! $this->$prop;
+		$this->$what = $value;
+
+		return ! ! $this->$what;
 	}
 
 	/**
@@ -176,9 +186,8 @@ class Smartcrawl_Model_IO {
 		if ( ! in_array( $what, $this->get_sections(), true ) ) {
 			return $ret;
 		}
-		$prop = "_{$what}";
 
-		$ret = $this->$prop;
+		$ret = $this->$what;
 
 		return (array) $ret;
 	}

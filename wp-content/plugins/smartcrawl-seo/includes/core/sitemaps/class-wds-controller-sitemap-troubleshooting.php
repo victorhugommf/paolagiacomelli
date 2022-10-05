@@ -1,20 +1,24 @@
 <?php
 
 class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Controller {
-	const SITEMAP_INVALID = 0;
-	const SITEMAP_VALID = 1;
-	const SITEMAP_FOREIGN = 2;
-	const SITEMAP_PHYSICAL = 3;
-	const SITEMAP_FAULTY_PERMALINK = 4;
-	const PERMALINKS_SETTING_PLAIN = 5;
-	const SITEMAP_HAS_WHITESPACE = 6;
+
+	use Smartcrawl_Singleton;
+
+	const SITEMAP_INVALID              = 0;
+	const SITEMAP_VALID                = 1;
+	const SITEMAP_FOREIGN              = 2;
+	const SITEMAP_PHYSICAL             = 3;
+	const SITEMAP_FAULTY_PERMALINK     = 4;
+	const PERMALINKS_SETTING_PLAIN     = 5;
+	const SITEMAP_HAS_WHITESPACE       = 6;
 	const SITEMAP_UNAUTHORIZED_REQUEST = 7;
-	const SITEMAP_REQUEST_ERROR = 8;
-	const EVENT_HOOK = 'wds_sitemap_validity_check';
-	const ERRORS_FOUND_OPTION_ID = 'wds_sitemap_errors_found';
+	const SITEMAP_REQUEST_ERROR        = 8;
+	const EVENT_HOOK                   = 'wds_sitemap_validity_check';
+	const ERRORS_FOUND_OPTION_ID       = 'wds_sitemap_errors_found';
 
-	private static $_instance;
-
+	/**
+	 * @var
+	 */
 	private $sub_sitemap_url;
 
 	/**
@@ -22,32 +26,51 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 	 */
 	private $wp_error = null;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
+	/**
+	 * @return bool
+	 */
 	public function should_run() {
 		return Smartcrawl_Settings::get_setting( 'sitemap' )
-		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
+			&& Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function init() {
-		add_action( 'wp_ajax_wds_troubleshoot_sitemap', array( $this, 'troubleshoot_sitemap' ) );
-		add_action( 'wp_ajax_wds_recheck_sitemaps', array( $this, 'recheck_sitemaps' ) );
+		add_action(
+			'wp_ajax_wds_troubleshoot_sitemap',
+			array(
+				$this,
+				'troubleshoot_sitemap',
+			)
+		);
+		add_action(
+			'wp_ajax_wds_recheck_sitemaps',
+			array(
+				$this,
+				'recheck_sitemaps',
+			)
+		);
 		add_action( 'init', array( $this, 'schedule_cron' ) );
-		add_action( self::EVENT_HOOK, array( $this, 'do_sitemap_validity_check_cron' ) );
+		add_action(
+			self::EVENT_HOOK,
+			array(
+				$this,
+				'do_sitemap_validity_check_cron',
+			)
+		);
 		add_action( 'all_admin_notices', array( $this, 'show_notice' ) );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function show_notice() {
-		$key = self::ERRORS_FOUND_OPTION_ID;
-		$dismissed_messages = get_user_meta( get_current_user_id(), 'wds_dismissed_messages', true );
+		$key                  = self::ERRORS_FOUND_OPTION_ID;
+		$dismissed_messages   = get_user_meta( get_current_user_id(), 'wds_dismissed_messages', true );
 		$is_message_dismissed = smartcrawl_get_array_value( $dismissed_messages, $key ) === true;
-		$errors_found = get_option( $key );
+		$errors_found         = get_option( $key );
 		if (
 			$is_message_dismissed
 			|| ! current_user_can( 'manage_options' )
@@ -56,7 +79,7 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 			return;
 		}
 
-		$message = sprintf(
+		$message    = sprintf(
 			esc_html__( 'Hey, %s! A problem on your site is preventing sitemaps from functioning properly. Identify and resolve any issues with SmartCrawl’s Sitemap Troubleshooting feature.', 'wds' ),
 			Smartcrawl_Model_User::current()->get_display_name()
 		);
@@ -65,52 +88,70 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 		smartcrawl_print_admin_notice( $key, false, $message, $action_url, esc_html__( 'Troubleshoot Sitemap', 'wds' ) );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function schedule_cron() {
 		if ( ! wp_next_scheduled( self::EVENT_HOOK ) ) {
 			wp_schedule_event( time(), 'twicedaily', self::EVENT_HOOK );
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function do_sitemap_validity_check_cron() {
 		$result = $this->check_all_sitemaps();
 		$status = (int) smartcrawl_get_array_value( $result, 'status' );
-		if ( $status === self::SITEMAP_VALID ) {
+		if ( self::SITEMAP_VALID === $status ) {
 			$this->clear_errors_found_option();
 		} else {
 			update_option( self::ERRORS_FOUND_OPTION_ID, 1 );
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function troubleshoot_sitemap() {
 		$data = $this->get_request_data();
 		if ( empty( $data ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Session expired. Please reload the page and try again.', 'wds' ),
-			) );
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Session expired. Please reload the page and try again.', 'wds' ),
+				)
+			);
 		}
 
-		// Check all sitemaps
+		// Check all sitemaps.
 		$result = $this->check_all_sitemaps();
 		$status = (int) smartcrawl_get_array_value( $result, 'status' );
 
-		// Let's do whatever we can to make the sitemap work
+		// Let's do whatever we can to make the sitemap work.
 		Smartcrawl_Sitemap_Cache::get()->invalidate();
 		flush_rewrite_rules();
 
-		// Prime the caches but don't block the current thread
+		// Prime the caches but don't block the current thread.
 		$this->prime_all_sitemap_caches();
 
-		wp_send_json_success( array(
-			'status' => $status,
-		) );
+		wp_send_json_success(
+			array(
+				'status' => $status,
+			)
+		);
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function recheck_sitemaps() {
 		$data = $this->get_request_data();
 		if ( empty( $data ) ) {
-			wp_send_json_error( array(
-				'message' => esc_html__( 'Session expired. Please reload the page and try again.', 'wds' ),
-			) );
+			wp_send_json_error(
+				array(
+					'message' => esc_html__( 'Session expired. Please reload the page and try again.', 'wds' ),
+				)
+			);
 		}
 
 		$status = ! isset( $data['status'] )
@@ -118,19 +159,20 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 			: (int) $data['status'];
 
 		// Let's check again, did we make a difference?
-		$recheck_result = $this->check_all_sitemaps();
-		$recheck_status = (int) smartcrawl_get_array_value( $recheck_result, 'status' );
+		$recheck_result    = $this->check_all_sitemaps();
+		$recheck_status    = (int) smartcrawl_get_array_value( $recheck_result, 'status' );
 		$rechecked_sitemap = (string) smartcrawl_get_array_value( $recheck_result, 'sitemap' );
 
-		if ( $recheck_status === self::SITEMAP_VALID ) {
+		if ( self::SITEMAP_VALID === $recheck_status ) {
 			$this->clear_errors_found_option();
 
-			if ( $status === self::SITEMAP_VALID ) {
+			if ( self::SITEMAP_VALID === $status ) {
 				// There was no error, there is no error, hurray!
 				return $this->send_response( true );
 			} else {
 				// We fixed something without user intervention, hurray!
 				list( $fixed_issue, , $fixed_message ) = $this->get_issue_details( $status );
+
 				return $this->send_response(
 					true,
 					$fixed_issue,
@@ -141,6 +183,7 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 
 		// Our fix didn't make any difference. Let's ask the user to intervene.
 		list( $issue, $message, , $action_text, $action_url ) = $this->get_issue_details( $recheck_status );
+
 		return $this->send_response(
 			false,
 			$issue,
@@ -150,17 +193,32 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 		);
 	}
 
+	/**
+	 * @param $fixed
+	 * @param $issue
+	 * @param $message
+	 * @param $action_text
+	 * @param $action_url
+	 *
+	 * @return bool
+	 */
 	private function send_response( $fixed, $issue = '', $message = '', $action_text = '', $action_url = '' ) {
-		wp_send_json_success( array(
-			'fixed'       => $fixed,
-			'issue'       => $issue,
-			'message'     => $message,
-			'action_text' => $action_text,
-			'action_url'  => $action_url,
-		) );
+		wp_send_json_success(
+			array(
+				'fixed'       => $fixed,
+				'issue'       => $issue,
+				'message'     => $message,
+				'action_text' => $action_text,
+				'action_url'  => $action_url,
+			)
+		);
+
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function is_nginx_server() {
 		$server_software = smartcrawl_get_array_value( $_SERVER, 'SERVER_SOFTWARE' );
 		if ( empty( $server_software ) || ! is_array( $server_software ) ) {
@@ -170,8 +228,13 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 		return in_array( 'nginx', array_map( 'strtolower', $server_software ), true );
 	}
 
+	/**
+	 * @param $status
+	 *
+	 * @return array
+	 */
 	private function get_issue_details( $status ) {
-		$service = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
+		$service     = Smartcrawl_Service::get( Smartcrawl_Service::SERVICE_SITE );
 		$support_url = $service->is_member()
 			? 'https://wpmudev.com/hub2/support'
 			: 'https://wordpress.org/support/plugin/smartcrawl-seo/';
@@ -181,10 +244,10 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 			: __( "Pretty permalinks are not working for your sitemap %s. You may have to manually include some rewrite rules to your server's configuration files. Visit SmartCrawl's documentation for details on how to fix this issue.", 'wds' );
 
 		$wp_error_message = $this->wp_error ? $this->wp_error->get_error_message() : '';
-		$request_error = $wp_error_message
-			? __( "Our troubleshooter was not able to access your sitemap for testing. We received the following error: %s", 'wds' )
-			: __( "Our troubleshooter was not able to access your sitemap for testing.", 'wds' );
-		$request_error = sprintf( $request_error, "<br/><code>$wp_error_message</code>" );
+		$request_error    = $wp_error_message
+			? __( 'Our troubleshooter was not able to access your sitemap for testing. We received the following error: %s', 'wds' )
+			: __( 'Our troubleshooter was not able to access your sitemap for testing.', 'wds' );
+		$request_error    = sprintf( $request_error, "<br/><code>$wp_error_message</code>" );
 
 		switch ( $status ) {
 			case self::SITEMAP_VALID:
@@ -202,7 +265,7 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 			case self::SITEMAP_PHYSICAL:
 				return array(
 					__( 'File Conflict', 'wds' ),
-					esc_html__( "You have a physical file named %s on your server that is conflicting with SmartCrawl. Please delete the file and try again.", 'wds' ),
+					esc_html__( 'You have a physical file named %s on your server that is conflicting with SmartCrawl. Please delete the file and try again.', 'wds' ),
 					'',
 					'',
 					'',
@@ -220,7 +283,7 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 			case self::PERMALINKS_SETTING_PLAIN:
 				return array(
 					__( 'Incorrect Permalink Settings', 'wds' ),
-					__( "You are using <code>plain</code> permalinks on this site. Change your permalink structure to anything else for the SmartCrawl sitemap to work.", 'wds' ),
+					__( 'You are using <code>plain</code> permalinks on this site. Change your permalink structure to anything else for the SmartCrawl sitemap to work.', 'wds' ),
 					'',
 					__( 'Go to Permalink Settings', 'wds' ),
 					admin_url( 'options-permalink.php' ),
@@ -229,7 +292,7 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 			case self::SITEMAP_HAS_WHITESPACE:
 				return array(
 					__( 'Unwanted Whitespace Character', 'wds' ),
-					__( "Your XML sitemap is invalid because it has an empty whitespace at the beginning. The cause most often is an empty line at the beginning (before the <?php line) or end of the <code>wp-config.php</code> or <code>functions.php</code> file. If there is no empty line or space in these files, we highly recommend running a conflict check to identify what outputs the empty whitespace.", 'wds' ),
+					__( 'Your XML sitemap is invalid because it has an empty whitespace at the beginning. The cause most often is an empty line at the beginning (before the <?php line) or end of the <code>wp-config.php</code> or <code>functions.php</code> file. If there is no empty line or space in these files, we highly recommend running a conflict check to identify what outputs the empty whitespace.', 'wds' ),
 					'',
 					'',
 					'',
@@ -265,41 +328,79 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 		}
 	}
 
+	/**
+	 * @param $message
+	 * @param $sitemap_name
+	 *
+	 * @return string
+	 */
 	private function include_sitemap_name( $message, $sitemap_name ) {
 		return empty( $sitemap_name )
 			? $message
 			: sprintf( $message, "<code>$sitemap_name</code>" );
 	}
 
+	/**
+	 * @param $response
+	 *
+	 * @return string
+	 */
 	private function get_sitemap_xml( $response ) {
 		return wp_remote_retrieve_body( $response );
 	}
 
+	/**
+	 * @param $sitemap_url
+	 *
+	 * @return array|WP_Error
+	 */
 	private function get_sitemap_response( $sitemap_url ) {
-		return wp_remote_get( $sitemap_url, array(
-			'timeout' => 300,
-		) );
+		return wp_remote_get(
+			$sitemap_url,
+			array(
+				'timeout' => 300,
+			)
+		);
 	}
 
+	/**
+	 * @param $sitemap_xml
+	 *
+	 * @return bool
+	 */
 	private function xml_has_whitespace( $sitemap_xml ) {
 		return $this->is_xml_valid( trim( $sitemap_xml ) );
 	}
 
+	/**
+	 * @param $sitemap_xml
+	 *
+	 * @return bool
+	 */
 	private function is_xml_valid( $sitemap_xml ) {
 		return Smartcrawl_String_Utils::starts_with( $sitemap_xml, '<?xml' );
 	}
 
+	/**
+	 * @return void
+	 */
 	private function prime_all_sitemap_caches() {
 		$sitemap_urls = $this->get_sitemap_urls();
 
 		foreach ( $sitemap_urls as $sitemap_url ) {
-			wp_remote_get( $sitemap_url['pretty'], array(
-				'blocking' => false,
-				'timeout'  => 1,
-			) );
+			wp_remote_get(
+				$sitemap_url['pretty'],
+				array(
+					'blocking' => false,
+					'timeout'  => 1,
+				)
+			);
 		}
 	}
 
+	/**
+	 * @return array|int[]
+	 */
 	private function check_all_sitemaps() {
 		return $this->check_sitemaps( $this->get_sitemap_urls() );
 	}
@@ -326,13 +427,19 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 				'plain'  => smartcrawl_get_plain_news_sitemap_url(),
 			);
 		}
+
 		return $sitemap_urls;
 	}
 
+	/**
+	 * @param $sitemaps
+	 *
+	 * @return array|int[]
+	 */
 	private function check_sitemaps( $sitemaps ) {
 		foreach ( $sitemaps as $sitemap_urls ) {
 			$pretty_permalink = $sitemap_urls['pretty'];
-			$plain_permalink = $sitemap_urls['plain'];
+			$plain_permalink  = $sitemap_urls['plain'];
 
 			$sitemap_name = $this->get_sitemap_name( $pretty_permalink );
 
@@ -340,7 +447,7 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 				$pretty_permalink,
 				$plain_permalink
 			);
-			if ( $status !== self::SITEMAP_VALID ) {
+			if ( self::SITEMAP_VALID !== $status ) {
 				return array(
 					'sitemap' => $sitemap_name,
 					'status'  => $status,
@@ -353,6 +460,11 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 		);
 	}
 
+	/**
+	 * @param $sitemap_response
+	 *
+	 * @return bool|int
+	 */
 	private function validate_sitemap_response( $sitemap_response ) {
 		if ( empty( $sitemap_response ) ) {
 			return self::SITEMAP_INVALID;
@@ -378,35 +490,41 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 		return true;
 	}
 
+	/**
+	 * @param $pretty_url
+	 * @param $plain_url
+	 *
+	 * @return bool|int
+	 */
 	private function check_sitemap( $pretty_url, $plain_url ) {
 		$sitemap_name = $this->get_sitemap_name( $pretty_url );
 		if ( $this->physical_sitemap_file_exists( $sitemap_name ) ) {
 			return self::SITEMAP_PHYSICAL;
 		}
 
-		$sitemap_response = $this->get_sitemap_response( $pretty_url );
+		$sitemap_response          = $this->get_sitemap_response( $pretty_url );
 		$is_valid_sitemap_response = $this->validate_sitemap_response( $sitemap_response );
-		if ( $is_valid_sitemap_response !== true ) {
+		if ( true !== $is_valid_sitemap_response ) {
 			return $is_valid_sitemap_response;
 		}
 
 		$sitemap_xml = $this->get_sitemap_xml( $sitemap_response );
-		$xml_valid = $this->is_xml_valid( $sitemap_xml );
+		$xml_valid   = $this->is_xml_valid( $sitemap_xml );
 		if ( $xml_valid ) {
 			return $this->is_foreign_sitemap( $sitemap_xml )
 				? self::SITEMAP_FOREIGN
 				: self::SITEMAP_VALID;
-		} else if ( $this->xml_has_whitespace( $sitemap_xml ) ) {
+		} elseif ( $this->xml_has_whitespace( $sitemap_xml ) ) {
 			return self::SITEMAP_HAS_WHITESPACE;
 		} else {
-			$sitemap_plain_response = $this->get_sitemap_response( $plain_url );
+			$sitemap_plain_response  = $this->get_sitemap_response( $plain_url );
 			$is_valid_plain_response = $this->validate_sitemap_response( $sitemap_plain_response );
-			if ( $is_valid_plain_response !== true ) {
+			if ( true !== $is_valid_plain_response ) {
 				return $is_valid_plain_response;
 			}
 
 			$sitemap_plain_xml = $this->get_sitemap_xml( $sitemap_plain_response );
-			$plain_xml_valid = $this->is_xml_valid( $sitemap_plain_xml );
+			$plain_xml_valid   = $this->is_xml_valid( $sitemap_plain_xml );
 			if ( $plain_xml_valid ) {
 				if ( empty( get_option( 'permalink_structure' ) ) ) {
 					return self::PERMALINKS_SETTING_PLAIN;
@@ -419,46 +537,56 @@ class Smartcrawl_Controller_Sitemap_Troubleshooting extends Smartcrawl_Base_Cont
 		}
 	}
 
+	/**
+	 * @param $response
+	 *
+	 * @return bool
+	 */
 	private function is_unauthorized_response( $response ) {
 		$response_code = wp_remote_retrieve_response_code( $response );
-		return in_array( $response_code, array( 401, 403 ) );
+
+		return in_array( $response_code, array( 401, 403 ), true );
 	}
 
+	/**
+	 * @param $sitemap_url
+	 *
+	 * @return mixed|string|null
+	 */
 	private function get_sitemap_name( $sitemap_url ) {
 		$url_parts = explode( '/', $sitemap_url );
+
 		return array_pop( $url_parts );
 	}
 
+	/**
+	 * @param $sitemap_name
+	 *
+	 * @return bool
+	 */
 	private function physical_sitemap_file_exists( $sitemap_name ) {
 		return file_exists( trailingslashit( ABSPATH ) . $sitemap_name );
 	}
 
-	private function get_sub_sitemap_url() {
-		if ( is_null( $this->sub_sitemap_url ) ) {
-			$this->sub_sitemap_url = $this->load_sub_sitemap_url();
-		}
-		return $this->sub_sitemap_url;
-	}
-
-	private function load_sub_sitemap_url() {
-		$posts_query = new Smartcrawl_Sitemap_Posts_Query();
-		$index_items = $posts_query->get_index_items_for_type( 'post' );
-		if ( empty( $index_items ) ) {
-			return false;
-		} else {
-			$index_item = array_shift( $index_items );
-			return $index_item->get_location();
-		}
-	}
-
+	/**
+	 * @param $sitemap_xml
+	 *
+	 * @return bool
+	 */
 	private function is_foreign_sitemap( $sitemap_xml ) {
 		return strpos( $sitemap_xml, Smartcrawl_Sitemap_Utils::SITEMAP_VERIFICATION_TOKEN ) === false;
 	}
 
+	/**
+	 * @return array|mixed
+	 */
 	private function get_request_data() {
 		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-nonce' ) ? stripslashes_deep( $_POST ) : array();
 	}
 
+	/**
+	 * @return void
+	 */
 	private function clear_errors_found_option() {
 		delete_option( self::ERRORS_FOUND_OPTION_ID );
 	}

@@ -32,8 +32,8 @@ class Smartcrawl_Blog_Home extends Smartcrawl_Entity_With_Archive {
 	}
 
 	protected function load_canonical_url() {
-		$blog_home_url = trailingslashit( get_bloginfo( 'url' ) );
-		$first_page_indexed = $this->is_first_page_indexed();
+		$blog_home_url        = trailingslashit( get_bloginfo( 'url' ) );
+		$first_page_indexed   = $this->is_first_page_indexed();
 		$current_page_indexed = ! $this->is_noindex();
 		if ( $current_page_indexed ) {
 			return $this->append_page_number( $blog_home_url, $this->page_number );
@@ -126,7 +126,9 @@ class Smartcrawl_Blog_Home extends Smartcrawl_Entity_With_Archive {
 	}
 
 	/**
-	 * @param $page_number
+	 * Get robots for page number.
+	 *
+	 * @param int $page_number Page number.
 	 *
 	 * @return string
 	 */
@@ -139,7 +141,7 @@ class Smartcrawl_Blog_Home extends Smartcrawl_Entity_With_Archive {
 			return '';
 		}
 
-		$noindex = $this->get_noindex_setting( $setting_key ) ? 'noindex' : 'index';
+		$noindex  = $this->get_noindex_setting( $setting_key ) ? 'noindex' : 'index';
 		$nofollow = $this->get_nofollow_setting( $setting_key ) ? 'nofollow' : 'follow';
 
 		return "{$noindex},{$nofollow}";

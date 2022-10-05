@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
-// arabic
-
-static $data = [
+// arabic.
+static $data = array(
     'فى',
     'في',
     'كل',
@@ -165,7 +164,7 @@ static $data = [
     'اي',
     'بها',
     'صفر',
-];
+);
 
 $result =& $data;
 unset($data);

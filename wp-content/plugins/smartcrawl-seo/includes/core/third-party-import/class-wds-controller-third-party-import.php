@@ -10,19 +10,14 @@
  */
 class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 
-	/**
-	 * Singleton instance holder
-	 *
-	 * @var Smartcrawl_Controller_Third_Party_Import
-	 */
-	private static $_instance;
+	use Smartcrawl_Singleton;
 
 	/**
 	 * Controller state flag
 	 *
 	 * @var bool
 	 */
-	private $_is_running = false;
+	private $is_running = false;
 
 	/**
 	 * Boot controller listeners
@@ -37,20 +32,7 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 			return false;
 		}
 
-		return $me->_add_hooks();
-	}
-
-	/**
-	 * Obtain instance without booting up
-	 *
-	 * @return Smartcrawl_Controller_Third_Party_Import instance
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
+		return $me->add_hooks();
 	}
 
 	/**
@@ -59,7 +41,7 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 	 * @return bool Status
 	 */
 	public function is_running() {
-		return $this->_is_running;
+		return $this->is_running;
 	}
 
 	/**
@@ -67,14 +49,14 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 	 *
 	 * @return bool
 	 */
-	private function _add_hooks() {
+	private function add_hooks() {
 
 		add_action( 'wp_ajax_import_yoast_data', array( $this, 'import_yoast_data' ) );
 		add_action( 'wp_ajax_import_aioseop_data', array( $this, 'import_aioseop_data' ) );
 
-		$this->_is_running = true;
+		$this->is_running = true;
 
-		return ! ! $this->_is_running;
+		return true;
 	}
 
 	/**
@@ -88,7 +70,7 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 			return false;
 		}
 
-		return $me->_remove_hooks();
+		return $me->remove_hooks();
 	}
 
 	/**
@@ -96,11 +78,10 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 	 *
 	 * @return bool
 	 */
-	private function _remove_hooks() {
+	private function remove_hooks() {
+		$this->is_running = false;
 
-		$this->_is_running = false;
-
-		return ! $this->_is_running;
+		return true;
 	}
 
 	/**
@@ -118,8 +99,10 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 	}
 
 	/**
-	 * @param $importer Smartcrawl_Importer
-	 * @param $plugin
+	 * Do import.
+	 *
+	 * @param Smartcrawl_Importer $importer Importer.
+	 * @param array               $options  Options.
 	 */
 	private function do_import( $importer, $options = array() ) {
 		$result = array();
@@ -142,8 +125,8 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 			$in_progress = $importer->is_import_in_progress();
 		}
 
-		$result['in_progress'] = $in_progress;
-		$result['status'] = $importer->get_status();
+		$result['in_progress']      = $in_progress;
+		$result['status']           = $importer->get_status();
 		$result['deactivation_url'] = $importer->get_deactivation_link();
 
 		wp_send_json_success( $result );
@@ -169,7 +152,7 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 	}
 
 	private function get_request_data() {
-		if ( isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-io-nonce' ) ) {
+		if ( isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( wp_unslash( $_POST['_wds_nonce'] ), 'wds-io-nonce' ) ) { // phpcs:ignore
 			return stripslashes_deep( $_POST );
 		} else {
 			if ( ! empty( $_POST['io-action'] ) ) {
@@ -181,9 +164,9 @@ class Smartcrawl_Controller_Third_Party_Import extends Smartcrawl_WorkUnit {
 	}
 
 	private function get_import_options_from_request() {
-		$request_data = $this->get_request_data();
-		$options = smartcrawl_get_array_value( $request_data, 'items_to_import' );
-		$options['force-restart'] = (boolean) smartcrawl_get_array_value( $request_data, 'restart' );
+		$request_data             = $this->get_request_data();
+		$options                  = smartcrawl_get_array_value( $request_data, 'items_to_import' );
+		$options['force-restart'] = (bool) smartcrawl_get_array_value( $request_data, 'restart' );
 
 		return empty( $options ) ? array() : $options;
 	}

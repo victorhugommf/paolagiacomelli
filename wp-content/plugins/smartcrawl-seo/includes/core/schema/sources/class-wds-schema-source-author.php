@@ -3,28 +3,41 @@
 class Smartcrawl_Schema_Source_Author extends Smartcrawl_Schema_Property_Source {
 	const ID = 'author';
 
-	const FULL_NAME = 'author_full_name';
-	const FIRST_NAME = 'author_first_name';
-	const LAST_NAME = 'author_last_name';
-	const URL = 'author_url';
-	const DESCRIPTION = 'author_description';
-	const GRAVATAR = 'author_gravatar';
+	const FULL_NAME    = 'author_full_name';
+	const FIRST_NAME   = 'author_first_name';
+	const LAST_NAME    = 'author_last_name';
+	const URL          = 'author_url';
+	const DESCRIPTION  = 'author_description';
+	const GRAVATAR     = 'author_gravatar';
 	const GRAVATAR_URL = 'author_gravatar_url';
 	const PROFILE_URLS = 'author_profile_urls';
-	const EMAIL = 'author_email';
+	const EMAIL        = 'author_email';
 
+	/**
+	 * @var
+	 */
 	private $post;
+	/**
+	 * @var
+	 */
 	private $field;
 
+	/**
+	 * @param $post
+	 * @param $field
+	 */
 	public function __construct( $post, $field ) {
 		parent::__construct();
 
-		$this->post = $post;
+		$this->post  = $post;
 		$this->field = $field;
 	}
 
+	/**
+	 * @return array|string
+	 */
 	public function get_value() {
-		$user = Smartcrawl_Model_User::get( $this->post->post_author );
+		$user     = Smartcrawl_Model_User::get( $this->post->post_author );
 		$user_url = $this->get_user_url( $user );
 
 		switch ( $this->field ) {

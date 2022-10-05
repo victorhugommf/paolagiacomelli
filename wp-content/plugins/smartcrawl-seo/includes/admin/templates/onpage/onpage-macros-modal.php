@@ -14,16 +14,16 @@ $macros = array(
 <div class="wds-conditional">
 	<p>
 		<select title="">
-			<?php foreach ( $macros as $type => $type_macros ): ?>
-				<option value="<?php echo esc_attr( $type ); ?>">
-					<?php echo esc_html( $type ); ?>
+			<?php foreach ( $macros as $macro_type => $type_macros ) : ?>
+				<option value="<?php echo esc_attr( $macro_type ); ?>">
+					<?php echo esc_html( $macro_type ); ?>
 				</option>
 			<?php endforeach; ?>
 		</select>
 	</p>
 
-	<?php foreach ( $macros as $type => $type_macros ): ?>
-		<div class="wds-conditional-inside" data-conditional-val="<?php echo esc_attr( $type ); ?>">
+	<?php foreach ( $macros as $macro_type => $type_macros ) : ?>
+		<div class="wds-conditional-inside" data-conditional-val="<?php echo esc_attr( $macro_type ); ?>">
 			<div id="wds-show-supported-macros">
 				<table class="sui-table">
 					<thead>

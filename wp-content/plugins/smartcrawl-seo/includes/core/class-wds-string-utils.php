@@ -9,6 +9,7 @@
  * String manipulation class
  */
 class Smartcrawl_String_Utils {
+
 	/**
 	 * Converts string to uppercase version
 	 *
@@ -30,9 +31,9 @@ class Smartcrawl_String_Utils {
 	 * Unicode-safe substr() port.
 	 * Works just like substr(), except that it handles Unicode strings better.
 	 *
-	 * @param string $str String to extract from.
-	 * @param int $start Where to start substring extraction (optional).
-	 * @param int $length Substring length (optional).
+	 * @param string $str    String to extract from.
+	 * @param int    $start  Where to start substring extraction (optional).
+	 * @param int    $length Substring length (optional).
 	 *
 	 * @return string Extracted substring
 	 */
@@ -78,8 +79,8 @@ class Smartcrawl_String_Utils {
 	/**
 	 * Extracts sentences from text
 	 *
-	 * @param string $text Text to process.
-	 * @param bool $preserve_punctuation Whether to preserve sentence delimiters (defaults to no).
+	 * @param string $text                 Text to process.
+	 * @param bool   $preserve_punctuation Whether to preserve sentence delimiters (defaults to no).
 	 *
 	 * @return array List of recognized sentences
 	 */
@@ -87,13 +88,13 @@ class Smartcrawl_String_Utils {
 		if ( empty( $text ) ) {
 			return array();
 		}
-		$raw = preg_split( '/([?.!]+)/', $text, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
-		$len = count( $raw );
+		$raw       = preg_split( '/([?.!]+)/', $text, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY );
+		$len       = count( $raw );
 		$sentences = array();
 
 		for ( $i = 1; $i <= $len; $i += 2 ) {
 			$current = $i - 1;
-			$snt = isset( $raw[ $current ] ) ? $raw[ $current ] : false;
+			$snt     = isset( $raw[ $current ] ) ? $raw[ $current ] : false;
 			if ( ! $snt ) {
 				continue;
 			}
@@ -124,7 +125,7 @@ class Smartcrawl_String_Utils {
 		}
 		$text = join( ' ', self::paragraphs( $text ) );
 
-		$text = preg_replace( '/[^ [:alnum:]]/iu', '', self::lowercase( $text ) );
+		$text  = preg_replace( '/[^ [:alnum:]]/iu', '', self::lowercase( $text ) );
 		$words = array_filter( explode( ' ', $text ) );
 
 		return $words;
@@ -191,6 +192,7 @@ class Smartcrawl_String_Utils {
 		if ( '' === $needle ) {
 			return true;
 		}
+
 		return 0 === self::pos( $haystack, $needle );
 	}
 

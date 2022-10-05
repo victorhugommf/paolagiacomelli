@@ -1,21 +1,23 @@
 <?php
 // All values passed to this template are expected to be escaped already so phpcs is disabled
 // phpcs:ignoreFile
-$source = empty( $source ) ? '' : $source;
-$destination = empty( $destination ) ? '' : $destination;
+$source        = empty( $source ) ? '' : $source;
+$destination   = empty( $destination ) ? '' : $destination;
 $selected_type = empty( $selected_type ) ? '' : $selected_type;
-$index = empty( $index ) ? 0 : $index;
+$index         = empty( $index ) ? 0 : $index;
 
 $option_name = 'wds_autolinks_options';
 ?>
 
-<div data-index="<?php echo esc_attr( $index ); ?>"
-     class="sui-builder-field wds-redirect-item">
+<div
+	data-index="<?php echo esc_attr( $index ); ?>"
+	class="sui-builder-field wds-redirect-item">
 
 	<label class="sui-checkbox">
-		<input type="checkbox"
-		       name="<?php echo esc_attr( $option_name ); ?>[bulk][]"
-		       value="<?php echo esc_attr( $index ); ?>"/>
+		<input
+			type="checkbox"
+			name="<?php echo esc_attr( $option_name ); ?>[bulk][]"
+			value="<?php echo esc_attr( $index ); ?>"/>
 		<span aria-hidden="true"></span>
 	</label>
 
@@ -29,7 +31,7 @@ $option_name = 'wds_autolinks_options';
         <small><?php esc_html_e( 'Temporary', 'wds' ); ?></small>
     </span>
 
-	<?php $this->_render( 'links-dropdown', array(
+	<?php $this->render_view( 'links-dropdown', array(
 		'label' => esc_html__( 'Options', 'wds' ),
 		'links' => array(
 			'#edit'   => '<span class="sui-icon-pencil" aria-hidden="true"></span> ' . esc_html__( 'Edit', 'wds' ),
@@ -37,18 +39,21 @@ $option_name = 'wds_autolinks_options';
 		),
 	) ); ?>
 
-	<input value="<?php echo esc_attr( $source ); ?>"
-	       type="hidden"
-	       class="wds-source-url"
-	       name="<?php echo esc_attr( $option_name ); ?>[urls][<?php echo esc_attr( $index ); ?>][source]"/>
+	<input
+		value="<?php echo esc_attr( $source ); ?>"
+		type="hidden"
+		class="wds-source-url"
+		name="<?php echo esc_attr( $option_name ); ?>[urls][<?php echo esc_attr( $index ); ?>][source]"/>
 
-	<input value="<?php echo esc_attr( $destination ); ?>"
-	       type="hidden"
-	       class="wds-destination-url"
-	       name="<?php echo esc_attr( $option_name ); ?>[urls][<?php echo esc_attr( $index ); ?>][destination]"/>
+	<input
+		value="<?php echo esc_attr( $destination ); ?>"
+		type="hidden"
+		class="wds-destination-url"
+		name="<?php echo esc_attr( $option_name ); ?>[urls][<?php echo esc_attr( $index ); ?>][destination]"/>
 
-	<input value="<?php echo esc_attr( $selected_type ); ?>"
-	       type="hidden"
-	       class="wds-redirect-type"
-	       name="<?php echo esc_attr( $option_name ); ?>[urls][<?php echo esc_attr( $index ); ?>][type]"/>
+	<input
+		value="<?php echo esc_attr( $selected_type ); ?>"
+		type="hidden"
+		class="wds-redirect-type"
+		name="<?php echo esc_attr( $option_name ); ?>[urls][<?php echo esc_attr( $index ); ?>][type]"/>
 </div>

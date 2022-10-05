@@ -5,7 +5,7 @@ abstract class Smartcrawl_Model {
 	/**
 	 * Gets the filter/action name based on supplied suffix
 	 *
-	 * @param string $suffix Action suffix
+	 * @param string $suffix Action suffix.
 	 *
 	 * @return string
 	 */

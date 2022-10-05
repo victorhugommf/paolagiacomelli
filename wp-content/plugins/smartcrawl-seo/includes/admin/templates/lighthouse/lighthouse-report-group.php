@@ -1,7 +1,10 @@
 <?php
 /**
  * @var $lighthouse_group Smartcrawl_Lighthouse_Group
+ *
+ * @package SmartCrawl
  */
+
 $lighthouse_group = empty( $lighthouse_group ) ? false : $lighthouse_group;
 if ( ! $lighthouse_group ) {
 	return;
@@ -13,18 +16,21 @@ $notices = array(
 );
 ?>
 
-<p><?php echo esc_html( $lighthouse_group->get_description() ) ?></p>
+<p><?php echo esc_html( $lighthouse_group->get_description() ); ?></p>
 
-<?php foreach ( $notices as $notice_group => $notice ): ?>
+<?php foreach ( $notices as $notice_group => $notice ) : ?>
 	<?php
 	if (
 		$lighthouse_group->get_id() === $notice_group
 		&& $lighthouse_group->get_failing_count() === 0
 	) {
-		Smartcrawl_Simple_Renderer::render( 'notice', array(
-			'class'   => 'sui-notice-success',
-			'message' => $notice,
-		) );
+		Smartcrawl_Simple_Renderer::render(
+			'notice',
+			array(
+				'class'   => 'sui-notice-success',
+				'message' => $notice,
+			)
+		);
 	}
 	?>
 <?php endforeach; ?>
@@ -32,7 +38,7 @@ $notices = array(
 <div class="sui-accordion sui-accordion-flushed">
 	<?php
 	foreach ( $lighthouse_group->get_checks() as $check ) {
-		$this->_render( 'lighthouse/lighthouse-check-item', array( 'check' => $check ) );
+		$this->render_view( 'lighthouse/lighthouse-check-item', array( 'check' => $check ) );
 	}
 	?>
 </div>

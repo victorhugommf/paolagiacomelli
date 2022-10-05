@@ -13,6 +13,13 @@ if ( ! class_exists( 'HT_CTC_Admin_Scripts' ) ) :
 
 class HT_CTC_Admin_Scripts {
 
+    public function __construct() {
+        $this->hooks();
+    }
+    
+    public function hooks() {
+        add_action('admin_enqueue_scripts', [$this, 'register_scripts_admin'] );
+    }
 
     // Register css styles, javascript files only on 'click-to-chat' page
     function register_scripts_admin($hook) {
@@ -49,14 +56,21 @@ class HT_CTC_Admin_Scripts {
             return;
         }
 
+        $this->admin_var();
         
+    }
+
+    function admin_var() {
+
+        $ctc = [
+            'plugin_url' => HT_CTC_PLUGIN_DIR_URL
+        ];
+
+        wp_localize_script( 'ctc_admin_js', 'ht_ctc_admin_var', $ctc );
     }
 
 }
 
-$ht_ctc_admin_scripts =  new HT_CTC_Admin_Scripts();
-
-add_action('admin_enqueue_scripts', array( $ht_ctc_admin_scripts, 'register_scripts_admin' ) );
-
+new HT_CTC_Admin_Scripts();
 
 endif; // END class_exists check

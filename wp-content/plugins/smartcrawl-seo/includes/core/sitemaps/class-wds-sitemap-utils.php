@@ -176,7 +176,7 @@ class Smartcrawl_Sitemap_Utils {
 	}
 
 	public static function sitemap_images_enabled() {
-		return (boolean) self::get_sitemap_option( 'sitemap-images' )
+		return self::get_sitemap_option( 'sitemap-images' )
 		       && ! smartcrawl_is_switch_active( 'SMARTCRAWL_SITEMAP_SKIP_IMAGES' );
 	}
 

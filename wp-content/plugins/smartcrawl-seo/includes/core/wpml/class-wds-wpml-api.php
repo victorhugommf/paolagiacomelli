@@ -9,6 +9,7 @@
  * @method mixed get_setting( string $key, mixed $default = false )
  */
 class Smartcrawl_Wpml_Api {
+
 	public function __call( $name, $arguments ) {
 		if ( function_exists( $name ) ) {
 			return call_user_func_array( $name, $arguments );

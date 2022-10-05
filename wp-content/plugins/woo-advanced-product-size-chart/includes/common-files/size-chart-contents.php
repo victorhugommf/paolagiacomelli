@@ -11,12 +11,23 @@
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
-
+$chart_position    = scfw_size_chart_get_position_by_chart_id( $chart_id );
 $chart_label = scfw_size_chart_get_label_by_chart_id( $chart_id );
-$chart_table = scfw_size_chart_get_chart_table_by_chart_id( $chart_id );
-if ( isset( $chart_label ) && ! empty( $chart_label ) ) {
-	printf( '<p class="md-size-chart-label">%s</p>', esc_html( $chart_label ) );
-}
+if( ( !empty($chart_position) && 'popup' === $chart_position ) || is_admin() ) {
+?>
+<div class="md-size-chart-close">
+    <!-- <div class="md-modal-title"><?php //esc_attr_e( 'Popup Title', 'size-chart-for-woocommerce' ); ?></div> -->
+    <?php
+    if ( isset( $chart_label ) && ! empty( $chart_label ) ) {
+        // printf( '<p class="md-size-chart-label">%s</p>', esc_html( $chart_label ) );
+        printf( '<div class="md-modal-title">%s</div>', esc_html( $chart_label ) );
+    }
+    ?>
+    <button data-remodal-action="close"  class="remodal-close" aria-label="<?php esc_attr_e( 'Close', 'size-chart-for-woocommerce' ); ?>"></button>
+</div>
+<?php } ?>
+<div class="chart-container" id="size-chart-id-<?php echo esc_attr( $chart_id ); ?>">
+<?php
 
 $post_data = get_post( $chart_id );
 $size_chart_get_sub_title_text = scfw_size_chart_get_sub_title_by_chart_id( $chart_id );
@@ -56,15 +67,34 @@ if ( $chart_image_id ) {
 	);
 }
 
+if( isset($data) && !empty($data) ){
+    $chart_table = $data;
+} else {
+    $chart_table = scfw_size_chart_get_chart_table_by_chart_id( $chart_id );
+}
+
+if( isset($table_style) && !empty($table_style) ){
+    $table_style = $table_style;
+} else {
+    $table_style = '';
+}
+
+$chart_note = scfw_size_chart_popup_note( $chart_id );
+
 if ( isset( $chart_table ) && array_filter( $chart_table ) ) {
-    if( false !== scfw_is_size_chart_table_empty($chart_table) ) {
+    
+    // if( false !== scfw_is_size_chart_table_empty($chart_table) ) {
 	    ?>
         <div class="chart-table">
 		    <?php
-		    echo wp_kses_post( scfw_size_chart_get_chart_table( $chart_table, $chart_id ) );
+		    echo wp_kses_post( scfw_size_chart_get_chart_table( $chart_table, $chart_id, $table_style ) );
             ?>
         </div>
+        <?php if( !empty( $chart_note ) ) { ?>
+            <?php echo sprintf( wp_kses_post( '<p class="chart_note"><strong>Note: </strong>%s</p>', 'size-chart-for-woocommerce' ), wp_kses_post( $chart_note ) ); ?>
+        <?php } ?>
 	    <?php
-    }
+    // }
 }
 ?>
+</div>

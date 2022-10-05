@@ -78,6 +78,7 @@ if ( 'edit.php' === $pagenow && 'size-chart-setting-page' === $get_page ) {
     $size_chart_get_title_color = '';
     $size_chart_get_button_class = '';
     $size_chart_get_custom_css = '';
+    $size_chart_get_size = 'medium';
     ?>
                 <div id="size-chart-setting-fields">
                     <fieldset class="custom-fieldset set-size-chart-fieldset<?php 
@@ -187,7 +188,7 @@ if ( 'edit.php' === $pagenow && 'size-chart-setting-page' === $get_page ) {
                                     </label>
                                 </th>
                                 <td>
-                                    <input type="hidden" name="size-chart-table-head-color" id="color-picker2" value="<?php 
+                                    <input type="text" name="size-chart-table-head-color" id="color-picker2" value="<?php 
     echo  esc_attr( $size_chart_get_table_head_color ) ;
     ?>" <?php 
     disabled( $is_disable, true, true );
@@ -279,7 +280,7 @@ if ( 'edit.php' === $pagenow && 'size-chart-setting-page' === $get_page ) {
                                 <th>
                                     <label for="size-chart-popup-label">
 										<?php 
-    esc_html_e( 'Popup Label', 'size-chart-for-woocommerce' );
+    esc_html_e( 'Size Chart Link Title', 'size-chart-for-woocommerce' );
     ?>
                                     </label>
                                 </th>
@@ -287,6 +288,29 @@ if ( 'edit.php' === $pagenow && 'size-chart-setting-page' === $get_page ) {
                                     <input type="text" name="size-chart-popup-label" id="size-chart-popup-label" value="<?php 
     echo  esc_attr_e( scfw_size_chart_get_popup_label(), 'size-chart-for-woocommerce' ) ;
     ?>"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <label for="size-chart-popup-type">
+										<?php 
+    esc_html_e( 'Size Chart Link Type', 'size-chart-for-woocommerce' );
+    ?>
+                                    </label>
+                                </th>
+                                <td>
+                                    <select name="size-chart-popup-type" id="size-chart-popup-type">
+                                        <option value="text" <?php 
+    selected( scfw_size_chart_get_popup_type(), 'text' );
+    ?> ><?php 
+    esc_html_e( 'Text', 'size-chart-for-woocommerce' );
+    ?></option>
+                                        <option value="button" <?php 
+    selected( scfw_size_chart_get_popup_type(), 'button' );
+    ?> ><?php 
+    esc_html_e( 'Button', 'size-chart-for-woocommerce' );
+    ?></option>
+                                    </select>
                                 </td>
                             </tr>
                             <tr>
@@ -378,6 +402,30 @@ if ( 'edit.php' === $pagenow && 'size-chart-setting-page' === $get_page ) {
     ?>" <?php 
     disabled( $is_disable, true, true );
     ?>/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <h4>
+                                        <label for="size-chart-size">
+											<?php 
+    esc_html_e( 'Chart Popup Size', 'size-chart-for-woocommerce' );
+    ?>
+                                        </label>
+                                    </h4>
+                                </th>
+                                <td>
+                                    <select name="size-chart-size" id="size-chart-size" <?php 
+    disabled( $is_disable, true, true );
+    ?>>
+                                        <option value="medium" <?php 
+    selected( $size_chart_get_size, 'medium', true );
+    ?> ><?php 
+    esc_html_e( 'Medium', 'size-chart-for-woocommerce' );
+    ?></option>
+										<?php 
+    ?>
+                                    </select>
                                 </td>
                             </tr>
                         </table>

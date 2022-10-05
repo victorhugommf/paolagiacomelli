@@ -1,6 +1,7 @@
 <?php
 
 class Smartcrawl_404_Page extends Smartcrawl_Entity {
+
 	protected function load_meta_title() {
 		return $this->load_option_string_value(
 			'404',

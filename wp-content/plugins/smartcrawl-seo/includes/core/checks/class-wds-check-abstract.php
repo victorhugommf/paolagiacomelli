@@ -15,7 +15,7 @@ abstract class Smartcrawl_Check_Abstract {
 	 *
 	 * @var string|WP_Post
 	 */
-	private $_subject = '';
+	private $subject = '';
 	/**
 	 * Holds a list of expected keywords (as strings)
 	 *
@@ -24,7 +24,7 @@ abstract class Smartcrawl_Check_Abstract {
 	 *
 	 * @var array
 	 */
-	private $_focus = array();
+	private $focus = array();
 	/**
 	 * Holds a list of raw keywords
 	 *
@@ -33,12 +33,14 @@ abstract class Smartcrawl_Check_Abstract {
 	 *
 	 * @var array
 	 */
-	private $_raw_focus_keywords = array();
+	private $raw_focus_keywords = array();
 
 	/**
+	 * Language.
+	 *
 	 * @var string
 	 */
-	private $_language = 'en';
+	private $language = 'en';
 
 	/**
 	 * Constructor
@@ -60,7 +62,7 @@ abstract class Smartcrawl_Check_Abstract {
 	 */
 	public function set_subject( $subject = '' ) {
 		if ( is_string( $subject ) || ( is_object( $subject ) && $subject instanceof WP_Post ) ) {
-			$this->_subject = $subject;
+			$this->subject = $subject;
 
 			return true;
 		}
@@ -110,7 +112,7 @@ abstract class Smartcrawl_Check_Abstract {
 	 * @return string Working markup
 	 */
 	public function get_markup() {
-		return $this->_subject;
+		return $this->subject;
 	}
 
 	/**
@@ -119,15 +121,15 @@ abstract class Smartcrawl_Check_Abstract {
 	 * @return array
 	 */
 	public function get_raw_focus() {
-		return (array) $this->_raw_focus_keywords;
+		return (array) $this->raw_focus_keywords;
 	}
 
 	/**
 	 * Checks if subject string length is within constraints
 	 *
 	 * @param string $str Subject string.
-	 * @param int $min Optional minimum length.
-	 * @param int $max Optional maximum length.
+	 * @param int    $min Optional minimum length.
+	 * @param int    $max Optional maximum length.
 	 *
 	 * @return bool|int (bool)true if within constraints
 	 *                  negative integer if shorter than $min
@@ -156,8 +158,8 @@ abstract class Smartcrawl_Check_Abstract {
 	 * @return bool
 	 */
 	public function has_focus( $raw ) {
-		$string = Smartcrawl_String_Cache::get()->get_string( $raw, $this->get_language() );
-		$kws = $string->get_keywords();
+		$string   = Smartcrawl_String_Cache::get()->get_string( $raw, $this->get_language() );
+		$kws      = $string->get_keywords();
 		$expected = $this->get_focus();
 
 		if ( empty( $expected ) ) {
@@ -174,7 +176,7 @@ abstract class Smartcrawl_Check_Abstract {
 	 * @return array
 	 */
 	public function get_focus() {
-		return (array) $this->_focus;
+		return (array) $this->focus;
 	}
 
 	/**
@@ -189,26 +191,27 @@ abstract class Smartcrawl_Check_Abstract {
 	 * @return bool
 	 */
 	public function set_focus( $keywords = array() ) {
-		$this->_raw_focus_keywords = $keywords;
-		$this->_focus = $this->prepare_focus( $keywords );
+		$this->raw_focus_keywords = $keywords;
+		$this->focus              = $this->prepare_focus( $keywords );
 
-		return ! ! $this->_focus;
+		return ! ! $this->focus;
 	}
 
 	protected function prepare_focus( $keywords ) {
 		$kwds = array();
 		foreach ( $keywords as $k ) {
 			$keyword_string = new Smartcrawl_String( $k, $this->get_language() );
-			$kwds = array_merge( $kwds, $keyword_string->get_keywords() );
+			$kwds           = array_merge( $kwds, $keyword_string->get_keywords() );
 		}
+
 		return array_unique( array_keys( $kwds ) );
 	}
 
 	public function set_language( $language ) {
-		$this->_language = $language;
+		$this->language = $language;
 	}
 
 	public function get_language() {
-		return $this->_language;
+		return $this->language;
 	}
 }

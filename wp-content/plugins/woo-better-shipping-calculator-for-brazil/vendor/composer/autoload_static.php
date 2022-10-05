@@ -4,8 +4,27 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit5d9d07a78d19569622110c8ff3efca31
+class ComposerStaticInit262e1b17069dbab530ea7e9c75be7c76
 {
+    public static $prefixLengthsPsr4 = array (
+        'W' => 
+        array (
+            'WC_Better_Shipping_Calculator_for_Brazil\\Core\\' => 46,
+            'WC_Better_Shipping_Calculator_for_Brazil\\' => 41,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'WC_Better_Shipping_Calculator_for_Brazil\\Core\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/core',
+        ),
+        'WC_Better_Shipping_Calculator_for_Brazil\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/classes',
+        ),
+    );
+
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
@@ -13,7 +32,9 @@ class ComposerStaticInit5d9d07a78d19569622110c8ff3efca31
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit5d9d07a78d19569622110c8ff3efca31::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit262e1b17069dbab530ea7e9c75be7c76::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit262e1b17069dbab530ea7e9c75be7c76::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit262e1b17069dbab530ea7e9c75be7c76::$classMap;
 
         }, null, ClassLoader::class);
     }

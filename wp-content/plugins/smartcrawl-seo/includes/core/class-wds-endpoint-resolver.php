@@ -21,23 +21,34 @@ class Smartcrawl_Endpoint_Resolver {
 	 * Page for posts
 	 */
 	const L_STATIC_HOME = 'static_home';
+
 	const L_SEARCH = 'search_page';
+
 	const L_404 = '404_page';
+
 	const L_ARCHIVE = 'archive';
+
 	const L_DATE_ARCHIVE = 'date';
+
 	const L_PT_ARCHIVE = 'post_type_archive';
+
 	const L_TAX_ARCHIVE = 'taxonomy_archive';
+
 	const L_AUTHOR_ARCHIVE = 'author_archive';
+
 	const L_SINGULAR = 'singular';
+
 	const L_BP_GROUPS = 'bp_groups';
+
 	const L_BP_PROFILE = 'bp_profile';
+
 	const L_WOO_SHOP = 'woo_shop';
 	/**
 	 * Singleton instance
 	 *
 	 * @var Smartcrawl_Endpoint_Resolver
 	 */
-	private static $_instance;
+	private static $instance;
 	/**
 	 * Current resolved location
 	 *
@@ -45,7 +56,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 *
 	 * @var string
 	 */
-	private $_location;
+	private $location;
 
 	/**
 	 * @var Smartcrawl_Entity
@@ -58,12 +69,12 @@ class Smartcrawl_Endpoint_Resolver {
 	 * @return Smartcrawl_Endpoint_Resolver instance
 	 */
 	public static function resolve() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-			self::$_instance->resolve_location();
+		if ( empty( self::$instance ) ) {
+			self::$instance = new self();
+			self::$instance->resolve_location();
 		}
 
-		return self::$_instance;
+		return self::$instance;
 	}
 
 	/**
@@ -74,7 +85,7 @@ class Smartcrawl_Endpoint_Resolver {
 	}
 
 	/**
-	 * @param $queried Smartcrawl_Entity
+	 * @param Smartcrawl_Entity $queried Entity.
 	 */
 	public function set_queried_entity( $queried ) {
 		$this->queried = $queried;
@@ -84,14 +95,14 @@ class Smartcrawl_Endpoint_Resolver {
 	 * Resolves current location to one of known constants
 	 */
 	public function resolve_location() {
-		$query = $this->get_query_context();
-		$queried_object_id = $query->get_queried_object_id();
-		$queried_object = $query->get_queried_object();
-		$queried_posts = $query->posts;
+		$query               = $this->get_query_context();
+		$queried_object_id   = $query->get_queried_object_id();
+		$queried_object      = $query->get_queried_object();
+		$queried_posts       = $query->posts;
 		$archive_page_number = $query->get( 'paged', 0 );
 
 		$buddypress_api = new Smartcrawl_Buddypress_Api();
-		$woo_api = new Smartcrawl_Woocommerce_Api();
+		$woo_api        = new Smartcrawl_Woocommerce_Api();
 
 		if ( $this->is_static_posts_page() ) {
 			$this->set_location( self::L_STATIC_HOME );
@@ -170,11 +181,11 @@ class Smartcrawl_Endpoint_Resolver {
 			$buddypress_api->bp_current_component() &&
 			'profile' !== $buddypress_api->bp_current_component()
 		) {
-			// Do nothing
+			// Do nothing.
 		} elseif ( is_singular() ) {
 			$this->set_location( self::L_SINGULAR );
 			$post_page_number = $query->get( 'page', 0 );
-			$comments_page = $query->get( 'cpage' );
+			$comments_page    = $query->get( 'cpage' );
 
 			if ( smartcrawl_woocommerce_active() && is_singular( array( 'product' ) ) ) {
 				$this->set_queried_entity(
@@ -203,10 +214,9 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	private function is_static_posts_page() {
 		$page_for_posts = (int) get_option( 'page_for_posts' );
-		$query = $this->get_query_context();
-		return 'page' === get_option( 'show_on_front' )
-		       && 0 < $page_for_posts
-		       && $query->get_queried_object_id() === $page_for_posts;
+		$query          = $this->get_query_context();
+
+		return 'page' === get_option( 'show_on_front' ) && 0 < $page_for_posts && $query->get_queried_object_id() === $page_for_posts;
 	}
 
 	/**
@@ -215,11 +225,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 * @return boolean
 	 */
 	private function is_home_posts_page() {
-		return is_home() &&
-		       (
-			       'posts' === get_option( 'show_on_front' ) ||
-			       0 === (int) get_option( 'page_on_front' )
-		       );
+		return is_home() && ( 'posts' === get_option( 'show_on_front' ) || 0 === (int) get_option( 'page_on_front' ) );
 	}
 
 	/**
@@ -239,7 +245,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 * @return string Location
 	 */
 	public function get_location() {
-		return $this->_location;
+		return $this->location;
 	}
 
 	/**
@@ -250,9 +256,9 @@ class Smartcrawl_Endpoint_Resolver {
 	 * @return bool
 	 */
 	public function set_location( $loc ) {
-		$this->_location = $loc;
+		$this->location = $loc;
 
-		return ! ! $this->_location;
+		return ! ! $this->location;
 	}
 
 	/**
@@ -260,6 +266,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	public function set_query_context( $qobj ) {
 		$this->mark_deprecated( __METHOD__ );
+
 		return false;
 	}
 
@@ -268,6 +275,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	public function simulate_post( $pid ) {
 		$this->mark_deprecated( __METHOD__ );
+
 		return false;
 	}
 
@@ -276,6 +284,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	public function simulate_taxonomy_term( $term_id ) {
 		$this->mark_deprecated( __METHOD__ );
+
 		return false;
 	}
 
@@ -291,6 +300,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	public function simulate( $location, $context, $query_context = null ) {
 		$this->mark_deprecated( __METHOD__ );
+
 		return false;
 	}
 
@@ -299,6 +309,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	public function get_context() {
 		$this->mark_deprecated( __METHOD__ );
+
 		return false;
 	}
 
@@ -307,6 +318,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	public function set_context( $pobj ) {
 		$this->mark_deprecated( __METHOD__ );
+
 		return false;
 	}
 
@@ -315,6 +327,7 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	public function stop_simulation() {
 		$this->mark_deprecated( __METHOD__ );
+
 		return false;
 	}
 
@@ -330,14 +343,15 @@ class Smartcrawl_Endpoint_Resolver {
 	 */
 	public function is_singular( $location = false ) {
 		$this->mark_deprecated( __METHOD__ );
+
 		return false;
 	}
 
 	/**
-	 * @param $method
+	 * @param string $method Method name.
 	 */
 	private function mark_deprecated( $method ) {
 		$class = __CLASS__;
-		_deprecated_function( "$class::$method", '2.18.0' );
+		_deprecated_function( "$class::$method", '2.18.0' ); // phpcs:ignore
 	}
 }

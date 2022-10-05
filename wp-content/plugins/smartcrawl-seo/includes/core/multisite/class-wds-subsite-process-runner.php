@@ -6,10 +6,12 @@
  * Runs a process (a simple callback) for each site in the network and keeps track of progress.
  */
 class Smartcrawl_Subsite_Process_Runner {
+
 	/**
 	 * @var string To store the number of processed sites
 	 */
 	private $option_id;
+
 	/**
 	 * @var callable The "process" this class is supposed to run
 	 */
@@ -19,7 +21,7 @@ class Smartcrawl_Subsite_Process_Runner {
 
 	public function __construct( $option_id, $callback ) {
 		$this->option_id = $option_id;
-		$this->callback = $callback;
+		$this->callback  = $callback;
 
 		$this->maybe_init_all_sites_cache();
 	}
@@ -33,7 +35,7 @@ class Smartcrawl_Subsite_Process_Runner {
 	 * @return int Number of sites for which processing has been completed.
 	 */
 	public function run( ...$args ) {
-		$processed_sites = $this->get_processed_site_count();
+		$processed_sites  = $this->get_processed_site_count();
 		$total_site_count = $this->get_total_site_count();
 
 		$next_site = $this->get_next_site_to_process();
@@ -56,11 +58,11 @@ class Smartcrawl_Subsite_Process_Runner {
 
 		// All done?
 		if ( $processed_sites === $total_site_count ) {
-			// Yes, clear the site count and cache
+			// Yes, clear the site count and cache.
 			$this->reset_processed_site_count();
 			$this->reset_all_sites_cache();
 		} else {
-			// No, update the site count
+			// No, update the site count.
 			$this->update_processed_site_count( $processed_sites );
 		}
 
@@ -89,11 +91,13 @@ class Smartcrawl_Subsite_Process_Runner {
 	 * @return array|int
 	 */
 	public function get_total_site_count() {
-		return get_sites( array(
-			'count'    => true,
-			'site__in' => $this->get_all_sites_cache(),
-			'number'   => PHP_INT_MAX,
-		) );
+		return get_sites(
+			array(
+				'count'    => true,
+				'site__in' => $this->get_all_sites_cache(),
+				'number'   => PHP_INT_MAX,
+			)
+		);
 	}
 
 	/**
@@ -103,14 +107,16 @@ class Smartcrawl_Subsite_Process_Runner {
 	 */
 	public function get_next_site_to_process() {
 		$processed_site_count = $this->get_processed_site_count();
-		$next_site = get_sites( array(
-			'fields'   => 'ids',
-			'number'   => 1,
-			'offset'   => $processed_site_count,
-			'site__in' => $this->get_all_sites_cache(),
-			'orderby'  => 'id',
-			'order'    => 'DESC',
-		) );
+		$next_site            = get_sites(
+			array(
+				'fields'   => 'ids',
+				'number'   => 1,
+				'offset'   => $processed_site_count,
+				'site__in' => $this->get_all_sites_cache(),
+				'orderby'  => 'id',
+				'order'    => 'DESC',
+			)
+		);
 
 		return empty( $next_site ) ? false : $next_site[0];
 	}
@@ -120,10 +126,12 @@ class Smartcrawl_Subsite_Process_Runner {
 			return false;
 		}
 
-		$all_sites = get_sites( array(
-			'fields' => 'ids',
-			'number' => PHP_INT_MAX,
-		) );
+		$all_sites = get_sites(
+			array(
+				'fields' => 'ids',
+				'number' => PHP_INT_MAX,
+			)
+		);
 
 		return update_site_option( self::ALL_NETWORK_SITES, $all_sites );
 	}

@@ -1,17 +1,26 @@
 <?php
 
 class Smartcrawl_Schema_Fragment_Menu extends Smartcrawl_Schema_Fragment {
+	/**
+	 * @var
+	 */
 	private $url;
 	/**
 	 * @var Smartcrawl_Schema_Utils
 	 */
 	private $utils;
 
+	/**
+	 * @param $url
+	 */
 	public function __construct( $url ) {
-		$this->url = $url;
+		$this->url   = $url;
 		$this->utils = Smartcrawl_Schema_Utils::get();
 	}
 
+	/**
+	 * @return array|false
+	 */
 	protected function get_raw() {
 		$main_menu_slug = $this->utils->get_schema_option( 'schema_main_navigation_menu' );
 		if ( empty( $main_menu_slug ) ) {
@@ -29,10 +38,10 @@ class Smartcrawl_Schema_Fragment_Menu extends Smartcrawl_Schema_Fragment {
 			 * @var $menu_item WP_Post
 			 */
 			$schema[] = array(
-				"@type" => "SiteNavigationElement",
-				"@id"   => $this->utils->url_to_id( $this->url, '#schema-nav-element-' . $menu_item->ID ),
-				"name"  => $menu_item->post_title,
-				"url"   => $menu_item->url,
+				'@type' => 'SiteNavigationElement',
+				'@id'   => $this->utils->url_to_id( $this->url, '#schema-nav-element-' . $menu_item->ID ),
+				'name'  => $menu_item->post_title,
+				'url'   => $menu_item->url,
 			);
 		}
 

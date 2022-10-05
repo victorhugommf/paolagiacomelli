@@ -227,6 +227,7 @@ function removeBillingCompany( $fields ) {
      unset($fields['billing']['billing_last_name']);
      unset($fields['billing']['billing_birthdate_field']);
      unset($fields['billing']['billing_sex_field']);
+     unset($fields['billing']['billing_phone']);
      return $fields;
 }
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Passthrough service class
+ * Pass through service class
  *
  * Used to check membership info throughout the non-service code
  */

@@ -1,20 +1,25 @@
 <?php
 
 class Smartcrawl_Date_Archive extends Smartcrawl_Entity_With_Archive {
+
 	private $year;
+
 	private $month;
+
 	private $day;
+
 	private $posts;
+
 	/**
 	 * @var int
 	 */
 	private $page_number;
 
 	public function __construct( $year, $month = '', $day = '', $posts = array(), $page_number = 0 ) {
-		$this->year = $year;
-		$this->month = $month;
-		$this->day = $day;
-		$this->posts = $posts;
+		$this->year        = $year;
+		$this->month       = $month;
+		$this->day         = $day;
+		$this->posts       = $posts;
 		$this->page_number = $page_number;
 	}
 
@@ -41,14 +46,14 @@ class Smartcrawl_Date_Archive extends Smartcrawl_Entity_With_Archive {
 	}
 
 	protected function load_canonical_url() {
-		$requested_year = $this->year;
-		$requested_month = $this->month;
-		$date_callback = ! empty( $requested_year ) && empty( $requested_month )
+		$requested_year   = $this->year;
+		$requested_month  = $this->month;
+		$date_callback    = ! empty( $requested_year ) && empty( $requested_month )
 			? 'get_year_link'
 			: 'get_month_link';
 		$date_archive_url = $date_callback( $requested_year, $requested_month );
 
-		$first_page_indexed = $this->is_first_page_indexed();
+		$first_page_indexed   = $this->is_first_page_indexed();
 		$current_page_indexed = ! $this->is_noindex();
 		if ( $current_page_indexed ) {
 			return $this->append_page_number( $date_archive_url, $this->page_number );
@@ -138,15 +143,18 @@ class Smartcrawl_Date_Archive extends Smartcrawl_Entity_With_Archive {
 	}
 
 	public function get_date_for_archive() {
-		$day = $this->day;
-		$month = $this->month;
-		$year = $this->year;
+		$day    = $this->day;
+		$month  = $this->month;
+		$year   = $this->year;
 		$format = '';
 		if ( empty( $year ) ) {
-			// At the very least we need a year
+			// At the very least we need a year.
 			return '';
 		}
-		$timestamp = mktime( 0, 0, 0,
+		$timestamp = mktime(
+			0,
+			0,
+			0,
 			empty( $month ) ? 1 : $month,
 			empty( $day ) ? 1 : $day,
 			$year
@@ -160,12 +168,12 @@ class Smartcrawl_Date_Archive extends Smartcrawl_Entity_With_Archive {
 			$format = 'Y';
 		}
 
-		// TODO: should we replace date_i18n with wp_date?
+		// TODO: should we replace date_i18n with wp_date?.
 		return date_i18n( $format, $timestamp );
 	}
 
 	/**
-	 * @param $page_number
+	 * @param int $page_number Page number.
 	 *
 	 * @return string
 	 */
@@ -183,7 +191,7 @@ class Smartcrawl_Date_Archive extends Smartcrawl_Entity_With_Archive {
 			return '';
 		}
 
-		$noindex = $this->get_noindex_setting( $setting_key ) ? 'noindex' : 'index';
+		$noindex  = $this->get_noindex_setting( $setting_key ) ? 'noindex' : 'index';
 		$nofollow = $this->get_nofollow_setting( $setting_key ) ? 'nofollow' : 'follow';
 
 		return "{$noindex},{$nofollow}";

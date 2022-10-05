@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // polish
-
-static $data = [
+static $data = array(
     'ach',
     'aj',
     'albo',
@@ -141,7 +140,7 @@ static $data = [
     'żaden',
     'zawsze',
     'że',
-];
+);
 
 $result =& $data;
 unset($data);

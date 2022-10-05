@@ -742,7 +742,7 @@ class HT_CTC_Admin_Other_Settings {
                 <ol>Check Display Settings</ol>
             </ul>
         </p>
-        <!-- <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/amp-compatibility/">Basic Troubleshooting</a></p> -->
+        <!-- <p class="description"><a target="_blank" href="https://holithemes.com/plugins/click-to-chat/link/">Basic Troubleshooting</a></p> -->
         <br>
 
         <?php

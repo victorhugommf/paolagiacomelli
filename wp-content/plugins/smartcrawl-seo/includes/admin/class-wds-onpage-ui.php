@@ -2,27 +2,15 @@
 
 class Smartcrawl_OnPage_UI extends Smartcrawl_Base_Controller {
 
+	use Smartcrawl_Singleton;
+
 	/**
-	 * Static instance
+	 * Should run?.
 	 *
-	 * @var self
+	 * @return bool
 	 */
-	private static $_instance;
-
-	/**
-	 * Static instance getter
-	 */
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
 	public function should_run() {
-		return Smartcrawl_Settings::get_setting( 'onpage' )
-		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE );
+		return Smartcrawl_Settings::get_setting( 'onpage' ) && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_ONPAGE );
 	}
 
 	/**
@@ -37,6 +25,12 @@ class Smartcrawl_OnPage_UI extends Smartcrawl_Base_Controller {
 		return true;
 	}
 
+	/**
+	 * @param $sections
+	 * @param $post
+	 *
+	 * @return mixed
+	 */
 	public function add_seo_meta_fields( $sections, $post = null ) {
 		if ( empty( $post ) ) {
 			return $sections;
@@ -50,16 +44,18 @@ class Smartcrawl_OnPage_UI extends Smartcrawl_Base_Controller {
 	}
 
 	/**
-	 * @param $sections
-	 * @param WP_Post $post
+	 * Add advanced metabox for settings sections.
+	 *
+	 * @param array   $sections Sections.
+	 * @param WP_Post $post     Post object.
 	 */
 	public function add_advanced_metabox_settings_section( $sections, $post = null ) {
 		if ( empty( $post ) ) {
 			return $sections;
 		}
 
-		$all_options = Smartcrawl_Settings::get_options();
-		$post_id = $post->ID;
+		$all_options                                   = Smartcrawl_Settings::get_options();
+		$post_id                                       = $post->ID;
 		$sections['metabox/metabox-advanced-indexing'] = array(
 			'robots_noindex_value'  => (int) smartcrawl_get_value( 'meta-robots-noindex', $post_id ),
 			'robots_nofollow_value' => (int) smartcrawl_get_value( 'meta-robots-nofollow', $post_id ),

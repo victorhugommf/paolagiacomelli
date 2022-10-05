@@ -3,34 +3,41 @@
 class Smartcrawl_Schema_Source_Woocommerce extends Smartcrawl_Schema_Property_Source {
 	const ID = 'woocommerce';
 
-	const STOCK_STATUS = 'stock_status';
-	const CURRENCY = 'currency';
-	const PRICE = 'price';
-	const SALE_START_DATE = 'date_on_sale_from';
-	const SALE_END_DATE = 'date_on_sale_to';
-	const MIN_PRICE = 'min_price';
-	const MAX_PRICE = 'max_price';
+	const STOCK_STATUS           = 'stock_status';
+	const CURRENCY               = 'currency';
+	const PRICE                  = 'price';
+	const SALE_START_DATE        = 'date_on_sale_from';
+	const SALE_END_DATE          = 'date_on_sale_to';
+	const MIN_PRICE              = 'min_price';
+	const MAX_PRICE              = 'max_price';
 	const PRODUCT_CHILDREN_COUNT = 'product_children_count';
-	const PRODUCT_ID = 'product_id';
-	const SKU = 'sku';
-	const GLOBAL_ID = 'global_id';
-	const REVIEW_COUNT = 'review_count';
-	const AVERAGE_RATING = 'average_rating';
-	const PRODUCT_CATEGORY = 'product_category';
-	const PRODUCT_CATEGORY_URL = 'product_category_url';
-	const PRODUCT_TAG = 'product_tag';
-	const PRODUCT_TAG_URL = 'product_tag_url';
+	const PRODUCT_ID             = 'product_id';
+	const SKU                    = 'sku';
+	const GLOBAL_ID              = 'global_id';
+	const REVIEW_COUNT           = 'review_count';
+	const AVERAGE_RATING         = 'average_rating';
+	const PRODUCT_CATEGORY       = 'product_category';
+	const PRODUCT_CATEGORY_URL   = 'product_category_url';
+	const PRODUCT_TAG            = 'product_tag';
+	const PRODUCT_TAG_URL        = 'product_tag_url';
 
 	/**
 	 * @var WC_Product
 	 */
 	private $product = false;
+	/**
+	 * @var
+	 */
 	private $field;
 	/**
 	 * @var Smartcrawl_Woocommerce_Data
 	 */
 	private $woo_data;
 
+	/**
+	 * @param $post
+	 * @param $field
+	 */
 	public function __construct( $post, $field ) {
 		parent::__construct();
 
@@ -38,17 +45,20 @@ class Smartcrawl_Schema_Source_Woocommerce extends Smartcrawl_Schema_Property_So
 			return;
 		}
 
-		$this->product = wc_get_product( $post );
-		$this->field = $field;
+		$this->product  = wc_get_product( $post );
+		$this->field    = $field;
 		$this->woo_data = new Smartcrawl_Woocommerce_Data();
 	}
 
+	/**
+	 * @return array|false|int|string|WP_Error|WP_Term|null
+	 */
 	public function get_value() {
 		if ( ! $this->woocommerce_active() || ! $this->product ) {
 			return '';
 		}
 
-		$price = $this->product->get_price();
+		$price               = $this->product->get_price();
 		$is_variable_product = is_a( $this->product, 'WC_Product_Variable' );
 
 		switch ( $this->field ) {
@@ -128,6 +138,11 @@ class Smartcrawl_Schema_Source_Woocommerce extends Smartcrawl_Schema_Property_So
 		}
 	}
 
+	/**
+	 * @param $price
+	 *
+	 * @return mixed
+	 */
 	private function format_price( $price ) {
 		return wc_format_decimal( $price, wc_get_price_decimals() );
 	}
@@ -165,7 +180,7 @@ class Smartcrawl_Schema_Source_Woocommerce extends Smartcrawl_Schema_Property_So
 	 * @return string
 	 */
 	private function get_global_identifier() {
-		$options = $this->woo_data->get_options();
+		$options        = $this->woo_data->get_options();
 		$module_enabled = (bool) smartcrawl_get_array_value( $options, 'woocommerce_enabled' );
 		if ( ! $module_enabled ) {
 			return '';

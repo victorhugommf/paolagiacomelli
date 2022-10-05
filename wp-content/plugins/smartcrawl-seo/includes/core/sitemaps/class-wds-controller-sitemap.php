@@ -2,48 +2,122 @@
 
 class Smartcrawl_Controller_Sitemap extends Smartcrawl_Base_Controller {
 
-	private static $_instance;
+	use Smartcrawl_Singleton;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
-
+	/**
+	 * @return bool
+	 */
 	public function should_run() {
 		return Smartcrawl_Settings::get_setting( 'sitemap' )
-		       && Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
+			&& Smartcrawl_Settings_Admin::is_tab_allowed( Smartcrawl_Settings::TAB_SITEMAP );
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function init() {
-		add_action( 'wp_ajax_wds_update_sitemap', array( $this, 'json_update_sitemap' ) );
-		add_action( 'wp_ajax_wds_update_engines', array( $this, 'json_update_engines' ) );
+		add_action(
+			'wp_ajax_wds_update_sitemap',
+			array(
+				$this,
+				'json_update_sitemap',
+			)
+		);
+		add_action(
+			'wp_ajax_wds_update_engines',
+			array(
+				$this,
+				'json_update_engines',
+			)
+		);
 
-		add_action( 'wp_ajax_wds-manually-update-engines', array( $this, 'json_manually_update_engines' ) );
-		add_action( 'wp_ajax_wds-manually-update-sitemap', array( $this, 'json_manually_update_sitemap' ) );
-		add_action( 'wp_ajax_wds-deactivate-sitemap-module', array( $this, 'json_deactivate_sitemap_module' ) );
-		add_action( 'wp_ajax_wds-override-native', array( $this, 'json_override_native' ) );
+		add_action(
+			'wp_ajax_wds-manually-update-engines',
+			array(
+				$this,
+				'json_manually_update_engines',
+			)
+		);
+		add_action(
+			'wp_ajax_wds-manually-update-sitemap',
+			array(
+				$this,
+				'json_manually_update_sitemap',
+			)
+		);
+		add_action(
+			'wp_ajax_wds-deactivate-sitemap-module',
+			array(
+				$this,
+				'json_deactivate_sitemap_module',
+			)
+		);
+		add_action(
+			'wp_ajax_wds-override-native',
+			array(
+				$this,
+				'json_override_native',
+			)
+		);
 
-		add_action( 'admin_init', array( $this, 'prime_cache_on_sitemap_settings_page_load' ) );
+		add_action(
+			'admin_init',
+			array(
+				$this,
+				'prime_cache_on_sitemap_settings_page_load',
+			)
+		);
 
-		add_action( 'update_option_wds_sitemap_options', array( $this, 'invalidate_sitemap_cache' ) );
+		add_action(
+			'update_option_wds_sitemap_options',
+			array(
+				$this,
+				'invalidate_sitemap_cache',
+			)
+		);
 
-		add_action( 'wds_plugin_update', array( $this, 'invalidate_sitemap_cache_on_plugin_update' ) );
+		add_action(
+			'wds_plugin_update',
+			array(
+				$this,
+				'invalidate_sitemap_cache_on_plugin_update',
+			)
+		);
 
 		if ( Smartcrawl_Sitemap_Utils::auto_regeneration_enabled() ) {
 			add_action( 'save_post', array( $this, 'handle_post_save' ) );
 			add_action( 'delete_post', array( $this, 'handle_post_delete' ) );
-			add_action( 'wp_update_term_data', array( $this, 'handle_term_slug_update' ), 10, 3 );
-			add_action( 'pre_delete_term', array( $this, 'handle_term_deletion' ), 10, 2 );
+			add_action(
+				'wp_update_term_data',
+				array(
+					$this,
+					'handle_term_slug_update',
+				),
+				10,
+				3
+			);
+			add_action(
+				'pre_delete_term',
+				array(
+					$this,
+					'handle_term_deletion',
+				),
+				10,
+				2
+			);
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	public function invalidate_sitemap_cache_on_plugin_update() {
 		$this->invalidate_sitemap_cache();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function prime_cache_on_sitemap_settings_page_load() {
 		global $plugin_page;
 
@@ -59,18 +133,28 @@ class Smartcrawl_Controller_Sitemap extends Smartcrawl_Base_Controller {
 		Smartcrawl_Sitemap_Utils::prime_cache( false );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function json_manually_update_engines() {
 		Smartcrawl_Sitemap_Utils::notify_engines( true );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function json_manually_update_sitemap() {
 		$this->invalidate_sitemap_cache();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function json_deactivate_sitemap_module() {
 		$data = $this->get_request_data();
 		if ( empty( $data ) ) {
 			wp_send_json_error();
+
 			return;
 		}
 
@@ -78,16 +162,20 @@ class Smartcrawl_Controller_Sitemap extends Smartcrawl_Base_Controller {
 		wp_send_json_success();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function json_override_native() {
-		$data = $this->get_request_data();
+		$data     = $this->get_request_data();
 		$override = smartcrawl_get_array_value( $data, 'override' );
 
 		if ( is_null( $override ) ) {
 			wp_send_json_error();
+
 			return;
 		}
 
-		Smartcrawl_Sitemap_Utils::set_sitemap_option( 'override-native', (boolean) $override );
+		Smartcrawl_Sitemap_Utils::set_sitemap_option( 'override-native', (bool) $override );
 		wp_send_json_success();
 	}
 
@@ -117,11 +205,16 @@ class Smartcrawl_Controller_Sitemap extends Smartcrawl_Base_Controller {
 		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
 			// The above if condition is necessary because save_post is called twice by gutenberg: https://github.com/WordPress/gutenberg/issues/12903
 			// We don't want the search engines to be notified of sitemap changes twice, so as a workaround we are going to invalidate sitemap cache both times
-			// but only prime the cache for gutenberg (and other rests requests)
+			// but only prime the cache for gutenberg (and other rests requests).
 			Smartcrawl_Sitemap_Utils::prime_cache( false );
 		}
 	}
 
+	/**
+	 * @param $post_id
+	 *
+	 * @return void
+	 */
 	public function handle_post_delete( $post_id ) {
 		if ( ! Smartcrawl_Sitemap_Utils::is_post_included( get_post( $post_id ) ) ) {
 			return;
@@ -131,9 +224,16 @@ class Smartcrawl_Controller_Sitemap extends Smartcrawl_Base_Controller {
 		Smartcrawl_Sitemap_Utils::prime_cache( false );
 	}
 
+	/**
+	 * @param $data
+	 * @param $term_id
+	 * @param $taxonomy
+	 *
+	 * @return mixed
+	 */
 	public function handle_term_slug_update( $data, $term_id, $taxonomy ) {
-		$term = get_term( $term_id, $taxonomy );
-		$new_slug = smartcrawl_get_array_value( $data, 'slug' );
+		$term              = get_term( $term_id, $taxonomy );
+		$new_slug          = smartcrawl_get_array_value( $data, 'slug' );
 		$taxonomy_included = Smartcrawl_Sitemap_Utils::is_taxonomy_included( $taxonomy );
 
 		if ( $taxonomy_included && ! empty( $term->count ) && $new_slug !== $term->slug ) {
@@ -144,6 +244,12 @@ class Smartcrawl_Controller_Sitemap extends Smartcrawl_Base_Controller {
 		return $data;
 	}
 
+	/**
+	 * @param $term_id
+	 * @param $taxonomy
+	 *
+	 * @return void
+	 */
 	public function handle_term_deletion( $term_id, $taxonomy ) {
 		$term = get_term( $term_id, $taxonomy );
 		if ( is_wp_error( $term ) ) {
@@ -158,21 +264,33 @@ class Smartcrawl_Controller_Sitemap extends Smartcrawl_Base_Controller {
 		Smartcrawl_Sitemap_Utils::prime_cache( false );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function json_update_sitemap() {
 		$this->invalidate_sitemap_cache();
 		Smartcrawl_Sitemap_Utils::prime_cache( true );
 		die( 1 );
 	}
 
+	/**
+	 * @return void
+	 */
 	public function json_update_engines() {
 		Smartcrawl_Sitemap_Utils::notify_engines( 1 );
 		die( 1 );
 	}
 
+	/**
+	 * @return array|mixed
+	 */
 	private function get_request_data() {
 		return isset( $_POST['_wds_nonce'] ) && wp_verify_nonce( $_POST['_wds_nonce'], 'wds-nonce' ) ? stripslashes_deep( $_POST ) : array();
 	}
 
+	/**
+	 * @return void
+	 */
 	public function invalidate_sitemap_cache() {
 		Smartcrawl_Sitemap_Cache::get()->invalidate();
 	}

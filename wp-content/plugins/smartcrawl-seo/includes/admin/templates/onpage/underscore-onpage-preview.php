@@ -1,6 +1,9 @@
 <?php
-$this->_render( 'onpage/onpage-preview', array(
-	'link'        => '{{- link }}',
-	'title'       => '{{- title }}',
-	'description' => '{{- description }}',
-) );
+$this->render_view(
+	'onpage/onpage-preview',
+	array(
+		'link'        => '{{- link }}',
+		'title'       => '{{- title }}',
+		'description' => '{{- description }}',
+	)
+);

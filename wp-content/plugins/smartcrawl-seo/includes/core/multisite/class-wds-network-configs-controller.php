@@ -1,15 +1,8 @@
 <?php
 
 class Smartcrawl_Network_Configs_Controller extends Smartcrawl_Base_Controller {
-	private static $_instance;
 
-	public static function get() {
-		if ( empty( self::$_instance ) ) {
-			self::$_instance = new self();
-		}
-
-		return self::$_instance;
-	}
+	use Smartcrawl_Singleton;
 
 	public function should_run() {
 		return is_multisite();
@@ -27,7 +20,7 @@ class Smartcrawl_Network_Configs_Controller extends Smartcrawl_Base_Controller {
 	/**
 	 * Actually apply the config to the current site
 	 *
-	 * @param $blog
+	 * @param mixed $blog Blog.
 	 */
 	public function apply_config( $blog ) {
 		$config_id = $this->get_subsite_config_id();
@@ -36,7 +29,7 @@ class Smartcrawl_Network_Configs_Controller extends Smartcrawl_Base_Controller {
 		}
 
 		$config_collection = Smartcrawl_Config_Collection::get();
-		$config = $config_collection->get_by_id( $config_id );
+		$config            = $config_collection->get_by_id( $config_id );
 		if ( ! $config ) {
 			return;
 		}
@@ -51,8 +44,7 @@ class Smartcrawl_Network_Configs_Controller extends Smartcrawl_Base_Controller {
 		}
 
 		switch_to_blog( $blog_id );
-		Smartcrawl_Controller_Configs::get()
-		                             ->apply_config( $config->get_configs() );
+		Smartcrawl_Controller_Configs::get()->apply_config( $config->get_configs() );
 		restore_current_blog();
 	}
 }

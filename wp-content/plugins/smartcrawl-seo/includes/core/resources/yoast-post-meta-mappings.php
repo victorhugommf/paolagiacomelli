@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of mappings
 
 return array(
 	'_yoast_wpseo_primary_category'      => false,

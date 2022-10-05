@@ -6,4 +6,6 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'WC_Better_Shipping_Calculator_for_Brazil\\Core\\' => array($baseDir . '/core'),
+    'WC_Better_Shipping_Calculator_for_Brazil\\' => array($baseDir . '/classes'),
 );

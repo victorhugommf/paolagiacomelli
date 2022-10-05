@@ -5,7 +5,7 @@ License URI: http://www.gnu.org/licenses/gpl.html
 Tags: Google Shopping Feed, Facebook feed, Facebook catalog feed, WooCommerce Product Feed, Product Feed, Bing Shopping Feed, Bing Product Feed, Google Merchant Feed, Skroutz, Google Product Feed, Pinterest, Idealo, Pixels, Conversion API
 Requires at least: 4.5
 Tested up to: 6.0
-Stable tag: 11.7.7
+Stable tag: 11.8.8
 
 == Description ==
 
@@ -344,6 +344,39 @@ Questions left or unanswered? Please do not hesitate to contact us at support@ad
 8. Set the basic configurations for your product feed
 
 === Changelog ===
+
+= 11.8.8 (2022-10-01) =
+* Added a htmlspecialchars call on review names
+
+= 11.8.7 (2022-09-07) =
+* Added the rich product content field to the Google Shopping template
+
+= 11.8.6 (2022-09-06) =
+* Added the release date field to the Google Shopping template
+
+= 11.8.5 (2022-09-02) =
+* Changed the update_option for cron_projects to non autoload
+
+= 11.8.4 (2022-08-17) =
+* Added an option to enable/disable returning of only basic attributes in the field mapping and rules and filters drop-downs
+
+= 11.8.3 (2022-08-15) =
+* Fixed an issue where not all (externally created) attributes or metafields where showing in the field mapping drop-downs
+
+= 11.8.2 (2022-08-13) =
+* When the availability date field mapping has been added it will only be added to products that are on backorder. Not to any other products.
+
+= 11.8.1 (2022-08-11) =
+* Added 5 attributes to create availability dates in the future for products that are on backorder
+
+= 11.8.0 (2022-08-10) =
+* Checked for compatibility with WooCommerce 6.8.0
+
+= 11.7.9 (2022-08-08) =
+* Fixed an issue where shipping class costs where not calculated properly
+
+= 11.7.8 (2022-08-05) =
+* Added additional field for the Pinterest template
 
 = 11.7.7 (2022-08-01) =
 * Removed currency from Zbozi shipping costs
@@ -3763,6 +3796,39 @@ Questions left or unanswered? Please do not hesitate to contact us at support@ad
 * Strip HTML from the (short) description attributes
 
 == Upgrade Notice ==
+
+= 11.8.8 =
+Added a htmlspecialchars call on review names
+
+= 11.8.7 =
+Added the rich product content field to the Google Shopping template
+
+= 11.8.6 =
+Added the release date field to the Google Shopping template
+
+= 11.8.5 =
+Changed the update_option for cron_projects to non autoload
+
+= 11.8.4 =
+Added an option to enable/disable returning of only basic attributes in the field mapping and rules and filters drop-downs
+
+= 11.8.3 =
+Fixed an issue where not all (externally created) attributes or metafields where showing in the field mapping drop-downs
+
+= 11.8.2 =
+When the availability date field mapping has been added it will only be added to products that are on backorder. Not to any other products.
+
+= 11.8.1 =
+Added 5 attributes to create availability dates in the future for products that are on backorder
+
+= 11.8.0 =
+Checked for compatibility with WooCommerce 6.8.0
+
+= 11.7.9 =
+Fixed an issue where shipping class costs where not calculated properly
+
+= 11.7.8 =
+Added additional field for the Pinterest template
 
 = 11.7.7 =
 Removed currency from Zbozi shipping costs

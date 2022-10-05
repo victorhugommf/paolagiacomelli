@@ -1,5 +1,5 @@
 <?php
-$option_name = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
+$option_name       = empty( $_view['option_name'] ) ? '' : $_view['option_name'];
 $organization_type = empty( $organization_type ) ? '' : $organization_type;
 ?>
 
@@ -8,13 +8,15 @@ $organization_type = empty( $organization_type ) ? '' : $organization_type;
 		<?php esc_html_e( 'Organization type', 'wds' ); ?>
 	</label>
 
-	<select id="organization_type"
-	        name="<?php echo esc_attr( $option_name ); ?>[organization_type]"
-	        data-minimum-results-for-search="-1"
-	        class="sui-select">
+	<select
+		id="organization_type"
+		name="<?php echo esc_attr( $option_name ); ?>[organization_type]"
+		data-minimum-results-for-search="-1"
+		class="sui-select"
+	>
 		<option value=""><?php esc_html_e( 'Select (Optional)', 'wds' ); ?></option>
-
-		<?php foreach (
+		<?php
+		foreach (
 			array(
 				Smartcrawl_Schema_Type_Constants::ORGANIZATION_AIRLINE          => 'Airline',
 				Smartcrawl_Schema_Type_Constants::ORGANIZATION_CONSORTIUM       => 'Consortium',
@@ -31,9 +33,12 @@ $organization_type = empty( $organization_type ) ? '' : $organization_type;
 				Smartcrawl_Schema_Type_Constants::ORGANIZATION_SPORTS           => 'Sports',
 				Smartcrawl_Schema_Type_Constants::ORGANIZATION_WORKERS_UNION    => 'Workers Union',
 			) as $org_type_value => $org_type_label
-		): ?>
-			<option <?php selected( $org_type_value, $organization_type ); ?>
-					value="<?php echo esc_attr( $org_type_value ); ?>">
+		) :
+			?>
+			<option
+				<?php selected( $org_type_value, $organization_type ); ?>
+				value="<?php echo esc_attr( $org_type_value ); ?>"
+			>
 				<?php echo esc_html( $org_type_label ); ?>
 			</option>
 		<?php endforeach; ?>
@@ -43,10 +48,12 @@ $organization_type = empty( $organization_type ) ? '' : $organization_type;
 		<?php esc_html_e( 'Choose the type that best describes your organization website.', 'wds' ); ?>
 	</p>
 	<p class="sui-description">
-		<?php echo smartcrawl_format_link(
+		<?php
+		echo smartcrawl_format_link( // phpcs:ignore
 			esc_html__( 'Note: If you want to add Local Business markup, you can do it by adding a “Local Business” type in the %s.', 'wds' ),
 			Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings::TAB_SCHEMA ) . '&tab=tab_types',
 			esc_html__( 'Types Builder', 'wds' )
-		); ?>
+		);
+		?>
 	</p>
 </div>

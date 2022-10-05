@@ -2,8 +2,8 @@
 Contributors: gt3themes
 Tags: photo gallery, image gallery, gallery block, gallery, gutenberg block, wordpress photo gallery plugin, gutenberg gallery block, responsive gallery, image gallery block, instagram gallery, photo album, video gallery
 Requires at least: 5.5
-Tested up to: 5.8
-Stable tag: 2.7.7.7
+Tested up to: 6.1
+Stable tag: 2.7.7.10
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -180,6 +180,17 @@ Yes, the plugin has a built-in lazy loading functionality. You can enable or dis
 == Upgrade Notice ==
 
 == Changelog ==
+
+= 2.7.7.10 =
+* Added: Import/Export global settings tool
+* Improved: Gallery options panel
+* Fixed: Minor bug fixes
+
+= 2.7.7.9 =
+* Improved: Gallery backend optimization
+* Improved: GT3 Image Optimizer support
+* Fixed: Youtube video issue
+* Fixed: Minor bug fixes
 
 = 2.7.7.7 =
 * Improved: Latest WP compatibility

@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // croatian
-
-static $data = [
+static $data = array(
     'a',
     'ako',
     'ali',
@@ -182,7 +181,7 @@ static $data = [
     'ćeš',
     'ću',
     'što',
-];
+);
 
 $result =& $data;
 unset($data);

@@ -2,6 +2,27 @@ Plugin Name: SmartCrawl SEO
 
 Change Log:
 ----------------------------------------------------------------------
+3.2.1 - 2022-09-22
+----------------------------------------------------------------------
+- Improvement: Membership checks.
+- Fix: CSS is visible on preview when an Elementor template is used.
+- Fix: Shared UI conflict.
+
+3.2.0 - 2022-08-31
+----------------------------------------------------------------------
+- Improvement: Remove redundant priority and frequency data from sitemap
+- Improvement: Remove redundant last modified timestamp from the sitemap index
+- Improvement: Better sitemap compatibility with bbPress
+- Fix: Unable to uninstall SmartCrawl plugin.
+
+3.1.0 - 2022-08-10
+----------------------------------------------------------------------
+Improvement: Code improvements.
+Improvement: Upgrade Shared UI.
+Fix: Unable to enable Media indexing.
+Fix: Schema types cannot have more than 10 in Schema of same type.
+
+----------------------------------------------------------------------
 3.0.1 - 2022-06-28
 ----------------------------------------------------------------------
 Improvement: Improved performance for the sitemap troubleshooter

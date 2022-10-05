@@ -2,14 +2,13 @@
 /**
  * General plugin initialization
  *
- * @package wpmu-dev-seo
+ * @package Smartcrawl
  */
 
 /**
- * Init WDS
+ * Class Smartcrawl_Init.
  */
 class Smartcrawl_Init {
-
 
 	/**
 	 * Init plugin
@@ -17,18 +16,15 @@ class Smartcrawl_Init {
 	 * @return  void
 	 */
 	public function __construct() {
-
 		$this->init();
-
 	}
 
 	/**
-	 * Init
+	 * Init the class.
 	 *
-	 * @return  void
+	 * @return void
 	 */
 	private function init() {
-
 		/**
 		 * Load textdomain.
 		 *
@@ -56,7 +52,6 @@ class Smartcrawl_Init {
 
 		Smartcrawl_Autolinks_UI::get()->run();
 		Smartcrawl_OnPage_UI::get()->run();
-		Smartcrawl_Sitemap_UI::get()->run();
 		Smartcrawl_SEO_Analysis_UI::get()->run();
 		Smartcrawl_Readability_Analysis_UI::get()->run();
 		Smartcrawl_Social_UI::get()->run();
@@ -77,10 +72,13 @@ class Smartcrawl_Init {
 		Smartcrawl_Sitewide_Deprecation_Controller::get()->run();
 		Smartcrawl_Controller_Ajax_Search::get()->run();
 
-		add_action( 'init', function () {
-			// WooCommerce is not available before init when smartcrawl is activated on a sub-site (not network active)
-			Smartcrawl_Controller_Woocommerce::get()->run();
-		} );
+		add_action(
+			'init',
+			function () {
+				// WooCommerce is not available before init when smartcrawl is activated on a sub-site (not network active).
+				Smartcrawl_Controller_Woocommerce::get()->run();
+			}
+		);
 		Smartcrawl_Controller_Redirection::get()->run();
 		Smartcrawl_Controller_Wpml::get()->run();
 

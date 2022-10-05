@@ -1,4 +1,4 @@
-<?php $this->_render( 'before-page-container' ); ?>
+<?php $this->render_view( 'before-page-container' ); ?>
 
 <div id="container" class="<?php smartcrawl_wrap_class( 'wds-upgrade-page' ); ?>">
 	<div class="sui-upgrade-page">
@@ -7,13 +7,15 @@
 				<div class="sui-upgrade-page-header__content">
 					<h1><?php esc_html_e( 'Upgrade to SmartCrawl Pro', 'wds' ); ?></h1>
 
-					<p><?php esc_html_e( 'Get SmartCrawl Pro for our full WordPress search engine optimization suite, including scheduled SEO audits and sitemap crawls, automatic linking, and white label reports for clients.', 'wds' ) ?></p>
+					<p><?php esc_html_e( 'Get SmartCrawl Pro for our full WordPress search engine optimization suite, including scheduled SEO audits and sitemap crawls, automatic linking, and white label reports for clients.', 'wds' ); ?></p>
 
-					<p><?php esc_html_e( 'Plus – you’ll get WPMU DEV membership, which includes our award winning Smush Pro plugin for image optimization, 24/7 live WordPress support, and unlimited usage of all our premium plugins.', 'wds' ) ?></p>
+					<p><?php esc_html_e( 'Plus – you’ll get WPMU DEV membership, which includes our award winning Smush Pro plugin for image optimization, 24/7 live WordPress support, and unlimited usage of all our premium plugins.', 'wds' ); ?></p>
 
-					<a href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_propage_topbutton"
-					   target="_blank"
-					   class="sui-button sui-button-lg sui-button-purple">
+					<a
+						href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_propage_topbutton"
+						target="_blank"
+						class="sui-button sui-button-lg sui-button-purple"
+					>
 						<?php esc_html_e( 'Try SmartCrawl Pro for Free Today', 'wds' ); ?>
 					</a>
 
@@ -24,8 +26,11 @@
 							<span class="sui-reviews-customer-count">-</span> <?php esc_html_e( 'customers', 'wds' ); ?>
 						</div>
 
-						<a class="sui-reviews__link" href="https://www.reviews.io/company-reviews/store/wpmudev-org"
-						   target="_blank">Reviews.io<span class="sui-icon-arrow-right" aria-hidden="true"></span></a>
+						<a
+							class="sui-reviews__link"
+							href="https://www.reviews.io/company-reviews/store/wpmudev-org"
+							target="_blank"
+						>Reviews.io<span class="sui-icon-arrow-right" aria-hidden="true"></span></a>
 					</div>
 				</div>
 
@@ -98,20 +103,26 @@
 
 				<p><?php esc_html_e( "97% of customers are happy with WPMU DEV's service, and it’s a great time to join them: as a SmartCrawl user you’ll get a free trial period, so you can see what all the fuss is about.", 'wds' ); ?></p>
 
-				<a href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_propage_bottombutton"
-				   target="_blank"
-				   class="sui-button sui-button-lg sui-button-purple">
+				<a
+					href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_propage_bottombutton"
+					target="_blank"
+					class="sui-button sui-button-lg sui-button-purple"
+				>
 					<?php esc_html_e( 'Get SmartCrawl Pro, and get a better WordPress', 'wds' ); ?>
 				</a>
 
-				<a href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_propage_bottombutton"
-				   target="_blank"
-				   class="sui-button sui-button-lg sui-button-purple sui-hidden-desktop">
+				<a
+					href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_propage_bottombutton"
+					target="_blank"
+					class="sui-button sui-button-lg sui-button-purple sui-hidden-desktop"
+				>
 					<?php esc_html_e( 'Get SmartCrawl Pro', 'wds' ); ?>
 				</a>
 
-				<a href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_propage_bottombutton"
-				   target="_blank">
+				<a
+					href="https://wpmudev.com/project/smartcrawl-wordpress-seo/?utm_source=smartcrawl&utm_medium=plugin&utm_campaign=smartcrawl_propage_bottombutton"
+					target="_blank"
+				>
 					<?php esc_html_e( 'Try it free today', 'wds' ); ?>
 				</a>
 			</div>

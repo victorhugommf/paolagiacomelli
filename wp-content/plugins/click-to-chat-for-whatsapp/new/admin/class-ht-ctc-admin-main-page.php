@@ -144,16 +144,13 @@ class HT_CTC_Admin_Main_Page {
 
                 <!-- country code -->
                 <div class="input-field col s3 m3 ctc_num_field">
-                    <input name="ht_ctc_chat_options[cc]" value="<?= $cc ?>" id="whatsapp_cc" type="text" class="input-margin tooltipped" data-position="left" data-tooltip="Country Code">
-                    
+                    <input name="ht_ctc_chat_options[cc]" value="<?= $cc ?>" id="whatsapp_cc" type="text" placeholder="+1 " class="input-margin tooltipped" data-position="left" data-tooltip="Country Code">
                     <label for="whatsapp_cc"><?php _e( 'Country Code', 'click-to-chat-for-whatsapp' ); ?></label>
-                    
-                    
                 </div>
 
                 <!-- number -->
                 <div class="input-field col s9 m7 ctc_num_field">
-                    <input name="ht_ctc_chat_options[num]" value="<?= $num ?>" id="whatsapp_number" type="text" class="input-margin tooltipped" data-position="right" data-tooltip="Number">
+                    <input name="ht_ctc_chat_options[num]" value="<?= $num ?>" id="whatsapp_number" placeholder="23456789" type="text" class="input-margin tooltipped" data-position="right" data-tooltip="Number">
                     <label for="whatsapp_number"><?php _e( 'Number', 'click-to-chat-for-whatsapp' ); ?></label>
                     <span class="helper-text ctc_wn_initial_zero" style="display: none;">zero may not needed to add before the number</span>
                 </div>

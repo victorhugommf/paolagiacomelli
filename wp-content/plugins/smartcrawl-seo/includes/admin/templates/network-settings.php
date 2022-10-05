@@ -1,22 +1,27 @@
 <?php
-$option_name = empty( $option_name ) ? '' : $option_name;
-$slugs = empty( $slugs ) ? array() : $slugs;
+$option_name          = empty( $option_name ) ? '' : $option_name;
+$slugs                = empty( $slugs ) ? array() : $slugs;
 $subsite_manager_role = empty( $subsite_manager_role ) ? false : $subsite_manager_role;
-$subsite_config_id = empty( $subsite_config_id ) ? '' : $subsite_config_id;
-$blog_tabs = empty( $blog_tabs ) ? array() : $blog_tabs;
-$dashboard_url = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings_Admin::TAB_DASHBOARD );
-$per_site_notice = empty( $per_site_notice ) ? '' : $per_site_notice;
-$collection = Smartcrawl_Config_Collection::get();
+$subsite_config_id    = empty( $subsite_config_id ) ? '' : $subsite_config_id;
+$blog_tabs            = empty( $blog_tabs ) ? array() : $blog_tabs;
+$dashboard_url        = Smartcrawl_Settings_Admin::admin_url( Smartcrawl_Settings_Admin::TAB_DASHBOARD );
+$per_site_notice      = empty( $per_site_notice ) ? '' : $per_site_notice;
+$collection           = Smartcrawl_Config_Collection::get();
 
-$this->_render( 'before-page-container' );
+$this->render_view( 'before-page-container' );
 ?>
 <div id="container" class="<?php smartcrawl_wrap_class( 'wds-page-network-settings' ); ?>">
 
-	<?php $this->_render( 'page-header', array(
-		'title' => esc_html__( 'Network Settings', 'wds' ),
-	) ); ?>
+	<?php
+	$this->render_view(
+		'page-header',
+		array(
+			'title' => esc_html__( 'Network Settings', 'wds' ),
+		)
+	);
+	?>
 
-	<?php $this->_render( 'floating-notices' ); ?>
+	<?php $this->render_view( 'floating-notices' ); ?>
 
 	<form method="post">
 		<div class="wds-vertical-tabs-container sui-row-with-sidenav">
@@ -47,8 +52,10 @@ $this->_render( 'before-page-container' );
 						</div>
 
 						<div class="sui-box-settings-col-2">
-							<label class="sui-settings-label"
-							       for="wds-subsite-access">
+							<label
+								class="sui-settings-label"
+								for="wds-subsite-access"
+							>
 								<?php esc_html_e( 'Admin Access', 'wds' ); ?>
 							</label>
 							<p class="sui-description">
@@ -56,17 +63,19 @@ $this->_render( 'before-page-container' );
 							</p>
 							<div class="sui-row">
 								<div class="sui-col-md-6">
-									<select id="wds-subsite-access"
-									        name="<?php echo esc_attr( $option_name ); ?>[wds_subsite_manager_role]"
-									        autocomplete="off"
-									        data-minimum-results-for-search="-1"
-									        class="sui-select">
-										<option <?php selected( 'admin', $subsite_manager_role ) ?>
-												value="admin">
+									<select
+										id="wds-subsite-access"
+										name="<?php echo esc_attr( $option_name ); ?>[wds_subsite_manager_role]"
+										autocomplete="off"
+										data-minimum-results-for-search="-1"
+										class="sui-select"
+									>
+										<option <?php selected( 'admin', $subsite_manager_role ); ?>
+											value="admin">
 											<?php esc_html_e( 'Site Admins', 'wds' ); ?>
 										</option>
-										<option <?php selected( 'superadmin', $subsite_manager_role ) ?>
-												value="superadmin">
+										<option <?php selected( 'superadmin', $subsite_manager_role ); ?>
+											value="superadmin">
 											<?php esc_html_e( 'Super Admins', 'wds' ); ?>
 										</option>
 									</select>
@@ -74,8 +83,10 @@ $this->_render( 'before-page-container' );
 							</div>
 
 							<div class="wds-separator-top">
-								<label class="sui-settings-label"
-								       for="wds-subsite-access">
+								<label
+									class="sui-settings-label"
+									for="wds-subsite-access"
+								>
 									<?php esc_html_e( 'Modules', 'wds' ); ?>
 								</label>
 								<p class="sui-description">
@@ -85,13 +96,17 @@ $this->_render( 'before-page-container' );
 								foreach ( $slugs as $item => $label ) {
 									$checkbox_name = sprintf( '%s[wds_blog_tabs][%s]', $option_name, $item );
 									?>
-									<label for="<?php echo esc_attr( $checkbox_name ); ?>"
-									       class="sui-checkbox">
-										<input type="checkbox" <?php checked( ! empty( $blog_tabs[ $item ] ) ); ?>
-										       name="<?php echo esc_attr( $checkbox_name ); ?>"
-										       value="yes"
-										       id="<?php echo esc_attr( $checkbox_name ); ?>"
-										       aria-labelledby="label-<?php echo esc_attr( $checkbox_name ); ?>"/>
+									<label
+										for="<?php echo esc_attr( $checkbox_name ); ?>"
+										class="sui-checkbox"
+									>
+										<input
+											type="checkbox" <?php checked( ! empty( $blog_tabs[ $item ] ) ); ?>
+											name="<?php echo esc_attr( $checkbox_name ); ?>"
+											value="yes"
+											id="<?php echo esc_attr( $checkbox_name ); ?>"
+											aria-labelledby="label-<?php echo esc_attr( $checkbox_name ); ?>"
+										/>
 										<span aria-hidden="true"></span>
 										<span id="label-<?php echo esc_attr( $checkbox_name ); ?>">
 											<?php echo esc_html( $label ); ?>
@@ -104,31 +119,37 @@ $this->_render( 'before-page-container' );
 							<br/>
 
 							<div class="wds-separator-top">
-								<label class="sui-settings-label"
-								       for="wds-subsite-config-id">
+								<label
+									class="sui-settings-label"
+									for="wds-subsite-config-id"
+								>
 									<?php esc_html_e( 'New Sub-sites', 'wds' ); ?>
 								</label>
 								<p class="sui-description">
-									<?php echo smartcrawl_format_link(
+									<?php
+									echo smartcrawl_format_link( // phpcs:ignore
 										esc_html__( 'Select a config that you would like to apply to new sub-sites. Visit the %s page to manage all your configs.', 'wds' ),
 										admin_url( 'admin.php?page=wds_settings&tab=tab_configs' ),
 										esc_html__( 'Configs', 'wds' ),
 										'_blank'
-									); ?>
+									);
+									?>
 								</p>
 
-								<select id="wds-subsite-config-id"
-								        name="<?php echo esc_attr( $option_name ); ?>[wds_subsite_config_id]"
-								        data-minimum-results-for-search="-1"
-								        class="sui-select">
+								<select
+									id="wds-subsite-config-id"
+									name="<?php echo esc_attr( $option_name ); ?>[wds_subsite_config_id]"
+									data-minimum-results-for-search="-1"
+									class="sui-select"
+								>
 									<option <?php selected( ! $subsite_config_id ); ?>
-											value="">
+										value="">
 										<?php esc_html_e( 'None', 'wds' ); ?>
 									</option>
 
-									<?php foreach ( $collection->get_sorted_configs() as $config ): ?>
-										<option <?php selected( $subsite_config_id, $config->get_id() ) ?>
-												value="<?php echo esc_attr( $config->get_id() ); ?>">
+									<?php foreach ( $collection->get_sorted_configs() as $config ) : ?>
+										<option <?php selected( $subsite_config_id, $config->get_id() ); ?>
+											value="<?php echo esc_attr( $config->get_id() ); ?>">
 
 											<?php echo esc_html( $config->get_name() ); ?>
 										</option>
@@ -140,9 +161,11 @@ $this->_render( 'before-page-container' );
 				</div>
 
 				<div class="sui-box-footer">
-					<button name="submit"
-					        type="submit"
-					        class="sui-button sui-button-blue">
+					<button
+						name="submit"
+						type="submit"
+						class="sui-button sui-button-blue"
+					>
 						<span class="sui-icon-save" aria-hidden="true"></span>
 
 						<?php esc_html_e( 'Save Changes', 'wds' ); ?>

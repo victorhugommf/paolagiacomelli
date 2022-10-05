@@ -1,8 +1,7 @@
-<?php
+<?php // phpcs:ignoreFile -- Contains a simple array of words
 
 // esperanto
-
-static $data = [
+static $data = array(
     'adiaŭ',
     'ajn',
     'al',
@@ -176,7 +175,7 @@ static $data = [
     'ŝi',
     'ŝia',
     'ŝin',
-];
+);
 
 $result =& $data;
 unset($data);

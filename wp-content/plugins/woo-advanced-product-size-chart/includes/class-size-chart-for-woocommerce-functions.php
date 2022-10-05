@@ -72,6 +72,19 @@ function scfw_size_chart_get_popup_label()
 }
 
 /**
+ * Get the popup type from default setting.
+ *
+ * @return mixed|string a string value.
+ */
+function scfw_size_chart_get_popup_type()
+{
+    $size_chart_field_value = scfw_size_chart_get_setting( 'size-chart-popup-type' );
+    if ( isset( $size_chart_field_value ) && !empty($size_chart_field_value) ) {
+        return $size_chart_field_value;
+    }
+}
+
+/**
  * Get the sub title text from default setting.
  *
  * @return mixed|string a string value.
@@ -82,7 +95,8 @@ function scfw_size_chart_get_sub_title_text()
     if ( isset( $size_chart_field_value ) && !empty($size_chart_field_value) ) {
         return $size_chart_field_value;
     }
-    return apply_filters( 'size_chart_how_to_measure_text', esc_html__( 'How to measure', 'size-chart-for-woocommerce' ) );
+    // return apply_filters( 'size_chart_how_to_measure_text', esc_html__( 'How to measure', 'size-chart-for-woocommerce' ) );
+    return '';
 }
 
 /**
@@ -92,9 +106,11 @@ function scfw_size_chart_get_sub_title_text()
  *
  * @return mixed|string css string value.
  */
-function scfw_size_chart_get_inline_styles_by_post_id( $post_id = 0 )
+function scfw_size_chart_get_inline_styles_by_post_id( $post_id = 0, $table_style = '' )
 {
-    $table_style = scfw_size_chart_get_chart_table_style_by_chart_id( $post_id );
+    if ( empty($table_style) ) {
+        $table_style = scfw_size_chart_get_chart_table_style_by_chart_id( $post_id );
+    }
     $size_chart_inline_style = '';
     $size_chart_title_color = '#007acc';
     
@@ -118,10 +134,12 @@ function scfw_size_chart_get_inline_styles_by_post_id( $post_id = 0 )
  *
  * @return false|string size chart table html.
  */
-function scfw_size_chart_get_chart_table( $chart_table, $chart_id )
+function scfw_size_chart_get_chart_table( $chart_table, $chart_id, $table_style = '' )
 {
     global  $post ;
-    $table_style = scfw_size_chart_get_chart_table_style_by_chart_id( $chart_id );
+    if ( empty($table_style) ) {
+        $table_style = scfw_size_chart_get_chart_table_style_by_chart_id( $chart_id );
+    }
     ob_start();
     
     if ( !empty($chart_table) && array_filter( $chart_table ) ) {
@@ -137,7 +155,7 @@ function scfw_size_chart_get_chart_table( $chart_table, $chart_id )
                     if ( isset( $chart[$j] ) && '' !== $chart[$j] ) {
                         echo  ( 0 === $i ? "<th>" . esc_html( $chart[$j] ) . "</th>" : "<td>" . esc_html( $chart[$j] ) . "</td>" ) ;
                     } else {
-                        echo  ( 0 === $i ? "<th>" . esc_html( $chart[$j] ) . "</th>" : "<td>" . esc_html( 'N/A' ) . "</td>" ) ;
+                        echo  ( 0 === $i ? "<th>" . esc_html( 'N/A' ) . "</th>" : "<td>" . esc_html( 'N/A' ) . "</td>" ) ;
                     }
                 
                 }
@@ -324,6 +342,21 @@ function scfw_size_chart_get_sub_title_by_chart_id( $size_chart_id )
 }
 
 /**
+ * Get the chart popup note value.
+ *
+ * @param int $size_chart_id size chart id.
+ *
+ * @return mixed|string a popup note.
+ */
+function scfw_size_chart_popup_note( $size_chart_id )
+{
+    $chart_popup_note = get_post_meta( $size_chart_id, 'chart-popup-note', true );
+    if ( !empty($chart_popup_note) ) {
+        return $chart_popup_note;
+    }
+}
+
+/**
  * Get the chart sub title value.
  *
  * @param int $size_chart_id size chart id.
@@ -350,6 +383,36 @@ function scfw_size_chart_get_popup_label_by_chart_id( $size_chart_id )
     $chart_popup_label = get_post_meta( $size_chart_id, 'chart-popup-label', true );
     if ( isset( $chart_popup_label ) && !empty($chart_popup_label) ) {
         return $chart_popup_label;
+    }
+}
+
+/**
+ * Get the chart sub title value.
+ *
+ * @param int $size_chart_id size chart id.
+ *
+ * @return mixed|string a icon name.
+ */
+function scfw_size_chart_get_popup_icon_by_chart_id( $size_chart_id )
+{
+    $chart_popup_icon = get_post_meta( $size_chart_id, 'chart-popup-icon', true );
+    if ( isset( $chart_popup_icon ) && !empty($chart_popup_icon) ) {
+        return $chart_popup_icon;
+    }
+}
+
+/**
+ * Get the chart sub title value.
+ *
+ * @param int $size_chart_id size chart id.
+ *
+ * @return mixed|string a type name.
+ */
+function scfw_size_chart_get_popup_type_by_chart_id( $size_chart_id )
+{
+    $chart_popup_type = get_post_meta( $size_chart_id, 'chart-popup-type', true );
+    if ( isset( $chart_popup_type ) && !empty($chart_popup_type) ) {
+        return $chart_popup_type;
     }
 }
 
@@ -446,11 +509,13 @@ function scfw_size_chart_get_chart_table_by_chart_id( $size_chart_id, $return_js
     if ( false === $return_json_decode ) {
         return $chart_table;
     }
+    
     if ( isset( $chart_table ) && !empty($chart_table) ) {
-        if ( false !== scfw_is_size_chart_table_empty( $chart_table ) ) {
-            return json_decode( $chart_table );
-        }
+        // if ( false !== scfw_is_size_chart_table_empty( $chart_table ) ) {
+        return json_decode( $chart_table );
+        // }
     }
+    
     return array();
 }
 
@@ -849,4 +914,22 @@ function scfw_size_chart_get_link_html(
         );
     }
 
+}
+
+/**
+ * Get the size chart popup from default setting.
+ *
+ */
+function scfw_size_chart_get_size()
+{
+    $size_chart_field_value = 'medium';
+    
+    if ( scfw_fs()->is__premium_only() && scfw_fs()->can_use_premium_code() ) {
+        $size_chart_field_value = scfw_size_chart_get_setting( 'size-chart-size' );
+        if ( isset( $size_chart_field_value ) && !empty($size_chart_field_value) ) {
+            return $size_chart_field_value;
+        }
+    }
+    
+    return $size_chart_field_value;
 }
