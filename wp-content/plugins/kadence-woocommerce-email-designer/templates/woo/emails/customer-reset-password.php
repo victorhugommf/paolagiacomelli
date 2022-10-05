@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Customer Reset Password email
  *
@@ -22,28 +23,28 @@
  * 2. Remove static main text area.
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
 	exit; // Exit if accessed directly
 }
 
-$button_check = Kadence_Woomail_Customizer::opt( 'customer_reset_password_btn_switch' );
+$button_check = Kadence_Woomail_Customizer::opt('customer_reset_password_btn_switch');
 
-do_action( 'woocommerce_email_header', $email_heading, $email ); 
+do_action('woocommerce_email_header', $email_heading, $email);
 
 /**
  * @hooked Kadence_Woomail_Designer::email_main_text_area_no_order
  */
-do_action( 'kadence_woomail_designer_email_text', $email ); 
+do_action('kadence_woomail_designer_email_text', $email);
 
-if ( true == $button_check ) {
-	echo '<p class="btn-container"><a href="' . esc_url( add_query_arg( array( 'key' => $reset_key, 'id' => $user_id ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ) . '" class="btn">' . esc_html__( 'Reset Password', 'kadence-woocommerce-email-designer' ) . '</a></p>';
+if (true == $button_check) {
+	echo '<p class="btn-container"><a href="' . esc_url(add_query_arg(array('key' => $reset_key, 'id' => $user_id), wc_get_endpoint_url('lost-password', '', wc_get_page_permalink('myaccount')))) . '" class="btn">' . esc_html__('Reset Password', 'kadence-woocommerce-email-designer') . '</a></p>';
 } else {
-	?>
+?>
 	<p>
-		<a class="link" href="<?php echo esc_url( add_query_arg( array( 'key' => $reset_key, 'id' => $user_id ), wc_get_endpoint_url( 'lost-password', '', wc_get_page_permalink( 'myaccount' ) ) ) ); ?>">
-				<?php esc_html_e( 'Click here to reset your password', 'kadence-woocommerce-email-designer' ); ?></a>
+		<a class="link" href="<?php echo esc_url(add_query_arg(array('key' => $reset_key, 'id' => $user_id), wc_get_endpoint_url('lost-password', '', wc_get_page_permalink('myaccount')))); ?>">
+			<?php esc_html_e('Clique aqui para redefinir sua senha', 'kadence-woocommerce-email-designer'); ?></a>
 	</p>
-	<?php
+<?php
 }
 ?>
 <p></p>
@@ -51,9 +52,9 @@ if ( true == $button_check ) {
 /**
  * Show user-defined additonal content - this is set in each email's settings.
  */
-if ( $additional_content ) {
-	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );
+if ($additional_content) {
+	echo wp_kses_post(wpautop(wptexturize($additional_content)));
 }
 
-do_action( 'woocommerce_email_footer', $email );
+do_action('woocommerce_email_footer', $email);
 ?>
