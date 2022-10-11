@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kadence WooCommerce Email Designer\n"
 "POT-Creation-Date: 2019-08-12 17:02-0600\n"
-"PO-Revision-Date: 2022-10-05 19:48+0000\n"
-"Last-Translator: Victor Fonseca\n"
+"PO-Revision-Date: 2022-10-05 17:36+0000\n"
+"Last-Translator: \n"
 "Language-Team: Português do Brasil\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -15,8 +15,6 @@ msgstr ""
 "1,2c;_n:1,2;esc_attr_x:1,2c;_x:1,2c;esc_html_x:1,2c\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
-"Report-Msgid-Bugs-To: \n"
-"X-Loco-Version: 2.6.2; wp-6.0.2"
 
 #: templates/woo/emails/waitlist-mailout.php:26
 msgid "%s is now back in stock at %s. "
@@ -450,7 +448,7 @@ msgstr "Clique aqui para redefinir sua senha"
 
 #: templates/woo/emails/customer-new-account.php:42
 msgid "Click here to set your new password."
-msgstr "Clique aqui para definir sua nova senha."
+msgstr ""
 
 #: includes/class-customizer-kwdimportexport-control.php:19
 msgid ""
