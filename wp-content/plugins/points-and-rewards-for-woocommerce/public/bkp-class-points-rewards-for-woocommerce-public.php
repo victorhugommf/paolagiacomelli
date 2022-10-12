@@ -2600,7 +2600,14 @@ class Points_Rewards_For_WooCommerce_Public
 					</div>
 				<?php
 				} else {
-					return;
+					$extra_req = abs($get_min_redeem_req - $get_points);
+				?>
+					<div class="custom_point_checkout woocommerce-info wps_wpr_checkout_points_class">
+						<input type="number" min="0" name="wps_cart_points" class="input-text" id="wps_cart_points" value="" placeholder="<?php esc_attr_e('Points', 'points-and-rewards-for-woocommerce'); ?>" readonly />
+						<button class="button wps_cart_points_apply" name="wps_cart_points_apply" id="wps_cart_points_apply" value="<?php esc_html_e('Apply Points', 'points-and-rewards-for-woocommerce'); ?>" data-point="<?php echo esc_html($get_points); ?>" data-id="<?php echo esc_html($user_id); ?>" data-order-limit="0" disabled><?php esc_html_e('Apply Points', 'points-and-rewards-for-woocommerce'); ?></button>
+						<p><?php esc_html_e('You require :', 'points-and-rewards-for-woocommerce'); ?> <?php echo esc_html($extra_req); ?> <?php esc_html_e('more points to get redeem', 'points-and-rewards-for-woocommerce'); ?></p>
+					</div>
+				<?php
 				}
 			}
 		}
@@ -3013,9 +3020,16 @@ class Points_Rewards_For_WooCommerce_Public
 							<button class="button wps_cart_points_apply" name="wps_cart_points_apply" id="wps_cart_points_apply" value="<?php esc_html_e('Apply Points', 'points-and-rewards-for-woocommerce'); ?>" data-point="<?php echo esc_html($get_points); ?>" data-id="<?php echo esc_html($user_id); ?>" data-order-limit="0"><?php esc_html_e('Apply Points', 'points-and-rewards-for-woocommerce'); ?></button>
 							<p><?php echo esc_html($get_points) . esc_html__(' Points', 'points-and-rewards-for-woocommerce') . ' = ' . wp_kses(wc_price($conversion), $this->wps_wpr_allowed_html()); ?></p>
 						</div>
-<?php
+					<?php
 					} else {
-						return;
+						$extra_req = abs($get_min_redeem_req - $get_points);
+					?>
+						<div class="custom_point_checkout woocommerce-info wps_wpr_checkout_points_class">
+							<input type="number" min="0" name="wps_cart_points" class="input-text" id="wps_cart_points" value="" placeholder="<?php esc_attr_e('Points', 'points-and-rewards-for-woocommerce'); ?>" readonly />
+							<button class="button wps_cart_points_apply" name="wps_cart_points_apply" id="wps_cart_points_apply" value="<?php esc_html_e('Apply Points', 'points-and-rewards-for-woocommerce'); ?>" data-point="<?php echo esc_html($get_points); ?>" data-id="<?php echo esc_html($user_id); ?>" data-order-limit="0" disabled><?php esc_html_e('Apply Points', 'points-and-rewards-for-woocommerce'); ?></button>
+							<p><?php esc_html_e('You require :', 'points-and-rewards-for-woocommerce'); ?> <?php echo esc_html($extra_req); ?> <?php esc_html_e('more points to get redeem', 'points-and-rewards-for-woocommerce'); ?></p>
+						</div>
+<?php
 					}
 				}
 			}
