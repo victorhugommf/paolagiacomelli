@@ -227,7 +227,7 @@ function removeBillingCompany( $fields ) {
      unset($fields['billing']['billing_last_name']);
      unset($fields['billing']['billing_birthdate_field']);
      unset($fields['billing']['billing_sex_field']);
-     unset($fields['billing']['billing_phone']);
+     unset($fields['billing']['billing_cellphone']);
      return $fields;
 }
 
@@ -236,15 +236,13 @@ add_filter( 'woocommerce_checkout_fields', 'paola_checkoutfields', 1);
 
 function paola_checkoutfields( $checkout_fields ) {
 	$checkout_fields['billing']['billing_email']['priority'] = 1;
-	$checkout_fields['billing']['billing_cellphone']['priority'] = 2;
+	$checkout_fields['billing']['billing_phone']['priority'] = 2;
 	$checkout_fields['billing']['billing_first_name']['priority'] = 3;
 	$checkout_fields['billing']['billing_cpf']['priority'] = 4;
 
-	$checkout_fields['billing']['billing_cellphone']['required'] = true;
+	$checkout_fields['billing']['billing_phone']['required'] = true;
 	
-	$checkout_fields['billing']['billing_cellphone']['label'] = 'Celular';
-	$checkout_fields['billing']['billing_cellphone']['placeholder'] = 'Número com DDD';
-	$checkout_fields['billing']['billing_phone']['label'] = 'Telefone de Contato Adicional';
+	$checkout_fields['billing']['billing_phone']['label'] = 'Telefone Celular';
 	$checkout_fields['billing']['billing_phone']['placeholder'] = 'Número com DDD';
 	
 	
@@ -264,4 +262,72 @@ function custom_override_default_address_fields( $address_fields ) {
 	
 
     return $address_fields;
+}
+
+
+
+
+//Desabilitar o LazyLoad na Shop Page
+add_action( 'wp', 'deactivate_rocket_lazyload_on_single' );
+function deactivate_rocket_lazyload_on_single() {
+	if ( is_shop() || is_product_category() || 	is_product_tag()) {
+		add_filter( 'do_rocket_lazyload', '__return_false' );
+	}
+}
+
+add_action( 'wp_print_scripts', 'my_deregister_javascript', 100 );
+
+function my_deregister_javascript() 
+ { 
+    if ( is_shop() ) 
+      {
+        wp_deregister_script( 'lazyload.min' ); 
+      } 
+ } 
+
+
+
+// It adds a JS script only on the WooCommerce product page.
+add_action( 'wp_footer', 'add_script_to_product_page' );
+function add_script_to_product_page() {
+
+    // Only on the product page.
+    if ( ! is_product() ) {
+        return;
+    }
+
+    ?>
+        <script>
+	var ced_image_to_show = '';
+	var variations = JSON.parse(jQuery(".variations_form").attr("data-product_variations"));
+	if (variations) {
+		var first_attr = Object.keys(variations[0].attributes)[0];
+
+		// when swatch button is clicked
+		jQuery("ul[data-attribute_name='" + first_attr + "'] li").click(function () {
+			var choice = jQuery(this).attr("data-value");
+			var found = false;
+
+			// loop variations JSON
+
+			for (const i in variations) {
+				if (found) continue;
+				if (variations.hasOwnProperty(i)) {
+					// if first attribute has the same value as has been selected
+					if (choice === variations[i].attributes[Object.keys(variations[0].attributes)[0]]) {
+						// change featured image
+						ced_image_to_show = variations[i].image.src;
+						if (ced_image_to_show.length) {
+							jQuery(".attachment-woocommerce_single").attr("src", ced_image_to_show).removeAttr("srcset");
+						}
+
+						found = true;
+					}
+				}
+			}
+		});
+	}
+</script>
+    <?php
+
 }

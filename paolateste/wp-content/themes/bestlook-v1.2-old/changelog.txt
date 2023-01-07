@@ -1,0 +1,326 @@
+October 18th 2017 (v.1.3.1)
+
+	Updated: Visual composer 5.4.2
+	Fixed: Modules issue in new visual composer
+
+Changed files:
+
+style.css
+core\tgm\gt3-tgm.php
+core\tgm\plugins\js_composer.zip
+core\vc\init.php
+changelog.txt
+
+------------------------------------------------------------------------------
+October 13th 2017 (v.1.3)
+
+	Updated: WooCommerce 3.2.0 compatibility
+	Updated: Next-twitter-connect compatibility
+	Updated: Revolution slider 5.4.6.2
+	Updated: Visual composer 5.4.1
+	Fixed: Checkout login form, YITH Popup
+	Fixed: Widgets issue in latest PHP
+	Fixed: Minor bug fixes
+
+Changed iles:
+
+style.css
+core\metabox_config.php
+core\widgets\flickr.php
+core\widgets\posts.php
+woocommerce\css\woocommerce.css
+woocommerce\global\quantity-input.php
+core\default-options.php
+core\redux-config.php
+css\dark_theme.css
+css\theme.css
+functions.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\js_composer.zip
+core\tgm\plugins\revslider.zip
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+
+------------------------------------------------------------------------------
+September 19th 2017 (v.1.2)
+
+	Added: Winery skin 
+	Added: Dark mode and it's options
+	Added: Zoom in icon to the single product page
+	Updated: All required plugins
+	Fixed: Minor bug fixes
+
+Changed files:
+
+style.css
+core\default-options.php
+core\redux-config.php
+css\dark_theme.css
+css\theme.css
+functions.php
+img\zoom.png
+vc_templates\gt3_shop_list.php
+vc_templates\gt3_spacing.php
+woocommerce\css\woocommerce.css
+woocommerce\loop\loop-start.php
+woocommerce\wooinit.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\js_composer.zip
+core\tgm\plugins\revslider.zip
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+
+------------------------------------------------------------------------------
+September 12th 2017 (v.1.1.0)
+
+	Added: 5th sider support in footer
+	Fixed: Loop issue in WooCommerce
+	Fixed: Currency switcher 
+	Fixed: Minor bug fixes	
+
+Changed files:
+
+style.css
+core\admin\js\gt3_param.js
+core\default-options.php
+core\metabox_config.php
+core\redux-config.php
+core\registrator\css-js.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+core\vc\modules\gt3_hotspot\init.php
+css\base_composer.css
+css\dark_theme.css
+css\gt3-css-search-ajax.css
+css\theme.css
+css\tiny_mce.css
+functions.php
+header.php
+img\preloader.gif
+img\preloader_dark.gif
+js\theme.js
+style.css
+vc_templates\gt3_hotspot.php
+vc_templates\gt3_shop_list.php
+woocommerce\css\woocommerce.css
+woocommerce\gt3-templates\gt3-content-product.php
+woocommerce\loop\loop-start.php
+woocommerce\wooinit.php
+
+------------------------------------------------------------------------------
+August 30th 2017 (v.1.0.9)
+
+	Added: Social sharing buttons on single product page
+	Fixed: Mega menu issue on mobile
+	Fixed: Facebook login issue
+	Fixed: Sticky menu issue	
+
+Changed files:
+
+style.css
+core\redux-config.php
+core\registrator\css-js.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+css\theme.css
+functions.php
+js\theme.js
+woocommerce\css\woocommerce.css
+woocommerce\wooinit.php
+
+------------------------------------------------------------------------------
+August 8th 2017 (v.1.0.8)
+
+	Added: Hotspot new module
+	Fixed: Multiselect in modules
+	Fixed: Filter issue in wooinit.php
+	Updated: All required plugins
+
+Changed files:
+
+style.css
+core\admin\css\admin.css
+core\admin\js\jquery.hotspot.js
+core\registrator\license_verification.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+core\vc\custom_types\gt3_multi_select.php
+core\vc\modules\gt3_hotspot\init.php
+core\vc\params\param_hotspot\init.php
+css\theme.css
+js\theme.js
+vc_templates\gt3_hotspot.php
+woocommerce\css\woocommerce.css
+woocommerce\js\theme-woo.js
+woocommerce\wooinit.php
+
+------------------------------------------------------------------------------
+July 25th 2017 (v.1.0.7)
+
+	Added: Vendors prefixes (css)
+	Added: Instagram shop powered by Snapppt
+	Added: "read more" style for Denim shop
+	Added: Masonry support for main shop
+	Added: Changelog support in theme options
+	Added: Shortcodes support in header builder
+	Fixed: Top sidebar for products category
+	Fixed: Ajax quick view responsive issue
+	Fixed: Sales lable position issue
+	Fixed: Margin issue for quick view
+	Fixed: Currency switcher display issue
+
+Changed files:
+
+core\registrator\css-js.php
+core\vc\custom_types\gt3_multi_select.php
+css\theme.css
+woocommerce\content-product.php
+woocommerce\css\woocommerce.css
+woocommerce\js\theme-woo.js
+woocommerce\loop\loop-start.php
+woocommerce\wooinit.php
+functions.php
+style.css
+core\loader.php
+core\redux-config.php
+core\admin\css\admin.css
+core\registrator\license_verification.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+css\theme.css
+changelog.txt
+
+------------------------------------------------------------------------------
+July 17th 2017 (v.1.0.6)
+
+	Fixed: YITH WooCommerce Quick View for variable product
+	Fixed: YITH Quick View. EasyZoom issue
+	Improved: Theme activation/auto-update and item support
+
+Changed files:
+
+core\registrator\license_verification.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+style.css
+woocommerce\css\woocommerce.css
+woocommerce\js\theme-woo.js
+
+------------------------------------------------------------------------------
+July 11th 2017 (v.1.0.5)
+
+	Updated: All required plugins
+	Improved: Shop top sidebar 
+	Added: Single product price styles
+	Fixed: Categories issue in blog post
+	Fixed: Labels positioning issue
+
+Changed files:
+
+screenshot.png
+style.css
+core\default-options.php
+core\redux-config.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+core\tgm\plugins\js_composer.zip
+bloglisting.php
+core\registrator\css-js.php
+css\base_composer.css
+single.php
+vc_templates\gt3_blog.php
+vc_templates\gt3_featured_posts.php
+woocommerce\css\woocommerce.css
+woocommerce\js\theme-woo.js
+
+
+------------------------------------------------------------------------------
+July 5th 2017 (v.1.0.3 - 1.0.4)
+
+	Added: New lables (HOT and New)
+	Added: Sidebar filter
+	Added: Product navigation on the single product page
+	Added: Size guide image support on the product page
+	Added: Following plugins comaptibiltiy AJAX Search lite, YITH Ajax Filter,  Yith Popup
+	Added: Mailchimp color management
+	Improved: Product images optimization
+	Updated: All required plugins
+	Fixed: Server compatibility issue (PHP)
+	Fixed: Masonry fullwidth product page
+	Fixed: Menu issue
+	Fixed: Sidebars import
+	Fixed: Minor bug fixes
+
+Changed files:
+core\loader.php
+core\metabox_config.php
+core\redux-config.php
+core\registrator\css-js.php
+core\registrator\license_verification.php
+core\tgm\gt3-tgm.php
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+core\tgm\plugins\revslider.zip
+core\wize-content-image-size.php
+css\base_composer.css
+css\gt3-css-search-ajax.css
+css\gt3-css-yith-popup.css
+css\theme.css
+footer.php
+functions.php
+js\gt3-js-yith-popup.js
+style.css
+vc_templates\gt3_product_shop.php
+woocommerce\cart\cart.php
+woocommerce\content-product.php
+woocommerce\css\woocommerce.css
+woocommerce\global\quantity-input.php
+woocommerce\gt3-templates\gt3-content-product.php
+woocommerce\js\theme-woo.js
+woocommerce\single-product\rating.php
+woocommerce\wooinit.php
+
+------------------------------------------------------------------------------
+June 13th 2017 (v.1.0.2)
+
+	Updated: All required plugins
+	Improved: Products loading time
+	Fixed: Translation issue
+	FIxed: Minor bug fixed
+	Added: Theme activation
+	Added: Theme auto update
+
+Changed files:
+
+core\admin\css\admin.css
+core\languages\wizestore.pot
+core\loader.php
+core\registrator\license_verification.php
+core\vc\modules\gt3_product_shop\init.php
+css\theme.css
+style.css
+woocommerce\content-product_cat.php
+
+------------------------------------------------------------------------------
+May 29th 2017 (v.1.0.1)
+
+	Added: Facebook and google accounts login in
+	Added: Accordion to product widget
+	Updated: Woocommerce account css
+	Updated: Quich-view css
+	Fixed: Responisive issues
+	Fixed: Shop buttons issue
+
+Changed files:
+
+core\redux-config.php
+core\registrator\css-js.php
+tgm\gt3-tgm.php
+core\tgm\plugins\gt3-wize-store-core-plugin.zip
+css\theme.css
+functions.php
+style.css
+woocommerce\css\woocommerce.css
+woocommerce\js\theme-woo.js
+woocommerce\wooinit.php
+
+------------------------------------------------------------------------------
+
+Initial Release

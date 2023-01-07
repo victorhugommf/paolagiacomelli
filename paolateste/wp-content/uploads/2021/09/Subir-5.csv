@@ -1,0 +1,98 @@
+﻿Tipo;Produto ascendente;Publicado;Em estoque?;Estoque;São permitidas encomendas?;Vendido individualmente?;Preço;Nome do atributo 1;Valores do atributo 1;Visibilidade do atributo 1;Atributo global 1;Nome do atributo 2;Valores do atributo 2;Visibilidade do atributo 2;Atributo global 2
+variation;10129;-1;1;1;0;0;459,99;Cor;MARROM;;1;Tamanho;G;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;MARROM;;1;Tamanho;M;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;MARROM;;1;Tamanho;P;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;MARROM;;1;Tamanho;PP;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;PRETO;;1;Tamanho;G;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;PRETO;;1;Tamanho;M;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;PRETO;;1;Tamanho;P;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;PRETO;;1;Tamanho;PP;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;VERDE;;1;Tamanho;G;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;VERDE;;1;Tamanho;M;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;VERDE;;1;Tamanho;P;;1
+variation;10129;-1;1;1;0;0;459,99;Cor;VERDE;;1;Tamanho;PP;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;PRETO;;1;Tamanho;G;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;PRETO;;1;Tamanho;GG;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;PRETO;;1;Tamanho;M;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;PRETO;;1;Tamanho;P;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;PRETO;;1;Tamanho;PP;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;VERDE;;1;Tamanho;G;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;VERDE;;1;Tamanho;GG;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;VERDE;;1;Tamanho;M;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;VERDE;;1;Tamanho;P;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;VERDE;;1;Tamanho;PP;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;LILAS;;1;Tamanho;G;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;LILAS;;1;Tamanho;GG;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;LILAS;;1;Tamanho;M;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;LILAS;;1;Tamanho;P;;1
+variation;10126;-1;1;1;0;0;269,99;Cor;LILAS;;1;Tamanho;PP;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;AZUL TURQUESA;;1;Tamanho;PP;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;AZUL TURQUESA;;1;Tamanho;P;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;AZUL TURQUESA;;1;Tamanho;M;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;AZUL TURQUESA;;1;Tamanho;G;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;AZUL TURQUESA;;1;Tamanho;GG;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;PP;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;P;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;M;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;G;;1
+variation;10137;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;GG;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;AZUL TURQUESA;;1;Tamanho;PP;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;AZUL TURQUESA;;1;Tamanho;P;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;AZUL TURQUESA;;1;Tamanho;M;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;AZUL TURQUESA;;1;Tamanho;G;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;AZUL TURQUESA;;1;Tamanho;GG;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;ROSA;;1;Tamanho;PP;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;ROSA;;1;Tamanho;P;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;ROSA;;1;Tamanho;M;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;ROSA;;1;Tamanho;G;;1
+variation;10136;-1;1;1;0;0;459,99;Cor;ROSA;;1;Tamanho;GG;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;PP;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;P;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;M;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;G;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;GG;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;PP;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;P;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;M;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;G;;1
+variation;10133;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;GG;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;PP;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;P;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;M;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;G;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;ROSA;;1;Tamanho;GG;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;PP;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;P;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;M;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;G;;1
+variation;10134;-1;1;1;0;0;489,99;Cor;LARANJA;;1;Tamanho;GG;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;PRETO;;1;Tamanho;PP;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;PRETO;;1;Tamanho;P;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;PRETO;;1;Tamanho;M;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;PRETO;;1;Tamanho;G;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;PRETO;;1;Tamanho;GG;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;BRANCO;;1;Tamanho;PP;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;BRANCO;;1;Tamanho;P;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;BRANCO;;1;Tamanho;M;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;BRANCO;;1;Tamanho;G;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;BRANCO;;1;Tamanho;GG;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA CHICLETE;;1;Tamanho;PP;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA CHICLETE;;1;Tamanho;P;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA CHICLETE;;1;Tamanho;M;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA CHICLETE;;1;Tamanho;G;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA CHICLETE;;1;Tamanho;GG;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA PINK;;1;Tamanho;PP;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA PINK;;1;Tamanho;P;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA PINK;;1;Tamanho;M;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA PINK;;1;Tamanho;G;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;ROSA PINK;;1;Tamanho;GG;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;VERDE;;1;Tamanho;PP;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;VERDE;;1;Tamanho;P;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;VERDE;;1;Tamanho;M;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;VERDE;;1;Tamanho;G;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;VERDE;;1;Tamanho;GG;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;LILAS;;1;Tamanho;PP;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;LILAS;;1;Tamanho;P;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;LILAS;;1;Tamanho;M;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;LILAS;;1;Tamanho;G;;1
+variation;4114;-1;1;1;0;0;169,99;Cor;LILAS;;1;Tamanho;GG;;1
