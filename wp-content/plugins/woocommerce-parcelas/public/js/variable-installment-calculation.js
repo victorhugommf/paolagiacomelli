@@ -4,8 +4,14 @@ jQuery(window).load(function () {
 
         function fswp_variable_installment_calculation() {
             var final_price = $('.single_variation_wrap .price .amount:last').text();
+            console.log(final_price);
             final_price = final_price.match(/\d+/g);
-            var final_price_length = Number(final_price.length);
+
+            if(final_price){
+                var final_price_length = Number(final_price.length);
+            }
+            else return;
+            
             var crude_price = '';
             var installments_html;
 
@@ -48,9 +54,14 @@ jQuery(window).load(function () {
             $('.fswp_variable_installment_calculation').html(installments_html);
         }
 
-        var default_variation = Number($('.single_variation .price').length);
 
-        if (default_variation) {
+        var default_variation = Number($('.single_variation .price'));
+
+        if(default_variation){
+            var default_variation_length = default_variation.length;
+        }
+
+        if (default_variation_length) {
             fswp_variable_installment_calculation();
         }
         $('.variations select').bind('change', function () {

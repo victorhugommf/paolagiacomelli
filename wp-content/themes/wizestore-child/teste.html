@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    .row {
+      width: 90%;
+      margin: 0 auto;
+    }
+
+    .card {
+      margin: 0 auto;
+    }
+
+    .card>.card-content {
+      background: red;
+      padding: 10px;
+      text-align: center;
+      font-size: 36px;
+      height: 350px;
+    }
+  </style>
+
+  <script>
+    var slickopts = {
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      rows: 1, // Removes the linear order. Would expect card 5 to be on next row, not stacked in groups.
+    };
+
+    $('.carousel').slick(slickopts);
+  </script>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="row carousel">
+    <div class="card">
+      <div class="card-content">Card 01</div>
+    </div>
+    <div class="card">
+      <div class="card-content">Card 02</div>
+    </div>
+  </div>
+</body>
+
+</html>
